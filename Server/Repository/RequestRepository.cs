@@ -44,12 +44,26 @@ namespace Server.Repository
      
         public void UpdateRequest(RequestAbonent request)
         {
-            //Nothing
+            //Nothing Implement by Automapper
         }
 
-        public bool SaveChanges()
+        public async Task DeleteRequest(RequestAbonent request)
         {
-            return (_context.SaveChanges() >=0);
+            if(request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            _context.Requests.Remove(request);
+            
+            await _context.SaveChangesAsync();
         }
+
+        public async Task SaveAsync()
+        {
+            await _context.SaveChangesAsync();
+        }
+
+
     }
 }

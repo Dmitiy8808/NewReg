@@ -92,18 +92,25 @@ namespace Server.Controllers
 
             _requestRepository.UpdateRequest(clientAbonentFromRepo);
 
-            _requestRepository.SaveChanges();
+            await _requestRepository.SaveAsync();
 
             return NoContent();
         }
 
+        [Route("RequestAbonent/{id:guid}")]
+        [HttpDelete]
+        public async Task<IActionResult> DeleteRegRequestAbonent(Guid id)
+        {
+            var clientAbonentFromRepo = await _requestRepository.GetRequest(id);
+            if(clientAbonentFromRepo == null)
+            {
+                return NotFound();
+            }
 
-        // [HttpPost]
-        // public async Task<IActionResult> CreatePerson([FromBody]Person person)
-        // {
-        //     await _repo.CreatePerson(person);
-        //     return CreatedAtAction(nameof(GetPerson), new { id = person.Id }, person);
+            await _requestRepository.DeleteRequest(clientAbonentFromRepo);
 
-        // }
+            return NoContent();
+        }
+
     }
 }

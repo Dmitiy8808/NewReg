@@ -11,5 +11,6 @@ namespace Reg.Client.HttpRepository
         Task<PagingResponse<RequestAbonent>> GetRequestAbonents(RequestAbonentParameters requestAbonentParameters);
         Task<RequestAbonentReadDto> GetRequestAbonent(Guid id);
         Task CreateRequestAbonent(RequestAbonentCreateDto requestAbonentCreateDto);
+        Task UpdateRequestAbonent(Guid id, RequestAbonentUpdateDto requestAbonentUpdateDto);
     }
 }

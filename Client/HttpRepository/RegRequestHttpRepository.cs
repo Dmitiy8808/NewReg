@@ -40,9 +40,10 @@ namespace Reg.Client.HttpRepository
             return certRequestDataDto;
         }
 
-        public Task<RequestAbonentReadDto> GetRequestAbonent(Guid id)
+        public async Task<RequestAbonentReadDto> GetRequestAbonent(Guid id)
         {
-            throw new NotImplementedException();
+            var requestAbonent = await _client.GetFromJsonAsync<RequestAbonentReadDto>($"regrequests/RequestAbonent/{id}");
+            return requestAbonent;
         }
 
         public async Task<PagingResponse<RequestAbonent>> GetRequestAbonents(RequestAbonentParameters requestAbonentParameters)
@@ -70,6 +71,11 @@ namespace Reg.Client.HttpRepository
             };
 
             return pagingResponse;
+        }
+
+        public async Task UpdateRequestAbonent(Guid id, RequestAbonentUpdateDto requestAbonentUpdateDto)
+        {
+            await _client.PutAsJsonAsync($"regrequests/RequestAbonent/{id}", requestAbonentUpdateDto);
         }
     }
 }
