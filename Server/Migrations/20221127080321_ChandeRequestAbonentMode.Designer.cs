@@ -12,8 +12,8 @@ using Reg.Server.Context;
 namespace Reg.Server.Migrations
 {
     [DbContext(typeof(RegContext))]
-    [Migration("20221125145854_AddRequestsTable")]
-    partial class AddRequestsTable
+    [Migration("20221127080321_ChandeRequestAbonentMode")]
+    partial class ChandeRequestAbonentMode
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -68,80 +68,6 @@ namespace Reg.Server.Migrations
                     b.ToTable("AddressInfo");
                 });
 
-            modelBuilder.Entity("Entities.Models.Person", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime?>("BithDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("BithPlace")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("GenderId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Inn")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("MobileTelephone")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("PassportAddon")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("PassportDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("PassportNumber")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("PassportSeries")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("PassportUnit")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Patronymic")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Snils")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Сitizenship")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Persons");
-                });
-
             modelBuilder.Entity("Entities.Models.PersonRequestInfo", b =>
                 {
                     b.Property<Guid>("Id")
@@ -149,26 +75,21 @@ namespace Reg.Server.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("BirthDate")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("BirthPlace")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Country")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("CryptoProviderCode")
-                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("CryptoProviderId")
+                    b.Property<int?>("CryptoProviderId")
                         .HasColumnType("integer");
 
                     b.Property<string>("CryptoProviderName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Email")
@@ -176,14 +97,12 @@ namespace Reg.Server.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("FirstName")
-                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("Gender")
+                    b.Property<int?>("Gender")
                         .HasColumnType("integer");
 
                     b.Property<string>("Inn")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("LastName")
@@ -191,47 +110,38 @@ namespace Reg.Server.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("OrgUnitName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("PassportAddon")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("PassportDate")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("PassportNumber")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("PassportSeries")
-                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("PassportType")
+                    b.Property<int?>("PassportType")
                         .HasColumnType("integer");
 
                     b.Property<string>("PassportUnit")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Patronymic")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Post")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Snils")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.ToTable("PersonRequestInfo");
+                    b.ToTable("Persons");
                 });
 
             modelBuilder.Entity("Entities.Models.Provider", b =>
@@ -298,64 +208,55 @@ namespace Reg.Server.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("CertRequest")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("CertificationCenter")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("ContainerName")
-                        .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("FullName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Inn")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<bool>("IsJuridical")
                         .HasColumnType("boolean");
 
                     b.Property<string>("Kpp")
-                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("LocationAddressId")
+                    b.Property<int?>("LocationAddressId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Ogrn")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("OrganisationUnit")
-                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("PersonId")
+                    b.Property<Guid?>("PersonId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Phone")
-                        .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<int>("PostalAddressId")
-                        .HasColumnType("integer");
 
                     b.Property<string>("ShortName")
-                        .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int>("StepId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
                     b.HasIndex("LocationAddressId");
 
                     b.HasIndex("PersonId");
-
-                    b.HasIndex("PostalAddressId");
 
                     b.ToTable("Requests");
                 });
@@ -364,27 +265,15 @@ namespace Reg.Server.Migrations
                 {
                     b.HasOne("Entities.Models.AddressInfo", "LocationAddress")
                         .WithMany()
-                        .HasForeignKey("LocationAddressId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("LocationAddressId");
 
                     b.HasOne("Entities.Models.PersonRequestInfo", "Person")
                         .WithMany()
-                        .HasForeignKey("PersonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Entities.Models.AddressInfo", "PostalAddress")
-                        .WithMany()
-                        .HasForeignKey("PostalAddressId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PersonId");
 
                     b.Navigation("LocationAddress");
 
                     b.Navigation("Person");
-
-                    b.Navigation("PostalAddress");
                 });
 #pragma warning restore 612, 618
         }

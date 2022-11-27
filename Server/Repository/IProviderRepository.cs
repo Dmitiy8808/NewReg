@@ -8,6 +8,6 @@ namespace Server.Repository
 
         IQueryable<Provider> GetProviders();
 
-        Task<Provider> GetProvider(int providerId);
+        Task<Provider> GetProvider(int? providerId);
     }
 }

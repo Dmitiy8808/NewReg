@@ -24,7 +24,6 @@ builder.Services.AddMudServices();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddScoped<IProductHttpRepository, ProductHttpRepository>();
-builder.Services.AddScoped<IPersonHttpRepository, PersonHttpRepository>(); 
 builder.Services.AddScoped<IRegRequestHttpRepository, RegRequestHttpRepository>(); 
 builder.Services.AddScoped<IWebSocketService, WebSocketService>();
 

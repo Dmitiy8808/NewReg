@@ -26,17 +26,17 @@ namespace Reg.Client.Pages
             ShortName = "ООО \"НПЦ \"1С\"",
             FullName = "ООО \"НПЦ \"1С\"",
             Phone = "+7(495)1234567",
-            PostalAddress = new AddressInfo {
-                PostalCode = null,
-                RegionId = 2,
-                City = null,
-                Locality = "Москва г",
-                Area = "",
-                Street = "Мосфильмовская ул",
-                Building = "42",
-                Bulk = "1",
-                Flat = "помещение 1, комната 7"
-            },
+            // PostalAddress = new AddressInfo {
+            //     PostalCode = null,
+            //     RegionId = 2,
+            //     City = null,
+            //     Locality = "Москва г",
+            //     Area = "",
+            //     Street = "Мосфильмовская ул",
+            //     Building = "42",
+            //     Bulk = "1",
+            //     Flat = "помещение 1, комната 7"
+            // },
             LocationAddress = new AddressInfo {
                 PostalCode = null,
                 RegionId = 2,

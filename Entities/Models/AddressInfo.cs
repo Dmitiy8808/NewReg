@@ -10,7 +10,7 @@ namespace Entities.Models
         public int Id { get; set; }
         public string? PostalCode { get; set; }
 
-        public int RegionId { get; set; }
+        public int RegionId { get; set; } = 1;
 
         public string? RegionCode { get; set; }
 
@@ -27,7 +27,5 @@ namespace Entities.Models
         public string? Bulk { get; set; }
 
         public string? Flat { get; set; }
-        // public Guid RequestAbonentId { get; set; }
-        // public RequestAbonent? RequestAbonent { get; set; }
     }
 }

@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Entities.Models;
 using Microsoft.EntityFrameworkCore;
 using Reg.Server.Context;
+using Server.Paging;
+using Server.RequestFeatures;
 
 namespace Server.Repository
 {
@@ -18,18 +20,40 @@ namespace Server.Repository
 
         public async Task CreateRequest(RequestAbonent request)
         {
-            _context.Add(request);
+            if(request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+            _context.Requests.Add(request);
             await _context.SaveChangesAsync();
         }
 
         public async Task<RequestAbonent> GetRequest(Guid id)
         {
-            return await _context.Requests.FindAsync(id);
+            return await _context.Requests
+                    .Include(c => c.Person)
+                    .Include(la => la.LocationAddress)
+                    .FirstOrDefaultAsync(req => req.Id == id);
         }
 
-        public async Task<List<RequestAbonent>> GetRequests()
+        public async Task<PagedList<RequestAbonent>> GetRequests(RequestAbonentParameters requestAbonentParameters)
         {
-            return await _context.Requests.ToListAsync();
+           var requests =  await _context.Requests.ToListAsync();
+
+           return PagedList<RequestAbonent>
+                .ToPagedList(requests, requestAbonentParameters.PageNumber, requestAbonentParameters.PageSize);
+
+        }
+
+     
+        public void UpdateRequest(RequestAbonent request)
+        {
+            //Nothing
+        }
+
+        public bool SaveChanges()
+        {
+            return (_context.SaveChanges() >=0);
         }
     }
 }

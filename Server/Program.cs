@@ -1,13 +1,14 @@
 using Reg.Server.Context;
 using Reg.Server.MigrationManager;
-using Reg.Server.Repository;
 using Microsoft.EntityFrameworkCore;
 using Server.Repository;
 using Server.Services;
+using NLog;
+using Server.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
 
 builder.Services.AddCors(policy =>
 {
@@ -20,10 +21,14 @@ builder.Services.AddCors(policy =>
 
 builder.Services.AddDbContext<RegContext>(opt => opt.UseNpgsql(builder.Configuration.GetConnectionString("sqlConnection")));
 
-builder.Services.AddScoped<IPersonRepository, PersonRepository>();
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+builder.Services.ConfigureLoggerService();
+
 builder.Services.AddScoped<IProviderRepository, ProviderRepository>(); 
 builder.Services.AddScoped<IRegionRepository, RegionRepository>();
-builder.Services.AddTransient<IQualifiedCertificateManager, QualifiedCertificateManager>();
+builder.Services.AddTransient<IQualifiedCertificateManager, QualifiedCertificateManager>();  
+builder.Services.AddTransient<IRequestRepository, RequestRepository>();
 
 builder.Services.AddControllers();
 

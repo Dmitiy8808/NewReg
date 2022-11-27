@@ -15,7 +15,7 @@ namespace Server.Repository
         {
             _context = context;
         }
-        public async Task<Provider> GetProvider(int providerId)
+        public async Task<Provider> GetProvider(int? providerId)
         {
             return await _context.Providers.FindAsync(providerId);
         }

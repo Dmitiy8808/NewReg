@@ -40,19 +40,19 @@ namespace Server.Services
 
         private async Task SetCommonRequisites(CertStruct refCertStruct, RequestAbonent clientAbonent)
         {
-            Region region = await _regionRepository.GetRegion(clientAbonent.PostalAddress.RegionId);
+            Region region = await _regionRepository.GetRegion(clientAbonent.LocationAddress.RegionId);
             string str1 = string.Empty;
-            if (!string.IsNullOrWhiteSpace(clientAbonent.PostalAddress.Street))
-                str1 = str1 + clientAbonent.PostalAddress.Street + " ";
-            if (!string.IsNullOrWhiteSpace(clientAbonent.PostalAddress.Building))
-                str1 = str1 + clientAbonent.PostalAddress.Building + " ";
-            if (!string.IsNullOrWhiteSpace(clientAbonent.PostalAddress.Bulk))
-                str1 = str1 + clientAbonent.PostalAddress.Bulk + " ";
-            if (!string.IsNullOrWhiteSpace(clientAbonent.PostalAddress.Flat))
-                str1 += clientAbonent.PostalAddress.Flat;
+            if (!string.IsNullOrWhiteSpace(clientAbonent.LocationAddress.Street))
+                str1 = str1 + clientAbonent.LocationAddress.Street + " ";
+            if (!string.IsNullOrWhiteSpace(clientAbonent.LocationAddress.Building))
+                str1 = str1 + clientAbonent.LocationAddress.Building + " ";
+            if (!string.IsNullOrWhiteSpace(clientAbonent.LocationAddress.Bulk))
+                str1 = str1 + clientAbonent.LocationAddress.Bulk + " ";
+            if (!string.IsNullOrWhiteSpace(clientAbonent.LocationAddress.Flat))
+                str1 += clientAbonent.LocationAddress.Flat;
             if (string.IsNullOrWhiteSpace(str1))
                 str1 = "0";
-            string str2 = clientAbonent.PostalAddress.City == null || !(clientAbonent.PostalAddress.City.Trim() != string.Empty) ? (clientAbonent.PostalAddress.Locality == null || !(clientAbonent.PostalAddress.Locality.Trim() != "") ? "0" : clientAbonent.PostalAddress.Locality.Trim().Replace("\"", string.Empty)) : clientAbonent.PostalAddress.City.Trim().Replace("\"", string.Empty);
+            string str2 = clientAbonent.LocationAddress.City == null || !(clientAbonent.LocationAddress.City.Trim() != string.Empty) ? (clientAbonent.LocationAddress.Locality == null || !(clientAbonent.LocationAddress.Locality.Trim() != "") ? "0" : clientAbonent.LocationAddress.Locality.Trim().Replace("\"", string.Empty)) : clientAbonent.LocationAddress.City.Trim().Replace("\"", string.Empty);
             if (!string.IsNullOrWhiteSpace(clientAbonent.Person.Email))
                 refCertStruct.Email = clientAbonent.Person.Email;
             refCertStruct.GivenName = string.Format("{0}{1}", (object) clientAbonent.Person.FirstName, clientAbonent.Person.Patronymic == null ? (object) string.Empty : (object) (" " + clientAbonent.Person.Patronymic));

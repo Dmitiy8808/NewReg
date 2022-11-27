@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Reg.Server.Context;
@@ -11,9 +12,11 @@ using Reg.Server.Context;
 namespace Reg.Server.Migrations
 {
     [DbContext(typeof(RegContext))]
-    partial class RegContextModelSnapshot : ModelSnapshot
+    [Migration("20221127073007_Initial")]
+    partial class Initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -213,9 +216,6 @@ namespace Reg.Server.Migrations
                     b.Property<string>("ContainerName")
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<string>("FullName")
                         .HasColumnType("text");
 
@@ -245,9 +245,6 @@ namespace Reg.Server.Migrations
 
                     b.Property<string>("ShortName")
                         .HasColumnType("text");
-
-                    b.Property<int>("StepId")
-                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 

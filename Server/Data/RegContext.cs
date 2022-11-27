@@ -12,10 +12,9 @@ namespace Reg.Server.Context
         }
 
 
-        public DbSet<Person> Persons { get; set; }
-        public DbSet<Provider> Providers { get; set; }
-        public DbSet<Region> Regions { get; set; }
-        public DbSet<RequestAbonent> Requests { get; set; }
-
+        public DbSet<Provider> Providers { get; set; } = null!;
+        public DbSet<Region> Regions { get; set; } = null!;
+        public DbSet<RequestAbonent> Requests { get; set; } = null!;
+        public DbSet<PersonRequestInfo> Persons { get; set; } = null!;
     }
 }

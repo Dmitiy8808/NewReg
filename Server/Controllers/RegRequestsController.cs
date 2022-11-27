@@ -1,5 +1,10 @@
+using System.Text.Json;
+using AutoMapper;
+using Entities.DTOs;
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
+using Server.Repository;
+using Server.RequestFeatures;
 using Server.Services;
 
 namespace Server.Controllers
@@ -9,8 +14,13 @@ namespace Server.Controllers
     public class RegRequestsController : ControllerBase
     {
         private readonly IQualifiedCertificateManager _qualifiedCertificateManager;
-        public RegRequestsController(IQualifiedCertificateManager qualifiedCertificateManager)
+        private readonly IRequestRepository _requestRepository;
+        private readonly IMapper _mapper;
+        public RegRequestsController(IQualifiedCertificateManager qualifiedCertificateManager, 
+                IRequestRepository requestRepository, IMapper mapper)
         {
+            _mapper = mapper;
+            _requestRepository = requestRepository;
             _qualifiedCertificateManager = qualifiedCertificateManager;
             
         }
@@ -32,5 +42,68 @@ namespace Server.Controllers
 
             return Ok(certRequestData);
         }
+
+        [Route("RequestAbonent")]
+        [HttpPost]
+        public async Task<IActionResult> CreateRegRequestAbonent(RequestAbonentCreateDto requestAbonentCreateDto)
+        {
+            var requestAbonentModel = _mapper.Map<RequestAbonent>(requestAbonentCreateDto);
+            
+            await _requestRepository.CreateRequest(requestAbonentModel);
+
+            var requestAbonentReadeDto = _mapper.Map<RequestAbonentReadDto>(requestAbonentModel);
+
+            return CreatedAtAction(nameof(GetRegRequestAbonent), new { id = requestAbonentReadeDto.Id }, requestAbonentReadeDto);
+        }
+
+        [Route("RequestAbonent/{id:guid}")]
+        [HttpGet]
+        public async Task<ActionResult<RequestAbonentReadDto>>   GetRegRequestAbonent(Guid id)
+        {
+            var requestAbonent = await _requestRepository.GetRequest(id);
+            if (requestAbonent != null)
+            {
+                return Ok(_mapper.Map<RequestAbonentReadDto>(requestAbonent));
+            }
+            return NotFound();
+        }
+
+        [Route("RequestAbonent")]
+        [HttpGet]
+        public async Task<IActionResult> GetRegRequestAbonents([FromQuery] RequestAbonentParameters requestAbonentParameters)
+        {
+            var requestAbonents = await _requestRepository.GetRequests(requestAbonentParameters);
+
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(requestAbonents.MetaData));
+
+            return Ok(requestAbonents);
+        }
+
+        [Route("RequestAbonent/{id:guid}")]
+        [HttpPut]
+        public async Task<IActionResult> UpdateRegRequestAbonent(Guid id, RequestAbonentUpdateDto requestAbonentUpdateDto)
+        {
+            var clientAbonentFromRepo = await _requestRepository.GetRequest(id);
+            if(clientAbonentFromRepo == null)
+            {
+                return NotFound();
+            }
+            _mapper.Map(requestAbonentUpdateDto, clientAbonentFromRepo);
+
+            _requestRepository.UpdateRequest(clientAbonentFromRepo);
+
+            _requestRepository.SaveChanges();
+
+            return NoContent();
+        }
+
+
+        // [HttpPost]
+        // public async Task<IActionResult> CreatePerson([FromBody]Person person)
+        // {
+        //     await _repo.CreatePerson(person);
+        //     return CreatedAtAction(nameof(GetPerson), new { id = person.Id }, person);
+
+        // }
     }
 }
