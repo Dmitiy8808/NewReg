@@ -1,5 +1,5 @@
 using Server.Paging;
-using Server.RequestFeatures;
+using Entities.RequestFeatures;
 using Entities.Models;
 
 namespace Server.Repository

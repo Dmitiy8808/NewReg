@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Components;
 
 namespace Reg.Client.Components
 {
-    partial class ProductTable
+    partial class RequestAbonentTable
     {
         [Parameter]
-        public List<Product> Products { get; set; }
+        public List<RequestAbonent> RequestAbonents { get; set; }
     }
 }

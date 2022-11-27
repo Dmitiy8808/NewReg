@@ -1,4 +1,4 @@
-@if(Products.Any())
+@if(RequestAbonents.Any())
 {
     <table class="table">
         <thead>
@@ -11,20 +11,20 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var product in Products)
+            @foreach (var request in RequestAbonents)
             {
                 <tr>
                     <td>
-                        <a href="/product/@product.Id"><img src="@product.ImageUrl" alt="product image" style="width: 100px;" /></a>
+                        <a href="/product/@request.Id"></a>
                     </td>
                     <td class="align-middle">
-                        <a href="/product/@product.Id">@product.Name</a>
+                        <a href="/request/@request.Id">@request.ShortName</a>
                     </td>
                     <td class="align-middle">
-                        @product.Supplier
+                        @request.CreationTime
                     </td>
                     <td class="align-middle">
-                        @product.Price
+                        @request.Inn
                     </td>
                     <td class="align-middle">
                         <button type="button" class="btn btn-info">Update</button>

@@ -4,7 +4,7 @@ using Entities.DTOs;
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
 using Server.Repository;
-using Server.RequestFeatures;
+using Entities.RequestFeatures;
 using Server.Services;
 
 namespace Server.Controllers

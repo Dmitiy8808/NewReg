@@ -1,12 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Entities.Models;
 using Microsoft.EntityFrameworkCore;
 using Reg.Server.Context;
 using Server.Paging;
-using Server.RequestFeatures;
+using Entities.RequestFeatures;
 
 namespace Server.Repository
 {
