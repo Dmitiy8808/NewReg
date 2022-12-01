@@ -3,7 +3,7 @@ using Entities.Models;
 using Entities.RequestFeatures;
 using Client.Features;
 
-namespace Reg.Client.HttpRepository
+namespace Client.HttpRepository
 {
     public interface IRegRequestHttpRepository
     {
@@ -12,5 +12,6 @@ namespace Reg.Client.HttpRepository
         Task<RequestAbonentReadDto> GetRequestAbonent(Guid id);
         Task CreateRequestAbonent(RequestAbonentCreateDto requestAbonentCreateDto);
         Task UpdateRequestAbonent(Guid id, RequestAbonentUpdateDto requestAbonentUpdateDto);
+        Task DeleteRequestAbonent(Guid id);
     }
 }

@@ -1,0 +1,112 @@
+@page "/request1"
+
+@inject ISnackbar Snackbar
+
+
+
+
+<MudGrid>
+    <MudPaper  MinWidth=500px Elevation=0 Class="d-flex flex-column align-center justify-center gap-4 mud-width-full grey lighten-5" >
+            
+             <MudPaper 
+                Elevation=0 MinWidth=500px MaxWidth=45%
+                 Class="d-flex mud-width-full justify-start mt-10 flex-column"
+                  Style="@($"border:1px solid {Colors.BlueGrey.Lighten5};")">
+                <MudText Class="d-flex pl-4 pt-4 " Typo="Typo.h5">Заявление на выпуск сертификата</MudText>
+                <MudCardContent Class="d-flex  mud-width-full  justify-lg-start justify-xl-start">
+                    
+                    <MudGrid>
+                        <MudItem lg="12" xl="6"   >
+                                <MudPaper Elevation=0 Class="d-flex align-start flex-column justify-lg-start justify-xl-start mud-width-full  ">
+                                    <MudText>Тип сертификата</MudText>
+                                    <MudTabs Elevation=0 Rounded="true" Class="d-block rounded mt-4"  ActivePanelIndexChanged="OnActivePanelIndexChanged" >
+                                            <MudTabPanel Style="@($"border:1px solid {Colors.BlueGrey.Lighten5};")"  Text="ЮЛ"/>
+                                            <MudTabPanel Style="@($"border:1px solid {Colors.BlueGrey.Lighten5};")"  Text="ФЛ"/>
+                                    </MudTabs>
+                                </MudPaper>
+                        </MudItem>
+                        <MudItem lg="12" xl="6"   >
+                                <MudPaper Elevation=0 Class="d-flex align-start flex-column justify-lg-start justify-xl-start mud-width-full mb-2">
+                                    <MudText>Провайдер</MudText>
+                                    <MudTabs Elevation=0 Rounded="true" Class="d-block rounded mt-4"   >
+                                            <MudTabPanel Style="@($"border:1px solid {Colors.BlueGrey.Lighten5};")"  Text="VipNet CSP"/>
+                                            <MudTabPanel Style="@($"border:1px solid {Colors.BlueGrey.Lighten5};")"  Text="Крипто Про CSP"/>
+                                    </MudTabs>
+                                </MudPaper>
+                        </MudItem>
+                    </MudGrid>
+                </MudCardContent>
+            </MudPaper>
+        @if (IsJuridical)
+        {
+            <MudPaper 
+                Elevation=0 MinWidth=500px MaxWidth=45%
+                 Class="d-flex mud-width-full justify-center "
+                  Style="@($"border:1px solid {Colors.BlueGrey.Lighten5};")">
+                <MudCardContent Class="mud-width-full">
+                    <MudText>Организация</MudText>
+                    <MudGrid>
+                        <MudItem xs="12" Class="d-flex gap-4 align-center" >
+                            <MudAutocomplete Variant="Variant.Outlined" T="string" Label="ИНН" @bind-Value="_request.Inn" SearchFunc="@SearchOrganizationByInn"
+                                ResetValueOnEmptyText=false
+                                 CoerceText=false CoerceValue=false
+                                AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" />
+                            <MudTextField Class= @bind-Value="_request.Kpp" Label="КПП" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                            <MudTextField  Class= @bind-Value="_request.Ogrn" Label="ОГРН" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                        </MudItem>
+                    </MudGrid>
+                    <MudTextField Class= @bind-Value="_request.ShortName" Label="Название организации" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                </MudCardContent>
+            </MudPaper>
+        }  
+            <MudPaper Width="45%" MinWidth=500px 
+                Elevation=0 
+                Class="d-flex mud-width-full justify-center "
+                Style="@($"border:1px solid {Colors.BlueGrey.Lighten5};")">
+                <MudCardContent  Class="mud-width-full">
+                    <MudText>Владелец ЭП</MudText>
+                    <MudTextField @bind-Value="_request.PersonLastName" Label="Фамилия" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                    <MudTextField @bind-Value="_request.PersonFirstName" Label="Имя" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                    <MudTextField @bind-Value="_request.PersonPatronymic" Label="Отчество" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                    <MudTextField @bind-Value="_request.PersonSnils" Label="СНИЛС" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                    <MudTextField @bind-Value="_request.PersonBirthDate" Label="Дата рождения" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                    <MudTextField @bind-Value="_request.PersonBirthPlace" Label="Место рождения" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                    <MudTextField @bind-Value="_request.PersonCountry" Label="Гражданство" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                    <MudNumericField @bind-Value="_request.PersonGender" Label="Пол (1-М 2-Ж)" Variant="Variant.Outlined" Min="1" Max="100" />
+                    <MudTextField @bind-Value="_request.PersonPost" Label="Должность" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                    <MudTextField @bind-Value="_request.PersonEmail" Label="Электронная почта" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                    <MudTextField @bind-Value="_request.PersonOrgUnitName" Label="Подразделение" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                    <MudTextField @bind-Value="_request.PersonPassportType" Label="Тип документа уд. личность" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                    <MudTextField @bind-Value="_request.PersonPassportSeries" Label="Серия" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                    <MudTextField @bind-Value="_request.PersonPassportNumber" Label="Номер" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                    <MudTextField @bind-Value="_request.PersonPassportDate" Label="Дата выдачи" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                    <MudTextField @bind-Value="_request.PersonPassportAddon" Label="Кем выдан" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                    <MudTextField @bind-Value="_request.PersonPassportUnit" Label="Код подразделения" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                    <MudTextField @bind-Value="_request.PersonInn" Label="ИНН владельца" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                </MudCardContent>
+            </MudPaper>         
+            <MudPaper Width="45%" MinWidth=500px 
+                Elevation=0 
+                Class="d-flex mud-width-full justify-center "
+                Style="@($"border:1px solid {Colors.BlueGrey.Lighten5};")">
+                <MudCardContent  Class="mud-width-full">
+                    <MudText>Адрес</MudText>
+                    <MudTextField @bind-Value="_request.LocationAddressPostalCode" Label="Индекс" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                    <MudNumericField @bind-Value="_request.LocationAddressRegionId" Label="Код региона?" Variant="Variant.Outlined" Min="1" Max="100" />
+                    <MudTextField @bind-Value="_request.LocationAddressRegionCode" Label="Наименование региона?" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                    <MudTextField @bind-Value="_request.LocationAddressArea" Label="Район?" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                    <MudTextField @bind-Value="_request.LocationAddressCity" Label="Город" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                    <MudTextField @bind-Value="_request.LocationAddressLocality" Label="Населенный пункт" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                    <MudTextField @bind-Value="_request.LocationAddressStreet" Label="Улица" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                    <MudTextField @bind-Value="_request.LocationAddressBuilding" Label="Дом" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                    <MudTextField @bind-Value="_request.LocationAddressBulk" Label="Корпус/строение" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                    <MudTextField @bind-Value="_request.LocationAddressFlat" Label="Квартира/офис" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                </MudCardContent>
+            </MudPaper>
+
+    </MudPaper>
+    
+</MudGrid>
+
+
+    

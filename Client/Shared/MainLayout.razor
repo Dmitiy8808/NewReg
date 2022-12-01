@@ -1,6 +1,6 @@
 ﻿@inherits LayoutComponentBase
 
-<MudThemeProvider />
+<MudThemeProvider Theme="MyCustomTheme"/>
 <MudDialogProvider />
 <MudSnackbarProvider />
 
@@ -18,7 +18,7 @@
         <NavMenu />
     </MudDrawer>
     <MudMainContent>
-        <MudContainer MaxWidth="MaxWidth.Large" >
+        <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" >
             @Body
         </MudContainer>
     </MudMainContent>
@@ -31,4 +31,18 @@
     {
         _drawerOpen = !_drawerOpen;
     }
+
+    MudTheme MyCustomTheme = new MudTheme()
+    {
+        Palette = new Palette()
+        {
+            Primary = Colors.Yellow.Darken1,
+            PrimaryContrastText = Colors.Shades.Black,
+            Secondary = Colors.Green.Accent4,
+            AppbarBackground = Colors.Yellow.Darken1,
+            Background = Colors.Grey.Lighten5
+        }
+
+    };
+
 }

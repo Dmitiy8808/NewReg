@@ -3,7 +3,7 @@ using Client.Service;
 using Entities.DTOs;
 using Entities.Models;
 using Microsoft.AspNetCore.Components;
-using Reg.Client.HttpRepository;
+using Client.HttpRepository;
 
 namespace Reg.Client.Pages
 {
@@ -49,7 +49,7 @@ namespace Reg.Client.Pages
                 Flat = "помещение 1, комната 7"
             },
             Person = new PersonRequestInfo {
-                LastName = "Ступин",
+                LastName = "Ступин1111111111111111",
                 FirstName = "Дмитрий",
                 Patronymic = "Алексеевич",
                 Snils = "134-795-823 41",
@@ -85,7 +85,7 @@ namespace Reg.Client.Pages
 
         public void RunWebSocket()
         {
-             WebSocketService.GenerateRequest();
+            WebSocketService.GenerateRequest(clientAbonent);
            
         }
     }

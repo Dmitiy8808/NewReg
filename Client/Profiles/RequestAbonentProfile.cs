@@ -1,5 +1,6 @@
 using AutoMapper;
 using Entities.DTOs;
+using Entities.Models;
 
 namespace Client.Profiles
 {
@@ -8,6 +9,7 @@ namespace Client.Profiles
         public RequestAbonentProfile()
         {
             CreateMap<RequestAbonentReadDto, RequestAbonentUpdateDto>().ReverseMap();
+            CreateMap<RequestAbonent, RequestAbonentReadDto>().ReverseMap();
         }
         
     }

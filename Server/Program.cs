@@ -25,6 +25,8 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.ConfigureLoggerService();
 
+
+builder.Services.AddScoped<ICompanyRepository, CompanyRepository>(); 
 builder.Services.AddScoped<IProviderRepository, ProviderRepository>(); 
 builder.Services.AddScoped<IRegionRepository, RegionRepository>();
 builder.Services.AddTransient<IQualifiedCertificateManager, QualifiedCertificateManager>();  

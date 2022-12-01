@@ -58,7 +58,7 @@ namespace Server.Controllers
 
         [Route("RequestAbonent/{id:guid}")]
         [HttpGet]
-        public async Task<ActionResult<RequestAbonentReadDto>>   GetRegRequestAbonent(Guid id)
+        public async Task<ActionResult<RequestAbonentReadDto>> GetRegRequestAbonent(Guid id)
         {
             var requestAbonent = await _requestRepository.GetRequest(id);
             if (requestAbonent != null)

@@ -4,7 +4,8 @@
 <MudTable  ServerData="@(new Func<TableState, Task<TableData<RequestAbonent>>>(GetServerData))"
             Hover="true" Breakpoint="Breakpoint.Sm" RightAlignSmall="true" 
             @ref="_table" RowsPerPage="15"
-            FixedFooter="true" FixedHeader="true" Height="84vh"
+            FixedFooter="true" FixedHeader="true" Height="84vh" 
+            Width="84vh"
             T="RequestAbonent" 
             OnRowClick="@RowClicked">
         @* <ToolBarContent>

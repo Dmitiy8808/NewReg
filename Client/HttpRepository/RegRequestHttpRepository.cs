@@ -11,7 +11,7 @@ using Entities.Models;
 using Entities.RequestFeatures;
 using Microsoft.AspNetCore.WebUtilities;
 
-namespace Reg.Client.HttpRepository
+namespace Client.HttpRepository
 {
     public class RegRequestHttpRepository : IRegRequestHttpRepository
     {
@@ -76,6 +76,11 @@ namespace Reg.Client.HttpRepository
         public async Task UpdateRequestAbonent(Guid id, RequestAbonentUpdateDto requestAbonentUpdateDto)
         {
             await _client.PutAsJsonAsync($"regrequests/RequestAbonent/{id}", requestAbonentUpdateDto);
+        }
+
+        public async Task DeleteRequestAbonent(Guid id)
+        {
+            await _client.DeleteAsync($"regrequests/RequestAbonent/{id}");
         }
     }
 }

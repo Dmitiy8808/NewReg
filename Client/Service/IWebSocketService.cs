@@ -10,7 +10,7 @@ namespace Client.Service
     public interface IWebSocketService
     {
         Task<string> SendMessage(string message);
-        Task GenerateRequest();
+        Task GenerateRequest(RequestAbonent requestAbonent);
         Task<CertRequestDataDto> GetCertRequestData(RequestAbonent clientAbonent);
     }
 }

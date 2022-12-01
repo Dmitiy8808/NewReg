@@ -5,7 +5,7 @@ using System.Text.Json;
 using System.Text.Unicode;
 using Entities.DTOs;
 using Entities.Models;
-using Reg.Client.HttpRepository;
+using Client.HttpRepository;
 
 namespace Client.Service
 {
@@ -77,13 +77,13 @@ namespace Client.Service
             IsJuridical = true
         };
 
-        public async Task GenerateRequest()
+        public async Task GenerateRequest(RequestAbonent requestAbonent)
         {
             var opt = new JsonSerializerOptions {
 
                 Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
             };
-            var certRequestData =  await GetCertRequestData(clientAbonent);
+            var certRequestData =  await GetCertRequestData(requestAbonent);
             var certRequestDataString = JsonSerializer.Serialize(certRequestData, opt);
             Console.WriteLine(certRequestDataString);
             Message message = new Message {
