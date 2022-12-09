@@ -64,6 +64,14 @@ namespace Server.Repository
             await _context.SaveChangesAsync();
         }
 
-
+        public async Task CreateRequests(List<RequestAbonent> requests)
+        {
+            if(requests == null)
+            {
+                throw new ArgumentNullException(nameof(requests));
+            }
+            await _context.Requests.AddRangeAsync(requests);
+            await _context.SaveChangesAsync();
+        }
     }
 }

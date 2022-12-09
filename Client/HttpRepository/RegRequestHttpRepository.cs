@@ -82,5 +82,10 @@ namespace Client.HttpRepository
         {
             await _client.DeleteAsync($"regrequests/RequestAbonent/{id}");
         }
+
+        public async Task CreateRequestAbonents(RequestAbonentListDto requestAbonentListDto)
+        {
+            await _client.PostAsJsonAsync("regrequests/RequestAbonentList", requestAbonentListDto);
+        }
     }
 }

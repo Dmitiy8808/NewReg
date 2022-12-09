@@ -8,8 +8,10 @@ namespace Client.Profiles
     {
         public RequestAbonentProfile()
         {
+            // Source --> Destination
             CreateMap<RequestAbonentReadDto, RequestAbonentUpdateDto>().ReverseMap();
             CreateMap<RequestAbonent, RequestAbonentReadDto>().ReverseMap();
+            CreateMap<RequestAbonentReadDto, RequestAbonentCreateDto>().ReverseMap();
         }
         
     }

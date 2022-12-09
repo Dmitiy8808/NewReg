@@ -6,6 +6,7 @@ using MudBlazor;
 using Newtonsoft.Json;
 using ValidationsCollection;
 using System.ComponentModel.DataAnnotations;
+using AutoMapper;
 
 namespace Reg.Client.Pages
 {
@@ -14,15 +15,29 @@ namespace Reg.Client.Pages
         private RequestAbonentReadDto _request = new RequestAbonentReadDto();
         public string address { get; set; } = string.Empty;
         public string regionText { get; set; } = string.Empty;
+        public RequestAbonentListDto _requestList = new RequestAbonentListDto();
         bool IsJuridical { get; set; } = true;
         public bool IsOrgUnit { get; set; } = false;
         [Inject]
+        public IRegRequestHttpRepository? RegRequestRepo { get; set; }
+        [Inject]
         IDialogService DialogService { get; set; }
+        [Inject]
+        IMapper Mapper { get; set; }
         [Inject]
         public ICompanyHttpRepository CompanyRepo { get; set; }
         public IMask innMask = new PatternMask("0000000000");
         public IMask kppMask = new PatternMask("000000000");
         public IMask ogrnMask = new PatternMask("0000000000000");
+
+        protected override void OnInitialized()
+        {
+            _request.IsJuridical = IsJuridical;
+            _request.PersonCryptoProviderCode = "80";
+            _request.PersonCryptoProviderId = 11;
+            _request.PersonCryptoProviderName = "Crypto-Pro GOST R 34.10-2012 Cryptographic Service Provider";
+        }
+
         private void OnActivePanelIndexChanged(int tabIndex)
         {
             if (tabIndex == 0)
@@ -343,6 +358,7 @@ namespace Reg.Client.Pages
         
         void AddPerson()
         {
+            _requestList.AbonentList.Add(Mapper.Map<RequestAbonentCreateDto>(_request));
 
             _persons.Add(new PersonItem
             (
@@ -358,57 +374,18 @@ namespace Reg.Client.Pages
         void OnDelete(PersonItem person)
         {
             _persons.RemoveAt(_persons.FindIndex(e => e.Email == person.Email));
+            _requestList.AbonentList.RemoveAll(el => el.PersonEmail == person.Email);
         }
 
-    
-
-        // private void ValueChanged(string value)
-        // {
-        //     Console.WriteLine(value);
-        //     var valResult = Validations.IsValidInnForEntity( value);
-        //     Console.WriteLine(valResult);
-        //     _request.Inn = value;
-        //     _request.Kpp = partySuggest.suggestions.Where(s => s.data.inn == value).Select(x => x.data.kpp).FirstOrDefault();
-        //     _request.Ogrn = partySuggest.suggestions.Where(s => s.data.inn == value).Select(x => x.data.ogrn).FirstOrDefault();
-        //     _request.ShortName = partySuggest.suggestions.Where(s => s.data.inn == value).Select(x => x.data.name.short_with_opf).FirstOrDefault();
-        // }
-
-
+        async Task SendRequest()
+        {
+            await RegRequestRepo.CreateRequestAbonents(_requestList);
+        }
 
         
 
-        // private async Task<IEnumerable<string>> SearchOrganizationByInn(string value)
-        // {
+    
 
-        //     var token = "527fb2e3f0d51051eb2819e252efbea8dfd93c9a";
-        //     var api = new SuggestClientAsync(token);
-        //     // var result = await api.FindParty(value);
-        //     partySuggest = await api.SuggestParty(value);
-            
-        //     var sugesions = partySuggest.suggestions.ToList().Select(x => x.data.inn);
-
-        //     // var anotherSugestions = partySuggest.suggestions.ToList();
-        //     // foreach (var suggestion in anotherSugestions)
-        //     // {
-        //     //     Console.WriteLine(suggestion.data.inn);
-        //     // }
-
-        //     //var suggestionResult = result.suggestions.Where(x => x.data.inn.Contains(value, StringComparison.InvariantCultureIgnoreCase));
-        //     // if (value.Length == 10)
-        //     // {
-               
-        //     //     _request.Kpp = suggestionResult.Where(s => s.data.inn == value).Select(x => x.data.kpp).FirstOrDefault();
-        //     //     _request.Ogrn = suggestionResult.Where(s => s.data.inn == value).Select(x => x.data.ogrn).FirstOrDefault();
-        //     //     _request.ShortName = suggestionResult.Where(s => s.data.inn == value).Select(x => x.data.name.short_with_opf).FirstOrDefault();
-        //     // }
-            
-        //     return sugesions;
-        //     // return suggestionResult.Select(x => x.data.inn + " " + x.data.name.short_with_opf) ;
-        //     // var companies = await CompanyRepo.GetCompanies();
-            
-        //     // if (string.IsNullOrEmpty(value))
-        //     //      return new string[0];
-        //     // return companies.Where(x => x.Inn.Contains(value, StringComparison.InvariantCultureIgnoreCase)).Select(x => x.Inn);
-        // }
+        
     }
 }

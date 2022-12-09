@@ -56,6 +56,17 @@ namespace Server.Controllers
             return CreatedAtAction(nameof(GetRegRequestAbonent), new { id = requestAbonentReadeDto.Id }, requestAbonentReadeDto);
         }
 
+        [Route("RequestAbonentList")]
+        [HttpPost]
+        public async Task<IActionResult> CreateRegRequestAbonentList(RequestAbonentListDto requestAbonentCreateDtoList)
+        {
+            var requestAbonentModelList = _mapper.Map<List<RequestAbonent>>(requestAbonentCreateDtoList.AbonentList);
+            
+            await _requestRepository.CreateRequests(requestAbonentModelList);
+
+            return Ok(); //Ответ должен быть 201 Ceratedc с указанием созданных Id
+        }
+
         [Route("RequestAbonent/{id:guid}")]
         [HttpGet]
         public async Task<ActionResult<RequestAbonentReadDto>> GetRegRequestAbonent(Guid id)
