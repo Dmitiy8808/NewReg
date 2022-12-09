@@ -4,6 +4,7 @@ using Entities.DTOs;
 using Entities.Models;
 using Microsoft.AspNetCore.Components;
 using Client.HttpRepository;
+using Dadata;
 
 namespace Reg.Client.Pages
 {
@@ -80,7 +81,15 @@ namespace Reg.Client.Pages
 
         protected async override Task OnInitializedAsync()
         {
-            certRequestDataDto = await RegRequestRepo.GetCertRequestData(clientAbonent);
+            var token = "527fb2e3f0d51051eb2819e252efbea8dfd93c9a";
+            var api = new SuggestClientAsync(token);
+            var result = await api.FindParty("7707083893");
+            foreach (var item in result.suggestions)
+            {
+                Console.WriteLine(item.data.inn);
+                Console.WriteLine(item.data.address.value);
+            }
+
         }
 
         public void RunWebSocket()

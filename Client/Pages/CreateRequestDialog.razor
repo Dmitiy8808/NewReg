@@ -1,0 +1,152 @@
+ <style>
+   .mud-select {
+    width: 100% !important;
+    }
+</style>
+
+<MudDialog >
+    <DialogContent >
+        <MudPaper Elevation=0 Class="d-flex align-center justify-center mud-width-full gap-4">
+         <MudItem xs="6">
+            <MudPaper Elevation=0 Class=" d-flex align-center justify-start mud-width-full flex-column gap-y-4 ">
+                <MudTextField  Class="d-flex mud-width-full"
+                    T="string"
+                    RequiredError="Поле на заполнено" 
+                    Required=true  @bind-Value="PostalCode" 
+                    Label="Индекс" 
+                    Variant="Variant.Outlined" 
+                    >
+                </MudTextField>
+                <MudSelect Class="mud-width-full flex-grow:1" T="string"  Label="Область" @bind-Value="RegionNames"  Variant="Variant.Outlined">
+                @foreach (var item in RegionDictionary)
+                {
+                        var stringRegionId = item.Key.ToString("D2");
+                        <MudSelectItem Class="mud-width-full" T="string" Value="(stringRegionId + ' ' + '-' + ' ' + item.Value)" />
+                } 
+                </MudSelect>
+                <MudTextField 
+                    Class="d-flex mud-width-full"
+                    RequiredError="Поле на заполнено" 
+                    Required=true  @bind-Value="AddressArea " 
+                    Label="Район" 
+                    Variant="Variant.Outlined" 
+                    >
+                </MudTextField>
+                <MudTextField 
+                    Class="d-flex mud-width-full"
+                    RequiredError="Поле на заполнено" 
+                    Required=true  @bind-Value="City" 
+                    Label="Город" 
+                    Variant="Variant.Outlined" 
+                    >
+                </MudTextField>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="6">
+            <MudPaper Elevation=0 Class="d-flex align-center justify-start mud-width-full gap-y-4  flex-column">
+                <MudTextField 
+                    Class="d-flex mud-width-full"
+                    RequiredError="Поле на заполнено" 
+                    Required=true  @bind-Value="AddressStreet" 
+                    Label="Улица" 
+                    Variant="Variant.Outlined" 
+                    >
+                </MudTextField>
+                <MudTextField 
+                    Class="d-flex mud-width-full"
+                    RequiredError="Поле на заполнено" 
+                    Required=true  @bind-Value="AddressBuilding" 
+                    Label="Дом" 
+                    Variant="Variant.Outlined" 
+                    >
+                </MudTextField>
+                <MudTextField 
+                    Class="d-flex mud-width-full"
+                    RequiredError="Поле на заполнено" 
+                    Required=true  @bind-Value="AddressBulk" 
+                    Label="Корпус/строение" 
+                    Variant="Variant.Outlined" 
+                    >
+                </MudTextField>
+                <MudTextField 
+                    Class="d-flex mud-width-full"
+                    RequiredError="Поле на заполнено" 
+                    Required=true  @bind-Value="AddressFlat" 
+                    Label="Офис" 
+                    Variant="Variant.Outlined" 
+                    >
+                </MudTextField>
+            </MudPaper>
+        </MudItem>
+        </MudPaper>
+        
+        
+        
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Primary" OnClick="Submit">Сохранить</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter]
+    public string RegionNames { get; set; } 
+    [Parameter]
+    public Dictionary<int, string> RegionDictionary { get; set; }
+    [Parameter]
+    public string PostalCode { get; set; }
+    [Parameter]
+    public int RegionId { get; set; }
+    [Parameter]
+    public string AddressArea { get; set; }
+    [Parameter]
+    public string City { get; set; }
+    [Parameter]
+    public string AddressStreet { get; set; }
+    [Parameter]
+    public string AddressBuilding { get; set; }
+    [Parameter]
+    public string AddressBulk { get; set; }
+    [Parameter]
+    public string AddressFlat { get; set; }
+    
+   
+    void Submit()
+    {
+             
+        var newAddress = new Dictionary<string, string>
+        {
+            {"PostalCode", PostalCode},
+            {"RegionId", RegionDictionary.FirstOrDefault(x => x.Key == int.Parse(RegionNames.Substring(0,2))).Key.ToString() },
+            {"AddressArea", AddressArea },
+            {"City", City },
+            {"AddressStreet", AddressStreet },
+            {"AddressBuilding", AddressBuilding },
+            {"AddressBulk", AddressBulk  },
+            {"AddressFlat", AddressFlat  },
+        };
+        MudDialog.Close(DialogResult.Ok<Dictionary<string, string>>(newAddress));
+    }
+
+    protected override void OnInitialized()
+    {
+        if (RegionId.ToString("D2") == "00")
+        {
+            RegionNames = "01 - Республика Адыгея (Адыгея)";
+        }
+        else
+        {
+            RegionNames = RegionId.ToString("D2") + ' ' + '-' + ' ' + RegionNames;
+        }
+        
+        
+    }
+
+
+    
+    
+
+
+
+    
+}
