@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Reg.Server.Context;
@@ -11,9 +12,11 @@ using Reg.Server.Context;
 namespace Reg.Server.Migrations
 {
     [DbContext(typeof(RegContext))]
-    partial class RegContextModelSnapshot : ModelSnapshot
+    [Migration("20221210091749_LeaderTableChange")]
+    partial class LeaderTableChange
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -91,27 +94,6 @@ namespace Reg.Server.Migrations
                     b.HasIndex("LocationAddressId");
 
                     b.ToTable("Companies");
-                });
-
-            modelBuilder.Entity("Entities.Models.Country", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("CountryName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Countries");
                 });
 
             modelBuilder.Entity("Entities.Models.Leader", b =>
@@ -338,32 +320,6 @@ namespace Reg.Server.Migrations
                     b.ToTable("Requests");
                 });
 
-            modelBuilder.Entity("Entities.Models.RequestFile", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<byte[]>("Data")
-                        .HasColumnType("bytea");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("RequestAbonentId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("TypeId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RequestAbonentId");
-
-                    b.ToTable("Files");
-                });
-
             modelBuilder.Entity("Entities.Models.Company", b =>
                 {
                     b.HasOne("Entities.Models.AddressInfo", "LocationAddress")
@@ -392,22 +348,6 @@ namespace Reg.Server.Migrations
                     b.Navigation("LocationAddress");
 
                     b.Navigation("Person");
-                });
-
-            modelBuilder.Entity("Entities.Models.RequestFile", b =>
-                {
-                    b.HasOne("Entities.Models.RequestAbonent", "RequestAbonent")
-                        .WithMany("Files")
-                        .HasForeignKey("RequestAbonentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("RequestAbonent");
-                });
-
-            modelBuilder.Entity("Entities.Models.RequestAbonent", b =>
-                {
-                    b.Navigation("Files");
                 });
 #pragma warning restore 612, 618
         }

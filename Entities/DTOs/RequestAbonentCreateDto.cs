@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Entities.Models;
 
 namespace Entities.DTOs
@@ -34,13 +35,14 @@ namespace Entities.DTOs
         public string? LocationAddressBulk { get; set; }
 
         public string? LocationAddressFlat { get; set; }
-
+        public string? LeaderPosition { get; set; }
+        public string? LeaderLastName { get; set; } 
+        public string? LeaderFirstName { get; set; } 
+        public string? LeaderPatronymic { get; set; } 
+        public string? LeaderLegalDocument { get; set; }
         public string PersonLastName { get; set; }
-
         public string? PersonFirstName { get; set; }
-
         public string? PersonPatronymic { get; set; }
-
         public string? PersonSnils { get; set; }
 
         public string? PersonBirthDate { get; set; }

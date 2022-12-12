@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Reg.Server.Context;
@@ -11,9 +12,11 @@ using Reg.Server.Context;
 namespace Reg.Server.Migrations
 {
     [DbContext(typeof(RegContext))]
-    partial class RegContextModelSnapshot : ModelSnapshot
+    [Migration("20221212070517_ChangeFileModel")]
+    partial class ChangeFileModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -354,7 +357,7 @@ namespace Reg.Server.Migrations
                     b.Property<Guid>("RequestAbonentId")
                         .HasColumnType("uuid");
 
-                    b.Property<int>("TypeId")
+                    b.Property<int>("TypeID")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");

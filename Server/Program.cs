@@ -26,6 +26,8 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.ConfigureLoggerService();
 
 
+builder.Services.AddScoped<IFileRepository, FileRepository>(); 
+builder.Services.AddScoped<ICountryRepository, CountryRepository>(); 
 builder.Services.AddScoped<ICompanyRepository, CompanyRepository>(); 
 builder.Services.AddScoped<IProviderRepository, ProviderRepository>(); 
 builder.Services.AddScoped<IRegionRepository, RegionRepository>();

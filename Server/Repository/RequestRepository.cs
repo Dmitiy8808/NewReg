@@ -29,6 +29,8 @@ namespace Server.Repository
             return await _context.Requests
                     .Include(c => c.Person)
                     .Include(la => la.LocationAddress)
+                    .Include(le => le.Leader)
+                    .Include(f => f.Files)
                     .FirstOrDefaultAsync(req => req.Id == id);
         }
 

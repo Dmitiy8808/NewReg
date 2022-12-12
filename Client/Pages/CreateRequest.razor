@@ -1,181 +1,211 @@
-@* @page "/request"
+@page "/createRequest"
+
 
 @inject ISnackbar Snackbar
-@using MudBlazor.Extensions
 
-
-<MudGrid >
-    <MudItem xs="12" >
-        <MudStepper @ref="_stepper" ContentStyle="min-height: 400px" Linear="_linear" Vertical="_vertical" Color="_color" Variant=Variant.Filled DisableAnimation="_disableAnimation" HeaderTextView="_headerTextView"
-                    PreventStepChange="new Func<bool>(CheckChange)" LocalizedStrings="GetLocalizedStrings()">
-
-            <MudStep Title="Выбор тарифа" StatusChanged="StatusChanged">
-                
-                    <MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
-                        <MudGrid>
-                            <MudItem xs="12" sm="6">
-                                <MudPaper Elevation="2" Class="pa-4" Style="height: 100%">
-                                    <MudText>Статус заявителя</MudText>
-                                    <MudForm @ref="_form2">
-                                        <MudRadioGroup T="string" SelectedOption="@SelectedOption" SelectedOptionChanged="OnSelectedOptionChanged">
-                                            <MudRadio Option="@("Ul")" Color="Color.Primary" >Юр. лицо</MudRadio>
-                                            <MudRadio Option="@("Fl")" Color="Color.Primary">Физ. лицо</MudRadio>
-                                        </MudRadioGroup>
-                                    </MudForm>
+<MudGrid>
+    <MudPaper  MinWidth=500px Elevation=0 Class="d-flex flex-column align-center justify-center gap-4 mud-width-full grey lighten-5" >
+            
+             <MudPaper 
+                Elevation=0 MinWidth=500px MaxWidth=45%
+                 Class="d-flex mud-width-full justify-start mt-10 flex-column"
+                  Style="@($"border:1px solid {Colors.BlueGrey.Lighten5};")">
+                <MudPaper Elevation=0 Class="d-flex  mud-width-full justify-space-between align-center pr-4">
+                    <MudText Class="d-flex pl-4 pt-4 " Typo="Typo.h5">Заявление на выпуск сертификата</MudText>
+                    <MudButton Class="mt-6" OnClick="@SendRequest" EndIcon="@Icons.Material.Filled.Send" Variant="Variant.Filled" Color="Color.Primary">Отправить</MudButton> 
+                </MudPaper>
+                <MudCardContent Class="d-flex  mud-width-full  justify-lg-start justify-xl-start">
+                    
+                    <MudGrid>
+                        <MudItem lg="12" xl="6"   >
+                                <MudPaper Elevation=0 Class="d-flex align-start flex-column justify-lg-start justify-xl-start mud-width-full  ">
+                                    <MudText>Тип сертификата</MudText>
+                                    <MudTabs Elevation=0 Rounded="true" Class="d-block rounded mt-4"  ActivePanelIndexChanged="OnActivePanelIndexChanged" >
+                                            <MudTabPanel Style="@($"border:1px solid {Colors.BlueGrey.Lighten5}; border-radius: 5px; font-size: 1rem; font-weight: 400; line-height: 1.1876em; letter-spacing: .00938em; color: var(--mud-palette-text-secondary); text-transform:none;")"  Text="ЮЛ"/>
+                                            <MudTabPanel Style="@($"border:1px solid {Colors.BlueGrey.Lighten5}; border-radius: 5px; font-size: 1rem; font-weight: 400; line-height: 1.1876em; letter-spacing: .00938em; color: var(--mud-palette-text-secondary);")"  Text="ФЛ"/>
+                                    </MudTabs>
                                 </MudPaper>
-                            </MudItem>
-                            <MudItem xs="12" sm="6">
-                                <MudPaper Elevation="2" Class="pa-4" Style="height: 100%">
-                                    <MudText>Криптопровайдер</MudText>
-                                    <MudForm @ref="_form2">
-                                        <MudRadioGroup @bind-SelectedOption="@SelectedOption1">
-                                            <MudRadio Option="@("Cpro")" Color="Color.Primary">Крипто Про CSP</MudRadio>
-                                            <MudRadio Option="@("Vip")" Color="Color.Primary">VipNet CSP</MudRadio>
-                                        </MudRadioGroup>
-                                    </MudForm>
+                        </MudItem>
+                        <MudItem lg="12" xl="6"   >
+                                <MudPaper Elevation=0 Class="d-flex align-start flex-column justify-lg-start justify-xl-start mud-width-full mb-2">
+                                    <MudText>Провайдер</MudText>
+                                    <MudTabs Elevation=0 Class="d-block rounded mt-4" Style="border-radius: 1px;"  >
+                                            <MudTabPanel Style="@($"border:1px solid {Colors.BlueGrey.Lighten5}; border-radius: 5px; font-size: 1rem; font-weight: 400; line-height: 1.1876em; letter-spacing: .00938em; color: var(--mud-palette-text-secondary); text-transform:none;")"  Text="Крипто Про CSP"/>
+                                            <MudTabPanel Style="@($"border:1px solid {Colors.BlueGrey.Lighten5}; border-radius: 5px; font-size: 1rem; font-weight: 400; line-height: 1.1876em; letter-spacing: .00938em; color: var(--mud-palette-text-secondary); text-transform:none;")"  Text="VipNet CSP"/>
+                                    </MudTabs>
                                 </MudPaper>
-                            </MudItem>
-                        </MudGrid>
-                    </MudContainer>
-            </MudStep>
-             @if (IsJuridical)
-            {
-                <MudStep Title="Данные организации" >
-                    <MudCheckBox T="bool" Label="Early Check-in" Color="_color" />
-                    <MudCheckBox T="bool" Label="Late Check-out" Color="_color" />
-                    <MudCheckBox T="bool" Label="Twin Bed" Color="_color" />
-                    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="(() => _stepper.Reset())">Reset</MudButton>
-                </MudStep>
-                <MudStep Title="Выбор владельца">
-                <MudForm @ref="_form2">
-                    <MudStack>
-                        <MudTextField T="string" Label="Card Number" Variant="_variant" Required="true" />
-                        <MudStack Row="true">
-                            <MudTextField T="string" Label="Expire Date" Variant="_variant" Required="true" />
-                            <MudTextField T="string" Label="CVC" Variant="_variant" Required="true" />
-                        </MudStack>
-                    </MudStack>
-                </MudForm>
-            </MudStep>
-            }
-            @if (!IsJuridical)
-            {
-            <MudStep Title="Выбор владельца">
-                <MudForm @ref="_form2">
-                    <MudStack>
-                        <MudTextField T="string" Label="Card Number" Variant="_variant" Required="true" />
-                        <MudStack Row="true">
-                            <MudTextField T="string" Label="Expire Date" Variant="_variant" Required="true" />
-                            <MudTextField T="string" Label="CVC" Variant="_variant" Required="true" />
-                        </MudStack>
-                    </MudStack>
-                </MudForm>
-            </MudStep>
-            }
-           
-           
+                        </MudItem>
+                    </MudGrid>
+                </MudCardContent>
+            </MudPaper>
+        @if (IsJuridical)
+        {
+            <MudPaper 
+                Elevation=0 MinWidth=500px MaxWidth=45%
+                 Class="d-flex mud-width-full justify-center "
+                  Style="@($"border:1px solid {Colors.BlueGrey.Lighten5};")">
+                <MudCardContent Class="mud-width-full">
+                    <MudText>Организация</MudText>
+                    <MudText Class="pt-3"  Style="@($"color:{Colors.BlueGrey.Lighten3};")" Typo="Typo.body2">Укажите ИНН и данные об организации заполнятся автоматически</MudText>
+                    <MudGrid>
+                        <MudItem xs="12" Class="d-flex align-stretch gap-4" >
+                            <MudTextField 
+                                Validation="@(new Func<string, Task<string>>(Validation))"
+                                @bind-Value="_request.Inn"
+                                Mask="@innMask"   
+                                Label="ИНН" 
+                                Variant="Variant.Outlined" 
+                                Margin="Margin.Normal" 
+                                Adornment="Adornment.End" 
+                                AdornmentIcon="@Icons.Material.Filled.Search" 
+                                AdornmentColor="Color.Primary">
+                            </MudTextField>
+                            <MudTextField RequiredError="Поле на заполнено" Required=true Mask="@kppMask" @bind-Value="_request.Kpp" Label="КПП" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                            <MudTextField RequiredError="Поле на заполнено" Required=true Mask="@ogrnMask" @bind-Value="_request.Ogrn" Label="ОГРН" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                            
+                        </MudItem>
+                    </MudGrid>
+                    <MudTextField  RequiredError="Поле на заполнено" Required=true  @bind-Value="_request.ShortName" Label="Название организации" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                    <MudPaper Elevation=0  Class="d-flex align-center gap-4" >
+                        <MudTextField RequiredError="Поле на заполнено" Required=true Disabled=true Value="@address" Label="Юридический адрес" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                        <MudFab @onclick="OpenDialog" Color="Color.Primary" Icon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small" />
+                    </MudPaper>
+                    <MudPaper Elevation=0  Class="d-flex align-center  gap-4" >
+                        <MudSwitch @bind-Checked="@IsOrgUnit" Color="Color.Primary" />
+                        <MudText   Style="@($"color:{Colors.BlueGrey.Lighten3};")" Typo="Typo.body2">Организация является обособленным подразделением</MudText>
+                    </MudPaper>
+                    @if(IsOrgUnit)
+                    {
+                        <MudTextField  RequiredError="Поле на заполнено" Required=true  @bind-Value="_request.OrganisationUnit" Label="Наименование обособленного подразделения" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                    }
+                    
+                </MudCardContent>
+            </MudPaper>
 
-            @if (_addResultStep)
-            {
-                <MudStep Title="Result Step" IsResultStep="true">
-                    <div class="d-flex flex-column align-center justify-center" style="height: 200px">
-                        <MudIconButton Icon="@Icons.Filled.DoneAll" Size="Size.Large" Variant="Variant.Filled" Color="Color.Success" />
-                        <MudText>Your reservation succesfully completed.</MudText>
-                    </div>
-                </MudStep>
-            }
-        </MudStepper>
-    </MudItem>
+            <MudPaper 
+                Elevation=0 MinWidth=500px MaxWidth=45%
+                 Class="d-flex mud-width-full justify-center "
+                  Style="@($"border:1px solid {Colors.BlueGrey.Lighten5};")">
+                <MudCardContent Class="mud-width-full">
+                    <MudText>Сведения о подписанте заявления</MudText>
+                    <MudText Class="pt-3"  Style="@($"color:{Colors.BlueGrey.Lighten3};")" Typo="Typo.body2">Укажите данные лица уполномоченного подписывать заявление</MudText>
+                    <MudGrid>
+                        <MudItem xs="12" Class="d-flex align-stretch gap-4" >
+                            <MudTextField 
+                                RequiredError="Поле на заполнено" Required=true
+                                @bind-Value="_request.LeaderLastName"  
+                                Label="Фамилия" 
+                                Variant="Variant.Outlined" 
+                                Margin="Margin.Normal" >
+                            </MudTextField>
+                            <MudTextField 
+                                RequiredError="Поле на заполнено" Required=true 
+                                @bind-Value="_request.LeaderFirstName" 
+                                Label="Имя" Variant="Variant.Outlined" 
+                                Margin="Margin.Normal">
+                            </MudTextField>
+                            <MudTextField 
+                                @bind-Value="_request.LeaderPatronymic" 
+                                Label="Отчество" Variant="Variant.Outlined" 
+                                Margin="Margin.Normal">
+                            </MudTextField>
+                        </MudItem>
+                    </MudGrid>
+                    <MudGrid>
+                        <MudItem xs="12" Class="d-flex align-stretch gap-4" >
+                            <MudTextField 
+                                RequiredError="Поле на заполнено" Required=true
+                                @bind-Value="_request.LeaderPosition"  
+                                Label="Должность" 
+                                Variant="Variant.Outlined" 
+                                Margin="Margin.Normal" >
+                            </MudTextField>
+                            <MudTextField 
+                                RequiredError="Поле на заполнено" Required=true 
+                                @bind-Value="_request.LeaderLegalDocument" 
+                                Label="Документ - основание" Variant="Variant.Outlined" 
+                                Margin="Margin.Normal">
+                            </MudTextField>
+                        </MudItem>
+                    </MudGrid>
+                </MudCardContent>
+            </MudPaper>
+        }  
 
-    @* <MudItem xs="12" sm="4" Style="box-shadow: rgba(240, 46, 170, 0.4) -3px 3px;">
-        <MudStack Spacing="4">
-            <MudCheckBox @bind-Checked="_linear" Color="Color.Primary" Label="Linear" Dense="true" />
-            <MudCheckBox @bind-Checked="_disableAnimation" Color="Color.Primary" Label="Disable Animation" Dense="true" />
-            <MudSwitch @bind-Checked="_addResultStep" Color="Color.Primary" Label="Has Result Step" />
-            <MudSwitch @bind-Checked="_checkValidationBeforeComplete" Color="Color.Primary" Label="Check Validation Before Complete Step" />
-            <MudSwitch @bind-Checked="_customLocalization" Color="Color.Primary" Label="Custom Localization (German)" />
-            <MudSelect @bind-Value="_variant" Variant="Variant.Outlined" Label="Variant">
-                @foreach (Variant item in Enum.GetValues<Variant>())
-                {
-                    <MudSelectItem Value="item">@item.ToDescriptionString()</MudSelectItem>
-                }
-            </MudSelect>
-            <MudSelect @bind-Value="_color" Variant="Variant.Outlined" Label="Color">
-                @foreach (Color item in Enum.GetValues<Color>())
-                {
-                    <MudSelectItem Value="item">@item.ToDescriptionString()</MudSelectItem>
-                }
-            </MudSelect>
-            <MudSelect @bind-Value="_headerTextView" Variant="Variant.Outlined" Label="Header Text View">
-                @foreach (HeaderTextView item in Enum.GetValues<HeaderTextView>())
-                {
-                    <MudSelectItem Value="item">@item.ToDescriptionString()</MudSelectItem>
-                }
-            </MudSelect>
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="(() => _stepper.Reset())">Reset</MudButton>
-        </MudStack>
-    </MudItem> *@
-@* </MudGrid>
 
-@code {
+        <MudPaper 
+                Elevation=0 MinWidth=500px MaxWidth=45%
+                 Class="d-flex mud-width-full justify-center "
+                  Style="@($"border:1px solid {Colors.BlueGrey.Lighten5};")">
+                <MudCardContent Class="mud-width-full">
+                    <MudText>Владельцы ЭП</MudText>
+                    <MudText Class="pt-3"  Style="@($"color:{Colors.BlueGrey.Lighten3};")" Typo="Typo.body2">Введите Email сотрудника, чтобы добавить его в список.
+                                После отправки, владельцы могут указать сведения о себе самостоятельно, в разделе
+                                <p>1С:Подпись > Мои заявления > Черновики</p> или по ссылке в уведомлении на почте.</MudText>
+                    <MudGrid>
+                        
+                        <MudItem xs="12" Class="d-flex align-start flex-column gap-4" >
+                            <MudPaper Elevation=0 Class="d-flex align-start mud-width-full gap-4">
+                            <MudTextField 
+                                Required=true
+                                RequiredError="Поле на заполнено"
+                                @bind-Value="_request.PersonEmail"  
+                                Label="E-mail" 
+                                Variant="Variant.Outlined" 
+                                Margin="Margin.Normal" >
+                            </MudTextField>
+                            <MudTextField 
+                                RequiredError="Поле на заполнено" 
+                                Required=true  @bind-Value="_request.PersonLastName" 
+                                Label="Фамилия" Variant="Variant.Outlined" 
+                                Margin="Margin.Normal"
+                                Validation="@(new Func<string, bool>(ValidationLastName))">
+                            </MudTextField>
+                            <MudButton Class="mt-6" OnClick="@AddPerson" Variant="Variant.Filled" Color="Color.Primary">Добавить</MudButton>  
+                            </MudPaper>
+                            @foreach (var person in _persons)
+                            {
+                                <MudPaper Elevation=0 Class="d-flex align-center gap-4">
+                                    <MudText>@person.Email</MudText>
+                                    <MudText>@person.Name</MudText>
+                                    <MudFab OnClick="@(() => { OnDelete(person); })" Color="Color.Primary" StartIcon="@Icons.Filled.DeleteOutline" Size="Size.Small" />
+                                </MudPaper>
+                            }
 
-    MudForm _form;
-    MudForm _form2;
-    bool _checkValidationBeforeComplete = false;
-    bool _linear = true;
-    bool IsJuridical = true;
-    Variant _variant = Variant.Outlined;
+                        </MudItem>
+                    </MudGrid>
+                </MudCardContent>
+            </MudPaper>
+            @* <MudPaper Width="45%" MinWidth=500px 
+                Elevation=0 
+                Class="d-flex mud-width-full justify-center "
+                Style="@($"border:1px solid {Colors.BlueGrey.Lighten5};")">
+                <MudCardContent  Class="mud-width-full">
+                    <MudText>Владелец ЭП</MudText>
+                    <MudTextField @bind-Value="_request.PersonLastName" Label="Фамилия" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                    <MudTextField @bind-Value="_request.PersonFirstName" Label="Имя" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                    <MudTextField @bind-Value="_request.PersonPatronymic" Label="Отчество" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                    <MudTextField @bind-Value="_request.PersonSnils" Label="СНИЛС" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                    <MudTextField @bind-Value="_request.PersonBirthDate" Label="Дата рождения" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                    <MudTextField @bind-Value="_request.PersonBirthPlace" Label="Место рождения" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                    <MudTextField @bind-Value="_request.PersonCountry" Label="Гражданство" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                    <MudNumericField @bind-Value="_request.PersonGender" Label="Пол (1-М 2-Ж)" Variant="Variant.Outlined" Min="1" Max="100" />
+                    <MudTextField @bind-Value="_request.PersonPost" Label="Должность" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                    <MudTextField @bind-Value="_request.PersonEmail" Label="Электронная почта" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                    <MudTextField @bind-Value="_request.PersonOrgUnitName" Label="Подразделение" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                    <MudTextField @bind-Value="_request.PersonPassportType" Label="Тип документа уд. личность" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                    <MudTextField @bind-Value="_request.PersonPassportSeries" Label="Серия" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                    <MudTextField @bind-Value="_request.PersonPassportNumber" Label="Номер" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                    <MudTextField @bind-Value="_request.PersonPassportDate" Label="Дата выдачи" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                    <MudTextField @bind-Value="_request.PersonPassportAddon" Label="Кем выдан" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                    <MudTextField @bind-Value="_request.PersonPassportUnit" Label="Код подразделения" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                    <MudTextField @bind-Value="_request.PersonInn" Label="ИНН владельца" Variant="Variant.Outlined" Margin="Margin.Normal"></MudTextField>
+                </MudCardContent>
+            </MudPaper>          *@
 
-    bool _disableAnimation = false;
-    bool _addResultStep = true;
-    bool _customLocalization = true;
-    Color _color = Color.Primary;
+    </MudPaper>
+    
+</MudGrid>
 
 
     
-    private bool CheckChange()
-    {
-        if (_checkValidationBeforeComplete == true)
-        {
-            if (_stepper.GetActiveIndex() == 0)
-            {
-                _form.Validate();
-                return !_form.IsValid;
-            }
-            else if (_stepper.GetActiveIndex() == 2)
-            {
-                _form2.Validate();
-                return !_form2.IsValid;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    private void StatusChanged(StepStatus status)
-    {
-        Snackbar.Add($"First step {status.ToDescriptionString()}.", Severity.Info);
-    }
-
-    private StepperLocalizedStrings GetLocalizedStrings()
-    {
-        return new StepperLocalizedStrings()
-            {
-                Completed = "Завершено",
-                Finish = "Отправить",
-                Next = "Далее",
-                Optional = "Не обязательно",
-                Previous = "Назад",
-                Skip = "Пропустить",
-                Skipped = "Пропущено",
-            };
-        
-    }
-
-} *@ 

@@ -71,7 +71,7 @@ namespace Client.Service
                 Inn = "572201119011"
             },
             CertRequest = "",
-            CertificationCenter = "ЗАО \"Калуга Астрал\"",
+            CertificationCenter = "ООО \"НПЦ \"1С\"",
             ContainerName = "",
             OrganisationUnit = "",
             IsJuridical = true

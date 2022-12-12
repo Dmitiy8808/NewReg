@@ -45,7 +45,7 @@ namespace Server.Controllers
 
 
         [HttpGet]
-        public async Task<ActionResult<List<CompanyReadDto>>> GetGetCompanies()
+        public async Task<ActionResult<List<CompanyReadDto>>> GetCompanies()
         {
             var companies = await _companyRepository.GetCompanies();
 

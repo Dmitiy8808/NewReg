@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Reg.Server.Context;
@@ -11,9 +12,11 @@ using Reg.Server.Context;
 namespace Reg.Server.Migrations
 {
     [DbContext(typeof(RegContext))]
-    partial class RegContextModelSnapshot : ModelSnapshot
+    [Migration("20221210080355_LeaderTable")]
+    partial class LeaderTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -93,27 +96,6 @@ namespace Reg.Server.Migrations
                     b.ToTable("Companies");
                 });
 
-            modelBuilder.Entity("Entities.Models.Country", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("CountryName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Countries");
-                });
-
             modelBuilder.Entity("Entities.Models.Leader", b =>
                 {
                     b.Property<Guid>("Id")
@@ -121,18 +103,23 @@ namespace Reg.Server.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("FirstName")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("LastName")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("LegalDocument")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Patronymic")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Position")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -303,7 +290,7 @@ namespace Reg.Server.Migrations
                     b.Property<string>("Kpp")
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("LeaderId")
+                    b.Property<Guid?>("LiaderId")
                         .HasColumnType("uuid");
 
                     b.Property<int?>("LocationAddressId")
@@ -329,39 +316,13 @@ namespace Reg.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("LeaderId");
+                    b.HasIndex("LiaderId");
 
                     b.HasIndex("LocationAddressId");
 
                     b.HasIndex("PersonId");
 
                     b.ToTable("Requests");
-                });
-
-            modelBuilder.Entity("Entities.Models.RequestFile", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<byte[]>("Data")
-                        .HasColumnType("bytea");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("RequestAbonentId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("TypeId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RequestAbonentId");
-
-                    b.ToTable("Files");
                 });
 
             modelBuilder.Entity("Entities.Models.Company", b =>
@@ -375,9 +336,9 @@ namespace Reg.Server.Migrations
 
             modelBuilder.Entity("Entities.Models.RequestAbonent", b =>
                 {
-                    b.HasOne("Entities.Models.Leader", "Leader")
+                    b.HasOne("Entities.Models.Leader", "Liader")
                         .WithMany()
-                        .HasForeignKey("LeaderId");
+                        .HasForeignKey("LiaderId");
 
                     b.HasOne("Entities.Models.AddressInfo", "LocationAddress")
                         .WithMany()
@@ -387,27 +348,11 @@ namespace Reg.Server.Migrations
                         .WithMany()
                         .HasForeignKey("PersonId");
 
-                    b.Navigation("Leader");
+                    b.Navigation("Liader");
 
                     b.Navigation("LocationAddress");
 
                     b.Navigation("Person");
-                });
-
-            modelBuilder.Entity("Entities.Models.RequestFile", b =>
-                {
-                    b.HasOne("Entities.Models.RequestAbonent", "RequestAbonent")
-                        .WithMany("Files")
-                        .HasForeignKey("RequestAbonentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("RequestAbonent");
-                });
-
-            modelBuilder.Entity("Entities.Models.RequestAbonent", b =>
-                {
-                    b.Navigation("Files");
                 });
 #pragma warning restore 612, 618
         }

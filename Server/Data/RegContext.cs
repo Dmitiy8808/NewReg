@@ -17,5 +17,8 @@ namespace Reg.Server.Context
         public DbSet<RequestAbonent> Requests { get; set; } = null!;
         public DbSet<PersonRequestInfo> Persons { get; set; } = null!;
         public DbSet<Company> Companies { get; set; } = null!;
+        public DbSet<Leader> Leaders { get; set; } = null!;
+        public DbSet<Country> Countries { get; set; } = null!;
+        public DbSet<RequestFile> Files { get; set; } = null!;
     }
 }

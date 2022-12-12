@@ -73,7 +73,7 @@ namespace Reg.Client.Pages
                 Inn = "515101119012"
             },
             CertRequest = "",
-            CertificationCenter = "ЗАО \"Калуга Астрал\"",
+            CertificationCenter = "ООО \"НПЦ \"1С\"",
             ContainerName = "",
             OrganisationUnit = "",
             IsJuridical = true
