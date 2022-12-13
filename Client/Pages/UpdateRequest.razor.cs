@@ -13,7 +13,7 @@ namespace Reg.Client.Pages
 {
     public partial class UpdateRequest 
     {
-        public RequestFileReadDto RequestFileReadDto = new RequestFileReadDto();
+        
         public EventCallback<RequestFileReadDto> OnChange { get; set; }
         public DateTime? PassportDate { get; set; }
         public DateTime? BirthDate { get; set; }
@@ -41,11 +41,21 @@ namespace Reg.Client.Pages
         public string Search { get; set; } 
         public string providerRuName { get; set; } = string.Empty;
         public RequestFileFeatures requestFileFeatures = new RequestFileFeatures();
+        public RequestFileReadDto RequestFileReadDto = new RequestFileReadDto();
         private RequestFileReadDto? _passportFile { get; set; }
+        public RequestFileReadDto RequestFileReadDtoSnils = new RequestFileReadDto();
+        private RequestFileReadDto? _snilsFile { get; set; }
+        public RequestFileReadDto RequestFileReadDtoDov = new RequestFileReadDto();
+        private RequestFileReadDto? _dovFile { get; set; }
+        public RequestFileReadDto RequestFileReadDtoClaim = new RequestFileReadDto();
+        private RequestFileReadDto? _claimFile { get; set; }
         List<RequestFileReadDto> requestFileList= new List<RequestFileReadDto>();
         private static string DefaultDragClass = "relative rounded-lg border-2 border-dashed pa-4 mt-4 mud-width-full mud-height-full ";
         private string DragClass = DefaultDragClass;
         private List<string> fileNames = new List<string>();
+        private List<string> fileNamesSnils = new List<string>();
+        private List<string> fileNamesDov = new List<string>();
+        private List<string> fileNamesClaim = new List<string>();
         protected async override Task OnInitializedAsync()
         {
             _request = await RequestRepo.GetRequestAbonent(Id);
@@ -55,6 +65,26 @@ namespace Reg.Client.Pages
             {
                fileNames.Add(_passportFile.Name); 
                RequestFileReadDto.Id = _passportFile.Id;
+            }
+            _snilsFile = requestFileList.Where(type => type.TypeId == 2).FirstOrDefault();
+            if (_snilsFile != null)
+            {
+               fileNamesSnils.Add(_snilsFile.Name); 
+               RequestFileReadDtoSnils.Id = _snilsFile.Id;
+            }
+
+            _dovFile = requestFileList.Where(type => type.TypeId == 4).FirstOrDefault();
+            if (_dovFile != null)
+            {
+               fileNamesDov.Add(_dovFile.Name); 
+               RequestFileReadDtoDov.Id = _dovFile.Id;
+            }
+
+            _claimFile = requestFileList.Where(type => type.TypeId == 3).FirstOrDefault();
+            if (_claimFile != null)
+            {
+               fileNamesClaim.Add(_claimFile.Name); 
+               RequestFileReadDtoClaim.Id = _claimFile.Id;
             }
             Search = _request.Inn;
             if(_request.PersonCryptoProviderId == 11)
@@ -144,31 +174,31 @@ namespace Reg.Client.Pages
 //Загрузка СНИЛС
         private async Task OnInputFileChangedSnils(InputFileChangeEventArgs e)
         {
-            requestFileFeatures.TypeId = 1;
+            requestFileFeatures.TypeId = 2;
             await ClearSnils();
             ClearDragClassSnils();
             var file = e.File;
-            fileNames.Add(file.Name);
+            fileNamesSnils.Add(file.Name);
             using (var ms = file.OpenReadStream(file.Size))
             {
                 var content = new MultipartFormDataContent();
                 content.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data");
                 content.Add(new StreamContent(ms, Convert.ToInt32(file.Size)), file.ContentType, file.Name);
-                RequestFileReadDto = await RequestFileHttpRepo.UploadRequestFile(content, requestFileFeatures);
-                await OnChange.InvokeAsync(RequestFileReadDto);  
+                RequestFileReadDtoSnils = await RequestFileHttpRepo.UploadRequestFile(content, requestFileFeatures);
+                await OnChange.InvokeAsync(RequestFileReadDtoSnils);  
             }
             
         }
 
         private async Task ClearSnils()
         {
-            if (RequestFileReadDto.Id != Guid.Empty)
+            if (RequestFileReadDtoSnils.Id != Guid.Empty)
             {
-                await RequestFileHttpRepo.DeleteRequestFile(RequestFileReadDto.Id);
-                RequestFileReadDto.Id = Guid.Empty;
+                await RequestFileHttpRepo.DeleteRequestFile(RequestFileReadDtoSnils.Id);
+                RequestFileReadDtoSnils.Id = Guid.Empty;
             }
             
-            fileNames.Clear();
+            fileNamesSnils.Clear();
             ClearDragClassSnils();
 
         }
@@ -221,6 +251,90 @@ namespace Reg.Client.Pages
         }
 
         private void ClearDragClass()
+        {
+            DragClass = DefaultDragClass;
+        }
+
+        //Загрузка Доверенность 
+        private async Task OnInputFileChangedDov(InputFileChangeEventArgs e)
+        {
+            requestFileFeatures.TypeId = 4;
+            await ClearDov();
+            ClearDragClassDov();
+            var file = e.File;
+            fileNamesDov.Add(file.Name);
+            using (var ms = file.OpenReadStream(file.Size))
+            {
+                var content = new MultipartFormDataContent();
+                content.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data");
+                content.Add(new StreamContent(ms, Convert.ToInt32(file.Size)), file.ContentType, file.Name);
+                RequestFileReadDtoDov = await RequestFileHttpRepo.UploadRequestFile(content, requestFileFeatures);
+                await OnChange.InvokeAsync(RequestFileReadDtoDov);  
+            }
+            
+        }
+
+        private async Task ClearDov()
+        {
+            if (RequestFileReadDtoDov.Id != Guid.Empty)
+            {
+                await RequestFileHttpRepo.DeleteRequestFile(RequestFileReadDtoDov.Id);
+                RequestFileReadDtoDov.Id = Guid.Empty;
+            }
+            
+            fileNamesDov.Clear();
+            ClearDragClassDov();
+
+        }
+
+        private void SetDragClassDov()
+        {
+            DragClass = $"{DefaultDragClass} mud-border-primary";
+        }
+
+        private void ClearDragClassDov()
+        {
+            DragClass = DefaultDragClass;
+        }
+
+        //Загрузка Заявление
+        private async Task OnInputFileChangedClaim(InputFileChangeEventArgs e)
+        {
+            requestFileFeatures.TypeId = 3;
+            await ClearClaim();
+            ClearDragClassClaim();
+            var file = e.File;
+            fileNamesClaim.Add(file.Name);
+            using (var ms = file.OpenReadStream(file.Size))
+            {
+                var content = new MultipartFormDataContent();
+                content.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data");
+                content.Add(new StreamContent(ms, Convert.ToInt32(file.Size)), file.ContentType, file.Name);
+                RequestFileReadDtoClaim = await RequestFileHttpRepo.UploadRequestFile(content, requestFileFeatures);
+                await OnChange.InvokeAsync(RequestFileReadDtoClaim);  
+            }
+            
+        }
+
+        private async Task ClearClaim()
+        {
+            if (RequestFileReadDtoClaim.Id != Guid.Empty)
+            {
+                await RequestFileHttpRepo.DeleteRequestFile(RequestFileReadDtoClaim.Id);
+                RequestFileReadDtoClaim.Id = Guid.Empty;
+            }
+            
+            fileNamesClaim.Clear();
+            ClearDragClassClaim();
+
+        }
+
+        private void SetDragClassClaim()
+        {
+            DragClass = $"{DefaultDragClass} mud-border-primary";
+        }
+
+        private void ClearDragClassClaim()
         {
             DragClass = DefaultDragClass;
         }

@@ -5,8 +5,12 @@ using Server.Repository;
 using Server.Services;
 using NLog;
 using Server.Extensions;
+using DinkToPdf.Contracts;
+using DinkToPdf;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
 
 LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
 
@@ -25,6 +29,7 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.ConfigureLoggerService();
 
+builder.Services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
 
 builder.Services.AddScoped<IFileRepository, FileRepository>(); 
 builder.Services.AddScoped<ICountryRepository, CountryRepository>(); 
@@ -37,6 +42,8 @@ builder.Services.AddTransient<IRequestRepository, RequestRepository>();
 builder.Services.AddControllers();
 
 var app = builder.Build();
+
+
 
 // Configure the HTTP request pipeline.
 

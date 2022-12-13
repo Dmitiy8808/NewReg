@@ -257,7 +257,7 @@
                                 </MudPaper>
                                 <MudPaper Elevation=0 Class="d-flex">
                                     <MudStack Style="width: 100%">
-                                        <MudFileUpload T="IReadOnlyList<IBrowserFile>" OnFilesChanged="OnInputFileChanged" Hidden="false" 
+                                        <MudFileUpload Accept=".pdf, .png"   T="IReadOnlyList<IBrowserFile>" OnFilesChanged="OnInputFileChanged" Hidden="false" 
                                                         Class="flex-1" 
                                                         InputClass="absolute mud-width-full mud-height-full overflow-hidden z-20" 
                                                         InputStyle="opacity:0"
@@ -296,13 +296,80 @@
                                             <ButtonTemplate>
                                                 <MudPaper Elevation=0  MinHeight=130px Outlined="true" Class="@DragClass">
                                                     <MudText Class="z-30" >Загрузить файл</MudText>
-                                                    @foreach (var file in fileNames)
+                                                    @foreach (var file in fileNamesSnils)
                                                     {   <MudPaper  Elevation=0 Class="d-flex gap-4 mt-4" >
                                                             <MudPaper Elevation=0 MinWidth=70%>
                                                                 <MudChip Color="Color.Dark" Text="@file" />
                                                             </MudPaper>
                                                             <MudPaper Elevation=0 MinWidth=20%>
                                                                 <MudFab Class="d-flex z-30" OnClick="@ClearSnils" Color="Color.Primary" StartIcon="@Icons.Filled.DeleteOutline"  Size="Size.Small" />
+                                                            </MudPaper>
+                                                        </MudPaper>  
+                                                    }
+                                                </MudPaper>
+                                            </ButtonTemplate>
+                                        </MudFileUpload>
+                                        
+                                    </MudStack>
+                                </MudPaper>
+                            </MudPaper>
+                            
+                        </MudItem>
+                    </MudGrid>
+                     <MudGrid>
+                        <MudItem xs="12" Class="d-flex align-start justify-space-between  gap-4 mt-4" >
+                            <MudPaper Elevation=0 Width=48% Class="d-flex flex-column">
+                                <MudPaper Elevation=0 Class="d-flex">
+                                    <MudText>Заявление</MudText>
+                                </MudPaper>
+                                <MudPaper Elevation=0 Class="d-flex">
+                                    <MudStack Style="width: 100%">
+                                        <MudFileUpload T="IReadOnlyList<IBrowserFile>" OnFilesChanged="OnInputFileChangedClaim" Hidden="false" 
+                                                        Class="flex-1" 
+                                                        InputClass="absolute mud-width-full mud-height-full overflow-hidden z-20" 
+                                                        InputStyle="opacity:0"
+                                                    @ondragenter="@SetDragClassClaim" @ondragleave="@ClearDragClassClaim" @ondragend="@ClearDragClassClaim">
+                                            <ButtonTemplate>
+                                                <MudPaper Elevation=0  MinHeight=130px Outlined="true" Class="@DragClass">
+                                                    <MudText Class="z-30" >Загрузить файл</MudText>
+                                                    @foreach (var file in fileNamesClaim)
+                                                    {   <MudPaper  Elevation=0 Class="d-flex gap-4 mt-4" >
+                                                            <MudPaper Elevation=0 MinWidth=70%>
+                                                                <MudChip Color="Color.Dark" Text="@file" />
+                                                            </MudPaper>
+                                                            <MudPaper Elevation=0 MinWidth=20%>
+                                                                <MudFab Class="d-flex z-30" OnClick="@ClearClaim" Color="Color.Primary" StartIcon="@Icons.Filled.DeleteOutline"  Size="Size.Small" />
+                                                            </MudPaper>
+                                                        </MudPaper>  
+                                                    }
+                                                </MudPaper>
+                                            </ButtonTemplate>
+                                        </MudFileUpload>
+                                        
+                                    </MudStack>
+                                </MudPaper>
+                            </MudPaper>
+                            <MudPaper Elevation=0 Width=48% Class="d-flex flex-column">
+                                <MudPaper Elevation=0 Class="d-flex">
+                                    <MudText>Доверенность</MudText>
+                                </MudPaper>
+                                <MudPaper Elevation=0 Class="d-flex">
+                                    <MudStack Style="width: 100%">
+                                        <MudFileUpload T="IReadOnlyList<IBrowserFile>" OnFilesChanged="OnInputFileChangedDov" Hidden="false" 
+                                                        Class="flex-1" 
+                                                        InputClass="absolute mud-width-full mud-height-full overflow-hidden z-20" 
+                                                        InputStyle="opacity:0"
+                                                    @ondragenter="@SetDragClassDov" @ondragleave="@ClearDragClassDov" @ondragend="@ClearDragClassDov">
+                                            <ButtonTemplate>
+                                                <MudPaper Elevation=0  MinHeight=130px Outlined="true" Class="@DragClass">
+                                                    <MudText Class="z-30" >Загрузить файл</MudText>
+                                                    @foreach (var file in fileNamesDov)
+                                                    {   <MudPaper  Elevation=0 Class="d-flex gap-4 mt-4" >
+                                                            <MudPaper Elevation=0 MinWidth=70%>
+                                                                <MudChip Color="Color.Dark" Text="@file" />
+                                                            </MudPaper>
+                                                            <MudPaper Elevation=0 MinWidth=20%>
+                                                                <MudFab Class="d-flex z-30" OnClick="@ClearDov" Color="Color.Primary" StartIcon="@Icons.Filled.DeleteOutline"  Size="Size.Small" />
                                                             </MudPaper>
                                                         </MudPaper>  
                                                     }
