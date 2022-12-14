@@ -1,12 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AutoMapper;
 using DinkToPdf;
 using DinkToPdf.Contracts;
 using Entities.DTOs;
-using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
 using Server.Utility;
 
@@ -16,30 +11,41 @@ namespace Server.Controllers
     [ApiController]
     public class PdfGeneratorController : ControllerBase
     {
+        private string htmlContent { get; set; }
         private readonly IConverter _converter;
-        private readonly IMapper _mapper;
-        public PdfGeneratorController(IConverter converter, IMapper mapper)
+
+        public PdfGeneratorController(IConverter converter)
         {
-            _mapper = mapper;
+ 
             _converter = converter;
             
         }
 
-        [HttpGet]
+        [HttpPost]
         public IActionResult CreatePDF(RequestAbonentUpdateDto requestAbonentUpdateDto)
         {
+            
+
+            if (requestAbonentUpdateDto.IsJuridical)
+            {
+                htmlContent = UlTemplateGenerator.GetHTMLString(requestAbonentUpdateDto); 
+            }
+            else
+            {
+                htmlContent = FlTemplateGenerator.GetHTMLString(requestAbonentUpdateDto);
+            }
             var globalSettings = new GlobalSettings
-    {
+        {
             ColorMode = ColorMode.Color,
             Orientation = Orientation.Portrait,
             PaperSize = PaperKind.A4,
             Margins = new MarginSettings { Top = 10 },
-            DocumentTitle = "PDF Report"
+            DocumentTitle = "Заявление"
         };
         var objectSettings = new ObjectSettings
         {
             PagesCount = true,
-            HtmlContent = UlTemplateGenerator.GetHTMLString(requestAbonentUpdateDto),
+            HtmlContent = htmlContent,
             WebSettings = { DefaultEncoding = "utf-8", UserStyleSheet =  Path.Combine(Directory.GetCurrentDirectory(), "assets", "styles.css") }
         };
         var pdf = new HtmlToPdfDocument()
@@ -48,8 +54,37 @@ namespace Server.Controllers
             Objects = { objectSettings }
         };
         var file = _converter.Convert(pdf);
-        return File(file, "application/pdf", "EmployeeReport.pdf");
+        return File(file, "application/pdf", "Zayavlenie.pdf");
         }
+
+        [Route("dover")]
+        [HttpPost]
+        public IActionResult CreateDovPDF(RequestAbonentUpdateDto requestAbonentUpdateDto)
+        {
+            var globalSettings = new GlobalSettings
+        {
+            ColorMode = ColorMode.Color,
+            Orientation = Orientation.Portrait,
+            PaperSize = PaperKind.A4,
+            Margins = new MarginSettings { Top = 10 },
+            DocumentTitle = "Доверенность"
+        };
+        var objectSettings = new ObjectSettings
+        {
+            PagesCount = true,
+            HtmlContent = DoverTemplateGenerator.GetHTMLString(requestAbonentUpdateDto),
+            WebSettings = { DefaultEncoding = "utf-8", UserStyleSheet =  Path.Combine(Directory.GetCurrentDirectory(), "assets", "styles.css") }
+        };
+        var pdf = new HtmlToPdfDocument()
+        {
+            GlobalSettings = globalSettings,
+            Objects = { objectSettings }
+        };
+        var file = _converter.Convert(pdf);
+        return File(file, "application/pdf", "Doverennost.pdf");
+        }
+
+
         
     }
 }

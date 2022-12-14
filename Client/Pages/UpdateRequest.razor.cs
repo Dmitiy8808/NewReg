@@ -8,6 +8,7 @@ using Client.HttpRepository;
 using Microsoft.AspNetCore.Components.Forms;
 using System.Net.Http.Headers;
 using Entities.FileFeatures;
+using Microsoft.JSInterop;
 
 namespace Reg.Client.Pages
 {
@@ -24,6 +25,10 @@ namespace Reg.Client.Pages
         private RequestAbonentReadDto _request;
         [Inject]
         ISnackbar Snackbar { get; set; }
+        [Inject]
+        public IJSRuntime JSRuntime { get; set; }
+        [Inject]
+        IPdfGeneratorHttpRepository PdfGeneratorHttpRepo { get; set; }
         [Inject]
         IRequestFileHttpRepository RequestFileHttpRepo { get; set; }
         [Inject]
@@ -58,7 +63,19 @@ namespace Reg.Client.Pages
         private List<string> fileNamesClaim = new List<string>();
         protected async override Task OnInitializedAsync()
         {
+            
             _request = await RequestRepo.GetRequestAbonent(Id);
+
+            if (_request.PersonPassportDate != null)
+            {
+                PassportDate = DateTime.Parse(_request.PersonPassportDate);
+            }
+
+            if (_request.PersonBirthDate != null)
+            {
+                BirthDate = DateTime.Parse(_request.PersonBirthDate);
+            }
+
             requestFileList = await RequestFileHttpRepo.GetRequestFiles(Id);
             _passportFile = requestFileList.Where(type => type.TypeId == 1).FirstOrDefault();
             if (_passportFile != null)
@@ -91,7 +108,7 @@ namespace Reg.Client.Pages
             {
                 providerRuName = "Крипто Про CSP";
             }
-            else if (_request.PersonCryptoProviderId == 11)
+            else if (_request.PersonCryptoProviderId == 9)
             {
                 providerRuName = "VipNet CSP";
             }
@@ -159,17 +176,17 @@ namespace Reg.Client.Pages
 
         }
 
-        void GenderChanged(string selectedOption)
-        {
-            if(selectedOption == "1")
-            {
-                _request.PersonGender = 1;
-            }
-            else if (selectedOption == "2")
-            {
-                _request.PersonGender = 2;
-            }
-        }
+        // void GenderChanged(string selectedOption)
+        // {
+        //     if(selectedOption == "1")
+        //     {
+        //         _request.PersonGender = 1;
+        //     }
+        //     else if (selectedOption == "2")
+        //     {
+        //         _request.PersonGender = 2;
+        //     }
+        // }
 
 //Загрузка СНИЛС
         private async Task OnInputFileChangedSnils(InputFileChangeEventArgs e)
@@ -337,6 +354,20 @@ namespace Reg.Client.Pages
         private void ClearDragClassClaim()
         {
             DragClass = DefaultDragClass;
+        }
+
+        protected async Task ClaimPrint() 
+        {
+            var fileBytes = await PdfGeneratorHttpRepo.GenerateClaim(Mapper.Map<RequestAbonentUpdateDto>(_request)); 
+            var fileName = $"Заявление {_request.PersonLastName} {_request.PersonFirstName} {_request.PersonPatronymic}.pdf";
+            await JSRuntime.InvokeAsync<object>("saveAsFile", fileName, Convert.ToBase64String(fileBytes));
+        }
+
+        protected async Task DoverPrint() 
+        {
+            var fileBytes = await PdfGeneratorHttpRepo.GenerateDover(Mapper.Map<RequestAbonentUpdateDto>(_request)); 
+            var fileName = $"Доверенность {_request.PersonLastName} {_request.PersonFirstName} {_request.PersonPatronymic}.pdf";
+            await JSRuntime.InvokeAsync<object>("saveAsFile", fileName, Convert.ToBase64String(fileBytes));
         }
         
     }

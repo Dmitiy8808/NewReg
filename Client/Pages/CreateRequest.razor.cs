@@ -45,10 +45,47 @@ namespace Reg.Client.Pages
             if (tabIndex == 0)
             {
                 IsJuridical = true;
+                _request.IsJuridical = true;
             }
-            else
+            else if (tabIndex == 1)
             {
+                _request.IsJuridical = false;
                 IsJuridical = false;
+                _request.Inn = null;
+                _request.Kpp = null;
+                _request.ShortName = null;
+                _request.ShortName = null;
+                address = string.Empty;
+                _request.Ogrn = null;
+                _request.LocationAddressPostalCode = null;
+                regionText = string.Empty;
+                _request.LocationAddressArea = null;
+                _request.LocationAddressCity = null;
+                _request.LocationAddressStreet = null;
+                _request.LocationAddressBuilding = null;
+                _request.LocationAddressBulk = null;
+                _request.LocationAddressFlat = null;
+                _request.LeaderLastName = null;
+                _request.LeaderFirstName = null;
+                _request.LeaderPatronymic = null;
+                _request.LeaderPosition = null;
+            }
+        }
+
+        private void OnActivePanelIndexChangedProvider(int tabIndex)
+        {
+            if (tabIndex == 0)
+            {
+                _request.PersonCryptoProviderCode = "80";
+                _request.PersonCryptoProviderId = 11;
+                _request.PersonCryptoProviderName = "Crypto-Pro GOST R 34.10-2012 Cryptographic Service Provider";
+         
+            }
+            else if (tabIndex == 1)
+            {
+                _request.PersonCryptoProviderCode = "77";
+                _request.PersonCryptoProviderId = 9;
+                _request.PersonCryptoProviderName = "Infotecs GOST 2012/512 Cryptographic Service Provider";
             }
         }
 
@@ -227,10 +264,10 @@ namespace Reg.Client.Pages
             [99] = "Иные территории, включая город и космодром Байконур"
         };
 
-        bool ValidationLastName(string value)
-        {
-            return false;
-        }
+        // bool ValidationLastName(string value)
+        // {
+        //     return false;
+        // } Validation="@(new Func<string, bool>(ValidationLastName))">
 
        
         private async Task<string> Validation(string value)
