@@ -1,3 +1,13 @@
+<style>
+    div.mud-layout.mud-drawer-open-responsive-md-left.mud-drawer-left-clipped-never > div > div > div > div > div:nth-child(3) > form > div > div:nth-child(3) > div > div:nth-child(1) > div:nth-child(2) > div > div > div.mud-input-control-helper-container > p,
+    div.mud-layout.mud-drawer-open-responsive-md-left.mud-drawer-left-clipped-never > div > div > div > div > div:nth-child(3) > form > div > div:nth-child(3) > div > div:nth-child(2) > div:nth-child(2) > div > div > div.mud-input-control-helper-container > p,
+    div.mud-layout.mud-drawer-open-responsive-md-left.mud-drawer-left-clipped-never > div > div > div > div > div:nth-child(3) > form > div > div:nth-child(4) > div > div.mud-paper.mud-elevation-0.d-flex.flex-column.pb-4 > div:nth-child(2) > div > div > div.mud-input-control-helper-container > p,
+    div.mud-layout.mud-drawer-open-responsive-md-left.mud-drawer-left-clipped-never > div > div > div > div > div:nth-child(3) > form > div > div:nth-child(4) > div > div:nth-child(2) > div:nth-child(2) > div > div > div.mud-input-control-helper-container > p
+    {
+        margin-top: 20px;
+    }
+</style>
+
 @page "/request/{Id:guid}"
 
 @using Entities.Models;
@@ -6,7 +16,7 @@
 
 <MudGrid>
     <MudPaper  MinWidth=500px Elevation=0 Class="d-flex flex-column align-center justify-center gap-4 mud-width-full grey lighten-5 mb-4" >
-            
+          
              <MudPaper 
                 Elevation=0 MinWidth=500px MaxWidth=45%
                  Class="d-flex mud-width-full justify-start mt-10 flex-column gap-4"
@@ -28,220 +38,237 @@
                     </MudPaper>
                     
                 </MudPaper>
-                <MudPaper Elevation=0 Class="d-flex  mud-width-full justify-space-between align-center">
-                    <MudText Class="d-flex pl-4  " >Организация: @_request.ShortName</MudText>  
+                
+                    @if (_request.IsJuridical)
+                    {
+                        <MudPaper Elevation=0 Class="d-flex  mud-width-full justify-space-between align-center">
+                            <MudText Class="d-flex pl-4  " >Организация: @_request.ShortName</MudText>  
+                        </MudPaper>
+                        <MudPaper Elevation=0 Class="d-flex  mud-width-full justify-space-between align-center">
+                            <MudText Class="d-flex pl-4 " >ИНН: @_request.Inn</MudText>
+                        </MudPaper>
+                    }
+                    else if (!_request.IsJuridical)
+                    {
+                        <MudPaper Elevation=0 Class="d-flex  mud-width-full justify-space-between align-center">
+                            <MudText Class="d-flex pl-4  " >Физическое лицо: @_request.PersonLastName @_request.PersonFirstName @_request.PersonPatronymic</MudText>  
+                        </MudPaper>
+                        <MudPaper Elevation=0 Class="d-flex  mud-width-full justify-space-between align-center">
+                            <MudText Class="d-flex pl-4 " >Email: @_request.PersonEmail</MudText>
+                        </MudPaper>
+                    }
+                    
+                    <MudPaper Elevation=0 Class="d-flex  mud-width-full justify-space-between align-center">
+                        <MudText Class="d-flex pl-4  mb-4 " >Криптопровайдер: @providerRuName</MudText>
+                    </MudPaper>
                 </MudPaper>
-                <MudPaper Elevation=0 Class="d-flex  mud-width-full justify-space-between align-center">
-                    <MudText Class="d-flex pl-4 " >ИНН: @_request.Inn</MudText>
-                </MudPaper>
-                <MudPaper Elevation=0 Class="d-flex  mud-width-full justify-space-between align-center">
-                    <MudText Class="d-flex pl-4  mb-4 " >Криптопровайдер: @providerRuName</MudText>
-                </MudPaper>
-            </MudPaper>
             <MudPaper 
                 Elevation=0 MinWidth=500px MaxWidth=45%
                  Class="d-flex mud-width-full justify-center "
                   Style="@($"border:1px solid {Colors.BlueGrey.Lighten5};")">
-                <MudCardContent Class="mud-width-full">
-                    <MudText>Данные владельца ЭП</MudText>
-                    <MudGrid>
-                        <MudItem xs="12" Class="d-flex align-stretch gap-4" >
-                            <MudTextField 
-                                RequiredError="Поле на заполнено" Required=true
-                                @bind-Value="_request.PersonLastName"  
-                                Label="Фамилия" 
-                                Variant="Variant.Outlined" 
-                                Margin="Margin.Normal" >
-                            </MudTextField>
-                            <MudTextField 
-                                RequiredError="Поле на заполнено" Required=true 
-                                @bind-Value="_request.PersonFirstName" 
-                                Label="Имя" Variant="Variant.Outlined" 
-                                Margin="Margin.Normal">
-                            </MudTextField>
-                            <MudTextField 
-                                @bind-Value="_request.PersonPatronymic" 
-                                Label="Отчество" Variant="Variant.Outlined" 
-                                Margin="Margin.Normal">
-                            </MudTextField>
-                        </MudItem>
-                    </MudGrid>
-                    <MudGrid>
-                        <MudItem xs="12" Class="d-flex justify-space-between gap-4" >
-                            <MudPaper MaxWidth=45% Class="d-flex mud-width-full" >
-                                <MudAutocomplete 
-                                    Variant="Variant.Outlined"
-                                    RequiredError="Поле на заполнено" Required=true
-                                    T="Country" 
-                                    Label="Гражданство"
-                                    Clearable=true 
-                                    Value="CyrrentCountry" 
-                                    ValueChanged="@CountryChanged"
-                                    SearchFunc="@SearchCountry" 
-                                    ToStringFunc="@(state => state.CountryName)">
-                                </MudAutocomplete>
-                            </MudPaper>
-                            
-                            <MudPaper MaxWidth=50% Elevation=0  Class="d-flex align-center ">
-                                <MudText Class="pr-4">Пол:</MudText>
-                                <MudForm Class="d-flex align-center">
-                                    <MudRadioGroup 
-                                        @bind-SelectedOption="_request.PersonGender"
-                                        Class="d-flex" 
-                                        T="int?"
-                                        Required=true
-                                        RequiredError="Укажите пол"
-                                        >
-                                        <MudRadio T="int?" Option="@(1)" Color="Color.Primary">Муж</MudRadio>
-                                        <MudRadio T="int?" Option="@(2)" Color="Color.Primary">Жен</MudRadio>
-                                    </MudRadioGroup>
-                                </MudForm>
-                            </MudPaper>
-                        </MudItem>
-                    </MudGrid>
-                    <MudGrid>
-                        <MudItem xs="12" Class="d-flex align-start gap-4" >
-                            <MudTextField 
-                                RequiredError="Поле на заполнено" Required=true
-                                @bind-Value="_request.PersonPassportSeries"  
-                                Label="Серия" 
-                                Variant="Variant.Outlined" 
-                                Margin="Margin.Normal"
-                                 >
-                            </MudTextField>
-                            <MudTextField 
-                                RequiredError="Поле на заполнено" Required=true 
-                                @bind-Value="_request.PersonPassportNumber" 
-                                Label="Номер" 
-                                Variant="Variant.Outlined" 
-                                Margin="Margin.Normal">
-                            </MudTextField>
-                            <MudDatePicker Class="d-flex mt-2" Style="margin-top:2px"
-                                Variant="Variant.Outlined" 
-                                Label="Дата выдачи" 
-                                Editable="true" 
-                                Date="PassportDate" 
-                                DateChanged="PassportDateChanged"
-                                Mask="@(new DateMask("dd.MM.yyyy"))" 
-                                DateFormat="dd.MM.yyyy"
-                                 />
-                        </MudItem>
-                    </MudGrid>
-                    <MudGrid>
-                        <MudItem xs="12" Class="d-flex align-stretch gap-4" >
-                            <MudPaper Elevation=0 Class="d-flex mud-width-full">
-                                <MudTextField  
-                                RequiredError="Поле на заполнено" Required=true
-                                @bind-Value="_request.PersonPassportAddon"  
-                                Label="Кем выдан" 
-                                Variant="Variant.Outlined" 
-                                Margin="Margin.Normal" >
-                            </MudTextField>
-                            </MudPaper>
-                            <MudPaper Elevation=0 MaxWidth=35% MinWidth=200px Class="d-flex mud-width-full">
+                <MudForm @ref="form" @bind-IsValid="@dataSuccess">
+                    <MudCardContent Class="mud-width-full">
+                        <MudText>Данные владельца ЭП</MudText>
+                        <MudGrid>
+                            <MudItem xs="12" Class="d-flex align-stretch gap-4" >
                                 <MudTextField 
-                                    @bind-Value="_request.PersonPassportUnit" 
                                     RequiredError="Поле на заполнено" Required=true
-                                    Label="Код подразделения" 
+                                    @bind-Value="_request.PersonLastName"  
+                                    Label="Фамилия" 
+                                    Variant="Variant.Outlined" 
+                                    Margin="Margin.Normal" >
+                                </MudTextField>
+                                <MudTextField 
+                                    RequiredError="Поле на заполнено" Required=true 
+                                    @bind-Value="_request.PersonFirstName" 
+                                    Label="Имя" Variant="Variant.Outlined" 
+                                    Margin="Margin.Normal">
+                                </MudTextField>
+                                <MudTextField 
+                                    @bind-Value="_request.PersonPatronymic" 
+                                    Label="Отчество" Variant="Variant.Outlined" 
+                                    Margin="Margin.Normal">
+                                </MudTextField>
+                            </MudItem>
+                        </MudGrid>
+                        <MudGrid>
+                            <MudItem xs="12" Class="d-flex justify-space-between gap-4" >
+                                <MudPaper MaxWidth=45% Class="d-flex mud-width-full" >
+                                    <MudAutocomplete 
+                                        Variant="Variant.Outlined"
+                                        RequiredError="Поле на заполнено" Required=true
+                                        T="Country" 
+                                        Label="Гражданство"
+                                        Clearable=true 
+                                        Value="CyrrentCountry" 
+                                        ValueChanged="@CountryChanged"
+                                        SearchFunc="@SearchCountry" 
+                                        ToStringFunc="@(state => state.CountryName)">
+                                    </MudAutocomplete>
+                                </MudPaper>
+                                
+                                <MudPaper MaxWidth=50% Elevation=0  Class="d-flex align-center ">
+                                    <MudText Class="pr-4">Пол:</MudText>
+                                    <MudForm Class="d-flex align-center">
+                                        <MudRadioGroup 
+                                            @bind-SelectedOption="_request.PersonGender"
+                                            Class="d-flex" 
+                                            T="int?"
+                                            Required=true
+                                            RequiredError="Укажите пол"
+                                            >
+                                            <MudRadio T="int?" Option="@(1)" Color="Color.Primary">Муж</MudRadio>
+                                            <MudRadio T="int?" Option="@(2)" Color="Color.Primary">Жен</MudRadio>
+                                        </MudRadioGroup>
+                                    </MudForm>
+                                </MudPaper>
+                            </MudItem>
+                        </MudGrid>
+                        <MudGrid>
+                            <MudItem xs="12" Class="d-flex align-start gap-4" >
+                                <MudTextField 
+                                    RequiredError="Поле на заполнено" Required=true
+                                    @bind-Value="_request.PersonPassportSeries"  
+                                    Label="Серия" 
                                     Variant="Variant.Outlined" 
                                     Margin="Margin.Normal"
-                                    Mask="@(new PatternMask("000-000"))" >
+                                    >
                                 </MudTextField>
-                            </MudPaper>
-                        </MudItem>
-                    </MudGrid>
-                    <MudGrid>
-                        <MudItem xs="12" Class="d-flex align-stretch gap-4" >
-                            <MudPaper Elevation=0 Class="d-flex mud-width-full">
-                                <MudTextField  
-                                RequiredError="Поле на заполнено" Required=true
-                                @bind-Value="_request.PersonBirthPlace"  
-                                Label="Место рождения" 
-                                Variant="Variant.Outlined" 
-                                Margin="Margin.Normal" >
-                            </MudTextField>
-                            </MudPaper>
-                            <MudPaper Elevation=0 MaxWidth=35% MinWidth=200px Class="d-flex mud-width-full">
+                                <MudTextField 
+                                    RequiredError="Поле на заполнено" Required=true 
+                                    @bind-Value="_request.PersonPassportNumber" 
+                                    Label="Номер" 
+                                    Variant="Variant.Outlined" 
+                                    Margin="Margin.Normal">
+                                </MudTextField>
                                 <MudDatePicker Class="d-flex mt-2" Style="margin-top:2px"
                                     Variant="Variant.Outlined" 
-                                    Label="Дата рождения" 
+                                    Label="Дата выдачи" 
                                     Editable="true" 
-                                    Date="BirthDate" 
-                                    DateChanged="BirthDateChanged"
+                                    Date="PassportDate" 
+                                    DateChanged="PassportDateChanged"
                                     Mask="@(new DateMask("dd.MM.yyyy"))" 
                                     DateFormat="dd.MM.yyyy"
                                     />
-                            </MudPaper>
-                        </MudItem>
-                    </MudGrid>
-                    <MudGrid>
-                        <MudItem xs="12" Class="d-flex align-stretch gap-4" >
-                            <MudPaper Elevation=0 Class="d-flex mud-width-full">
-                                <MudTextField  
-                                RequiredError="Поле на заполнено" Required=true
-                                @bind-Value="_request.PersonInn"  
-                                Label="ИНН ФЛ" 
-                                Variant="Variant.Outlined" 
-                                Margin="Margin.Normal" >
-                            </MudTextField>
-                            </MudPaper>
-                            <MudPaper Elevation=0  Class="d-flex mud-width-full">
-                                <MudTextField 
-                                    @bind-Value="_request.PersonSnils" 
-                                    RequiredError="Поле на заполнено" Required=true
-                                    Label="СНИЛС" 
-                                    Variant="Variant.Outlined" 
-                                    Margin="Margin.Normal"
-                                    Mask="@(new PatternMask("000-000-000 00"))" >
-                                </MudTextField>
-                            </MudPaper>
-                        </MudItem>
-                    </MudGrid>
-                    <MudGrid>
-                        <MudItem xs="12" Class="d-flex align-stretch gap-4" >
-                            <MudPaper Elevation=0 Class="d-flex mud-width-full">
-                                <MudTextField  
-                                RequiredError="Поле на заполнено" Required=true
-                                @bind-Value="_request.PersonEmail"  
-                                Label="Email" 
-                                Variant="Variant.Outlined" 
-                                Margin="Margin.Normal" >
-                            </MudTextField>
-                            </MudPaper>
-                            <MudPaper Elevation=0  Class="d-flex mud-width-full">
-                                <MudTextField 
-                                    @bind-Value="_request.Phone" 
-                                    RequiredError="Поле на заполнено" Required=true
-                                    Label="Мобильный Телефон" 
-                                    Variant="Variant.Outlined" 
-                                    Margin="Margin.Normal"
-                                    Mask="@(new PatternMask("0 (000) 000-00-00"))" >
-                                </MudTextField>
-                            </MudPaper>
-                        </MudItem>
-                    </MudGrid>
-                    @if (_request.IsJuridical)
-                    {
+                            </MudItem>
+                        </MudGrid>
                         <MudGrid>
-                        <MudItem xs="12" Class="d-flex align-stretch gap-4" >
-                            <MudPaper Elevation=0 Class="d-flex mud-width-full">
-                                <MudTextField  
-                                RequiredError="Поле на заполнено" Required=true
-                                @bind-Value="_request.PersonPost"  
-                                Label="Должность" 
-                                Variant="Variant.Outlined" 
-                                Margin="Margin.Normal" >
-                            </MudTextField>
-                            </MudPaper>
-                        </MudItem>
-                    </MudGrid>
-                    }
-                </MudCardContent>
+                            <MudItem xs="12" Class="d-flex align-stretch gap-4" >
+                                <MudPaper Elevation=0 Class="d-flex mud-width-full">
+                                    <MudTextField  
+                                    RequiredError="Поле на заполнено" Required=true
+                                    @bind-Value="_request.PersonPassportAddon"  
+                                    Label="Кем выдан" 
+                                    Variant="Variant.Outlined" 
+                                    Margin="Margin.Normal" >
+                                </MudTextField>
+                                </MudPaper>
+                                <MudPaper Elevation=0 MaxWidth=35% MinWidth=200px Class="d-flex mud-width-full">
+                                    <MudTextField 
+                                        @bind-Value="_request.PersonPassportUnit" 
+                                        RequiredError="Поле на заполнено" Required=true
+                                        Label="Код подразделения" 
+                                        Variant="Variant.Outlined" 
+                                        Margin="Margin.Normal"
+                                        Mask="@(new PatternMask("000-000"))" >
+                                    </MudTextField>
+                                </MudPaper>
+                            </MudItem>
+                        </MudGrid>
+                        <MudGrid>
+                            <MudItem xs="12" Class="d-flex align-stretch gap-4" >
+                                <MudPaper Elevation=0 Class="d-flex mud-width-full">
+                                    <MudTextField  
+                                    RequiredError="Поле на заполнено" Required=true
+                                    @bind-Value="_request.PersonBirthPlace"  
+                                    Label="Место рождения" 
+                                    Variant="Variant.Outlined" 
+                                    Margin="Margin.Normal" >
+                                </MudTextField>
+                                </MudPaper>
+                                <MudPaper Elevation=0 MaxWidth=35% MinWidth=200px Class="d-flex mud-width-full">
+                                    <MudDatePicker Class="d-flex mt-2" Style="margin-top:2px"
+                                        Variant="Variant.Outlined" 
+                                        Label="Дата рождения" 
+                                        Editable="true" 
+                                        Date="BirthDate" 
+                                        DateChanged="BirthDateChanged"
+                                        Mask="@(new DateMask("dd.MM.yyyy"))" 
+                                        DateFormat="dd.MM.yyyy"
+                                        />
+                                </MudPaper>
+                            </MudItem>
+                        </MudGrid>
+                        <MudGrid>
+                            <MudItem xs="12" Class="d-flex align-stretch gap-4" >
+                                <MudPaper Elevation=0 Class="d-flex mud-width-full">
+                                    <MudTextField  
+                                    RequiredError="Поле на заполнено" Required=true
+                                    @bind-Value="_request.PersonInn"  
+                                    Label="ИНН ФЛ" 
+                                    Variant="Variant.Outlined" 
+                                    Margin="Margin.Normal" >
+                                </MudTextField>
+                                </MudPaper>
+                                <MudPaper Elevation=0  Class="d-flex mud-width-full">
+                                    <MudTextField 
+                                        @bind-Value="_request.PersonSnils" 
+                                        RequiredError="Поле на заполнено" Required=true
+                                        Label="СНИЛС" 
+                                        Variant="Variant.Outlined" 
+                                        Margin="Margin.Normal"
+                                        Mask="@(new PatternMask("000-000-000 00"))" >
+                                    </MudTextField>
+                                </MudPaper>
+                            </MudItem>
+                        </MudGrid>
+                        <MudGrid>
+                            <MudItem xs="12" Class="d-flex align-stretch gap-4" >
+                                <MudPaper Elevation=0 Class="d-flex mud-width-full">
+                                    <MudTextField  
+                                    RequiredError="Поле на заполнено" Required=true
+                                    @bind-Value="_request.PersonEmail"  
+                                    Label="Email" 
+                                    Variant="Variant.Outlined" 
+                                    Margin="Margin.Normal" >
+                                </MudTextField>
+                                </MudPaper>
+                                <MudPaper Elevation=0  Class="d-flex mud-width-full">
+                                    <MudTextField 
+                                        @bind-Value="_request.Phone" 
+                                        RequiredError="Поле на заполнено" Required=true
+                                        Label="Мобильный Телефон" 
+                                        Variant="Variant.Outlined" 
+                                        Margin="Margin.Normal"
+                                        Mask="@(new PatternMask("0 (000) 000-00-00"))" >
+                                    </MudTextField>
+                                </MudPaper>
+                            </MudItem>
+                        </MudGrid>
+                        @if (_request.IsJuridical)
+                        {
+                            <MudGrid>
+                            <MudItem xs="12" Class="d-flex align-stretch gap-4" >
+                                <MudPaper Elevation=0 Class="d-flex mud-width-full">
+                                    <MudTextField  
+                                    RequiredError="Поле на заполнено" Required=true
+                                    @bind-Value="_request.PersonPost"  
+                                    Label="Должность" 
+                                    Variant="Variant.Outlined" 
+                                    Margin="Margin.Normal" >
+                                </MudTextField>
+                                </MudPaper>
+                            </MudItem>
+                        </MudGrid>
+                        }
+                    </MudCardContent>
+                </MudForm>
             </MudPaper>
             <MudPaper 
                 Elevation=0 MinWidth=500px MaxWidth=45%
                  Class="d-flex mud-width-full justify-center "
                   Style="@($"border:1px solid {Colors.BlueGrey.Lighten5};")">
+            <MudForm Class="d-flex mud-width-full justify-center " @ref="formdoc" >
                 <MudCardContent Class="mud-width-full">
                     <MudText>Требуемые документы</MudText>
                     <MudText 
@@ -259,7 +286,11 @@
                                 </MudPaper>
                                 <MudPaper Elevation=0 Class="d-flex">
                                     <MudStack Style="width: 100%">
-                                        <MudFileUpload Accept=".pdf, .png"   T="IReadOnlyList<IBrowserFile>" OnFilesChanged="OnInputFileChanged" Hidden="false" 
+                                        <MudFileUpload @ref="passportValidation" Accept=".pdf, .png"   
+                                                        T="IReadOnlyList<IBrowserFile>" 
+                                                        OnFilesChanged="OnInputFileChanged" 
+                                                        Validation="@(new Func<IReadOnlyList<IBrowserFile>, string>(ValidationPass))"
+                                                        Hidden="false" 
                                                         Class="flex-1" 
                                                         InputClass="absolute mud-width-full mud-height-full overflow-hidden z-20" 
                                                         InputStyle="opacity:0"
@@ -290,8 +321,9 @@
                                 </MudPaper>
                                 <MudPaper Elevation=0 Class="d-flex">
                                     <MudStack Style="width: 100%">
-                                        <MudFileUpload T="IReadOnlyList<IBrowserFile>" OnFilesChanged="OnInputFileChangedSnils" Hidden="false" 
+                                        <MudFileUpload @ref="snilsValidation" T="IReadOnlyList<IBrowserFile>" OnFilesChanged="OnInputFileChangedSnils" Hidden="false" 
                                                         Class="flex-1" 
+                                                        Validation="@(new Func<IReadOnlyList<IBrowserFile>, string>(ValidationSnils))"
                                                         InputClass="absolute mud-width-full mud-height-full overflow-hidden z-20" 
                                                         InputStyle="opacity:0"
                                                     @ondragenter="@SetDragClassSnils" @ondragleave="@ClearDragClassSnils" @ondragend="@ClearDragClassSnils">
@@ -327,8 +359,9 @@
                                 </MudPaper>
                                 <MudPaper Elevation=0 Class="d-flex">
                                     <MudStack Style="width: 100%">
-                                        <MudFileUpload T="IReadOnlyList<IBrowserFile>" OnFilesChanged="OnInputFileChangedClaim" Hidden="false" 
+                                        <MudFileUpload @ref="claimValidation" T="IReadOnlyList<IBrowserFile>" OnFilesChanged="OnInputFileChangedClaim" Hidden="false" 
                                                         Class="flex-1" 
+                                                        Validation="@(new Func<IReadOnlyList<IBrowserFile>, string>(ValidationClaim))"
                                                         InputClass="absolute mud-width-full mud-height-full overflow-hidden z-20" 
                                                         InputStyle="opacity:0"
                                                     @ondragenter="@SetDragClassClaim" @ondragleave="@ClearDragClassClaim" @ondragend="@ClearDragClassClaim">
@@ -352,44 +385,47 @@
                                     </MudStack>
                                 </MudPaper>
                             </MudPaper>
-                            <MudPaper Elevation=0 Width=48% Class="d-flex flex-column">
-                                <MudPaper Elevation=0 Class="d-flex justify-space-between align-center">
-                                    <MudText>Доверенность</MudText>
-                                    <MudFab Class="d-flex z-30" OnClick="@DoverPrint" Color="Color.Primary" StartIcon="@Icons.Filled.Print"  Size="Size.Small" />
+                            @if (_request.IsJuridical)
+                            {
+                                <MudPaper Elevation=0 Width=48% Class="d-flex flex-column">
+                                    <MudPaper Elevation=0 Class="d-flex justify-space-between align-center">
+                                        <MudText>Доверенность</MudText>
+                                        <MudFab Class="d-flex z-30" OnClick="@DoverPrint" Color="Color.Primary" StartIcon="@Icons.Filled.Print"  Size="Size.Small" />
+                                    </MudPaper>
+                                    <MudPaper Elevation=0 Class="d-flex">
+                                        <MudStack Style="width: 100%">
+                                            <MudFileUpload @ref="dovValidation" T="IReadOnlyList<IBrowserFile>" OnFilesChanged="OnInputFileChangedDov" Hidden="false" 
+                                                            Class="flex-1" 
+                                                            Validation="@(new Func<IReadOnlyList<IBrowserFile>, string>(ValidationDov))"
+                                                            InputClass="absolute mud-width-full mud-height-full overflow-hidden z-20" 
+                                                            InputStyle="opacity:0"
+                                                        @ondragenter="@SetDragClassDov" @ondragleave="@ClearDragClassDov" @ondragend="@ClearDragClassDov">
+                                                <ButtonTemplate>
+                                                    <MudPaper Elevation=0  MinHeight=130px Outlined="true" Class="@DragClass">
+                                                        <MudText Class="z-30" >Загрузить файл</MudText>
+                                                        @foreach (var file in fileNamesDov)
+                                                        {   <MudPaper  Elevation=0 Class="d-flex gap-4 mt-4" >
+                                                                <MudPaper Elevation=0 MinWidth=70%>
+                                                                    <MudChip Color="Color.Dark" Text="@file" />
+                                                                </MudPaper>
+                                                                <MudPaper Elevation=0 MinWidth=20%>
+                                                                    <MudFab Class="d-flex z-30" OnClick="@ClearDov" Color="Color.Primary" StartIcon="@Icons.Filled.DeleteOutline"  Size="Size.Small" />
+                                                                </MudPaper>
+                                                            </MudPaper>  
+                                                        }
+                                                    </MudPaper>
+                                                </ButtonTemplate>
+                                            </MudFileUpload>
+                                            
+                                        </MudStack>
+                                    </MudPaper>
                                 </MudPaper>
-                                <MudPaper Elevation=0 Class="d-flex">
-                                    <MudStack Style="width: 100%">
-                                        <MudFileUpload T="IReadOnlyList<IBrowserFile>" OnFilesChanged="OnInputFileChangedDov" Hidden="false" 
-                                                        Class="flex-1" 
-                                                        InputClass="absolute mud-width-full mud-height-full overflow-hidden z-20" 
-                                                        InputStyle="opacity:0"
-                                                    @ondragenter="@SetDragClassDov" @ondragleave="@ClearDragClassDov" @ondragend="@ClearDragClassDov">
-                                            <ButtonTemplate>
-                                                <MudPaper Elevation=0  MinHeight=130px Outlined="true" Class="@DragClass">
-                                                    <MudText Class="z-30" >Загрузить файл</MudText>
-                                                    @foreach (var file in fileNamesDov)
-                                                    {   <MudPaper  Elevation=0 Class="d-flex gap-4 mt-4" >
-                                                            <MudPaper Elevation=0 MinWidth=70%>
-                                                                <MudChip Color="Color.Dark" Text="@file" />
-                                                            </MudPaper>
-                                                            <MudPaper Elevation=0 MinWidth=20%>
-                                                                <MudFab Class="d-flex z-30" OnClick="@ClearDov" Color="Color.Primary" StartIcon="@Icons.Filled.DeleteOutline"  Size="Size.Small" />
-                                                            </MudPaper>
-                                                        </MudPaper>  
-                                                    }
-                                                </MudPaper>
-                                            </ButtonTemplate>
-                                        </MudFileUpload>
-                                        
-                                    </MudStack>
-                                </MudPaper>
-                            </MudPaper>
+                            }
                             
                         </MudItem>
                     </MudGrid>
-                    
-                    
                 </MudCardContent>
+            </MudForm>
             </MudPaper>
     </MudPaper>
     

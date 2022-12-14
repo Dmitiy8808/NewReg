@@ -94,7 +94,7 @@ namespace Entities.DTOs
 
         public bool IsJuridical { get; set; }
 
-        //  public int? StepId { get; set; }
+        public int StepId { get; set; }
 
     }
 }

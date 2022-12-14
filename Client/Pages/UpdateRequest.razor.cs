@@ -14,7 +14,14 @@ namespace Reg.Client.Pages
 {
     public partial class UpdateRequest 
     {
-        
+        MudForm form; 
+        MudForm formdoc;
+        bool dataSuccess;
+        bool docSuccess;
+        MudFileUpload<IReadOnlyList<IBrowserFile>> passportValidation; 
+        MudFileUpload<IReadOnlyList<IBrowserFile>> snilsValidation; 
+        MudFileUpload<IReadOnlyList<IBrowserFile>> claimValidation; 
+        MudFileUpload<IReadOnlyList<IBrowserFile>> dovValidation;
         public EventCallback<RequestFileReadDto> OnChange { get; set; }
         public DateTime? PassportDate { get; set; }
         public DateTime? BirthDate { get; set; }
@@ -25,6 +32,8 @@ namespace Reg.Client.Pages
         private RequestAbonentReadDto _request;
         [Inject]
         ISnackbar Snackbar { get; set; }
+        [Inject]
+        IDialogService DialogService { get; set; }
         [Inject]
         public IJSRuntime JSRuntime { get; set; }
         [Inject]
@@ -144,12 +153,59 @@ namespace Reg.Client.Pages
 
         private async Task GenerateRequest()
         {
-            var mapReqAbon = Mapper.Map<RequestAbonent>(_request);
+            await form.Validate();
+            await formdoc.Validate();
+            if (dataSuccess & dataSuccess)
+            {
+                await Update();
+                
+                Console.WriteLine("Сообщение после валидации ");
+                await Confirm();
+            }
+    
+
+            // var mapReqAbon = Mapper.Map<RequestAbonent>(_request);
             
-            await WebSocketService.GenerateRequest(mapReqAbon);
-            Snackbar.Add("Запрос успешно сформирован!", Severity.Success);
+            // await WebSocketService.GenerateRequest(mapReqAbon);
+            // Snackbar.Add("Запрос успешно сформирован!", Severity.Success);
            
         }
+
+        private string ValidationPass(IReadOnlyList<IBrowserFile> fileList)
+        {
+            if (!fileNames.Any())
+            {
+               return "Загрузите документ"; 
+            }
+            return null;
+        } 
+
+        private string ValidationSnils(IReadOnlyList<IBrowserFile> fileList)
+        {
+            if (!fileNamesSnils.Any())
+            {
+               return "Загрузите документ"; 
+            }
+            return null;
+        }  
+
+        private string ValidationClaim(IReadOnlyList<IBrowserFile> fileList)
+        {
+            if (!fileNamesClaim.Any())
+            {
+               return "Загрузите документ"; 
+            }
+            return null;
+        }   
+
+        private string ValidationDov(IReadOnlyList<IBrowserFile> fileList)
+        {
+            if (!fileNamesDov.Any())
+            {
+               return "Загрузите документ"; 
+            }
+            return null;
+        }  
 
         private async Task<IEnumerable<Country>> SearchCountry(string value)
         {
@@ -196,6 +252,7 @@ namespace Reg.Client.Pages
             ClearDragClassSnils();
             var file = e.File;
             fileNamesSnils.Add(file.Name);
+            snilsValidation.Validate();
             using (var ms = file.OpenReadStream(file.Size))
             {
                 var content = new MultipartFormDataContent();
@@ -238,6 +295,7 @@ namespace Reg.Client.Pages
             ClearDragClass();
             var file = e.File;
             fileNames.Add(file.Name);
+            passportValidation.Validate();
             using (var ms = file.OpenReadStream(file.Size))
             {
                 var content = new MultipartFormDataContent();
@@ -280,6 +338,7 @@ namespace Reg.Client.Pages
             ClearDragClassDov();
             var file = e.File;
             fileNamesDov.Add(file.Name);
+            dovValidation.Validate();
             using (var ms = file.OpenReadStream(file.Size))
             {
                 var content = new MultipartFormDataContent();
@@ -322,6 +381,7 @@ namespace Reg.Client.Pages
             ClearDragClassClaim();
             var file = e.File;
             fileNamesClaim.Add(file.Name);
+            claimValidation.Validate();
             using (var ms = file.OpenReadStream(file.Size))
             {
                 var content = new MultipartFormDataContent();
@@ -369,6 +429,25 @@ namespace Reg.Client.Pages
             var fileName = $"Доверенность {_request.PersonLastName} {_request.PersonFirstName} {_request.PersonPatronymic}.pdf";
             await JSRuntime.InvokeAsync<object>("saveAsFile", fileName, Convert.ToBase64String(fileBytes));
         }
+
+        private async Task Confirm()
+        {
+            var parameters = new DialogParameters();
+            parameters.Add("ContentText", "Заявление будет закрыто для редактирования и получит статус «Готово к формированию контейнера» Больше не будет возможности внести изменения в заявление");
+            parameters.Add("ButtonText", "Отправить");
+            parameters.Add("Color", Color.Primary);
+
+            var dialog = DialogService.Show<ConfirmDialog>("Подготовка к формированию контейнера", parameters);
+            var result = await dialog.Result;
+            if (!result.Cancelled)
+            {
+                Console.WriteLine("Подтверждение диалога");
+                _request.StepId = 2;
+                await Update();
+                NavigationManager.NavigateTo("/generateRequestConfirm");
+            }
+        }
+
         
     }
 }

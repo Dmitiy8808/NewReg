@@ -23,7 +23,7 @@ namespace Entities.Models
         public string? ContainerName { get; set; }
         public string? OrganisationUnit { get; set; }
         public bool IsJuridical { get; set; }
-        public int StepId { get; set; } = 1;
+        public int StepId { get; set; } 
         public DateTime CreationTime { get; set; } = DateTime.UtcNow;
 
     }
