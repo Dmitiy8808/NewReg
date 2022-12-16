@@ -9,7 +9,7 @@ namespace Reg.Client.Pages
 
         public void ToRequestList()
         {
-            NavigationManager.NavigateTo("/requests");
+            NavigationManager.NavigateTo("/requestsDraft");
         }
 
         public void CreateRequest()

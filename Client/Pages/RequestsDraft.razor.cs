@@ -7,7 +7,7 @@ using Client.Features;
 
 namespace Reg.Client.Pages
 {
-    public partial class Requests
+    public partial class RequestsDraft
     {
         [Inject]
 		public NavigationManager NavigationManager { get; set; }
@@ -24,12 +24,33 @@ namespace Reg.Client.Pages
         private readonly int[] _pageSizeOption = { 15, 25, 50};
         string state = string.Empty;
 
+        Dictionary<int, string> status = new Dictionary<int, string>()
+        {
+            [1] = "Черновик",
+
+            [2] = "Подготовлено",
+
+            [3] = "Подготовлено",
+
+            [4] = "Генерация запроса",
+
+            [5] = "Ожидание сертификата",
+
+            [6] = "Установка сертификата",
+
+            [7] = "Выполнено",
+        };
+
         private async Task<TableData<RequestAbonent>> GetServerData(TableState state)
 		{
 			_requestAbonentParameters.PageSize = state.PageSize;
 			_requestAbonentParameters.PageNumber = state.Page + 1;
 
-			_response = await RequestRepo.GetRequestAbonents(_requestAbonentParameters);
+            _requestAbonentParameters.OrderBy = state.SortDirection == SortDirection.Descending ?
+            state.SortLabel + " desc" :
+            state.SortLabel;
+
+			_response = await RequestRepo.GetDraftRequestAbonents(_requestAbonentParameters);
 
             
 
@@ -47,8 +68,16 @@ namespace Reg.Client.Pages
 
         private async void Delete(Guid id)
 		{
-			await RequestRepo.DeleteRequestAbonent(id);
-
+            var parameters = new DialogParameters();
+            parameters.Add("ContentText", "Вы действительно хотите удалить заявление?");
+            parameters.Add("ButtonText", "Удалить");
+            parameters.Add("Color", Color.Warning);
+            var dialog = DialogService.Show<ConfirmDeleteDialog>("Подтверждение", parameters);
+            var result = await dialog.Result;
+            if (!result.Cancelled)
+            {
+                await RequestRepo.DeleteRequestAbonent(id);
+            }
             if (_requestAbonentParameters.PageNumber > 1 && RequestAbonentList.Count == 1) //разобраться почему не работает Приудалении последнего запроса номер страницы должен изменяться на единицу
             {
                 _requestAbonentParameters.PageNumber--;
@@ -62,18 +91,12 @@ namespace Reg.Client.Pages
             NavigationManager.NavigateTo($"/request/{p.Item.Id}");
         }
 
-        private async void OnButtonClicked()
+        private void OnSearch(string searchTerm)
         {
-            bool? result = await DialogService.ShowMessageBox(
-                "Предупреждение", 
-                "Вы действительно хотите удалить заявление?", 
-                yesText:"Delete!", cancelText:"Cancel");
-            state= result==null ? "Cancelled" : "Deleted!";
-            if (state == "Deleted!")
-            {
-                
-            }
-            StateHasChanged();
+            _requestAbonentParameters.SearchTerm = searchTerm;
+            _table.ReloadServerData();
         }
+
+  
     }
 }

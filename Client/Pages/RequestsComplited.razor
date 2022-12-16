@@ -1,0 +1,123 @@
+@page "/requests"
+@using Entities.Models
+
+<MudTable  ServerData="@(new Func<TableState, Task<TableData<RequestAbonent>>>(GetServerData))"
+            Hover="true" Breakpoint="Breakpoint.Sm" RightAlignSmall="true" 
+            @ref="_table" RowsPerPage="15"
+            FixedFooter="true" FixedHeader="true" Height="80vh" 
+            T="RequestAbonent" 
+            OnRowClick="@RowClicked">
+        @* <ToolBarContent>
+            <MudSpacer/>
+             <MudTextField OnDebounceIntervalElapsed="OnSearch" Placeholder="Search" Adornment="Adornment.Start" 
+            AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" 
+            Class="mt-0" T="string" DebounceInterval="500"></MudTextField> 
+        </ToolBarContent> *@
+        <ToolBarContent>
+
+
+            
+                <MudTextField Style="width:30%; min-width:350px; margin-top:20px; z-index:60" T="string" 
+                        OnDebounceIntervalElapsed="OnSearch"
+                        DebounceInterval="500"
+                        Placeholder="Поиск"
+                        Variant="Variant.Outlined" 
+                        Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search"
+                        IconSize="Size.Medium" Class="mt-0">
+                </MudTextField>
+
+
+        
+        
+        </ToolBarContent>
+        
+        <HeaderContent>
+            <MudTh>Владелец</MudTh>
+            <MudTh>Организация</MudTh>
+            <MudTh><MudTableSortLabel SortLabel="creationtime" T="RequestAbonent">Дата</MudTableSortLabel></MudTh>
+            <MudTh>Статус</MudTh>
+            <MudTh></MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd Style="width:30%;" DataLabel="Владелец">
+                <MudPaper Style="background-color: transparent !important;" Elevation=0 Class="d-flex flex-column">
+                        <MudPaper Class="d-flex"  Style="background-color: transparent !important;" Elevation=0>
+                            @if (@context.Person.LastName != null)
+                            {
+                                <MudPaper Style="background-color: transparent !important;" Elevation=0 >@context.Person.LastName</MudPaper>
+                            }
+                            @if (@context.Person.FirstName != null)
+                            {
+                                <MudPaper Style="background-color: transparent !important;" Elevation=0 Class="ml-1">@context.Person.FirstName[0]</MudPaper>
+                                <MudPaper Style="background-color: transparent !important;" Elevation=0>.</MudPaper>
+                            }
+                             @if (@context.Person.Patronymic != null)
+                            {
+                                <MudPaper Style="background-color: transparent !important;" Elevation=0 Class="ml-1">@context.Person.Patronymic[0]</MudPaper>
+                                <MudPaper Style="background-color: transparent !important;" Elevation=0>.</MudPaper>
+                            }
+
+                        </MudPaper> 
+                        <MudPaper Style="background-color: transparent !important;" Elevation=0>
+                                Email: @context.Person.Email
+                        </MudPaper>
+                </MudPaper>
+            </MudTd>
+            <MudTd Style="width:30%;" DataLabel="Организация">
+                @if (@context.IsJuridical)
+                {
+                    <MudPaper Style="background-color: transparent !important;" Elevation=0 Class="d-flex flex-column">
+                        <MudPaper  Style="background-color: transparent !important;" Elevation=0>
+                                @context.ShortName
+                        </MudPaper> 
+                        <MudPaper Style="background-color: transparent !important;" Elevation=0>
+                                ИНН: @context.Inn
+                        </MudPaper>
+                    </MudPaper>
+                }
+                else if(!@context.IsJuridical)
+                {
+                    <MudPaper  Style="background-color: transparent !important;" Elevation=0 Class="d-flex flex-column">
+                        <MudPaper Style="background-color: transparent !important;" Elevation=0>
+                                Физическое лицо
+                        </MudPaper> 
+                        @if (@context.Person.Inn != null)
+                        {
+                            <MudPaper Style="background-color: transparent !important;" Elevation=0>
+                                ИНН: @context.Person.Inn
+                            </MudPaper>
+                        }
+                        
+                    </MudPaper>
+                }
+                
+            </MudTd>
+            <MudTd Style="width:15%;" DataLabel="Дата">@context.CreationTime.ToLocalTime().ToString("dd.MM.yyyy")</MudTd>
+            <MudTd Style="width:15%;" DataLabel="Статус">
+                @if (@context.StepId == 2)
+                {
+                    <MudChip Color="Color.Warning">Подготовлено</MudChip>
+                }
+                else if (@context.StepId == 3)
+                {
+                    <MudChip Color="Color.Info">Генерация запроса</MudChip>
+                }
+                else if (@context.StepId == 3)
+                {
+                    <MudChip Color="Color.Tertiary">Ожидание сертификата</MudChip>
+                }
+                else if (@context.StepId == 1)
+                {
+                    <MudChip Color="Color.Default">Черновик</MudChip>
+                }
+            </MudTd>
+            <MudTd Style="width:10%;" DataLabel="">
+                @* <MudFab @onclick="() => Delete(context.Id)"  Icon="@Icons.Filled.DeleteOutline" Size="Size.Small" IconSize="Size.Medium" /> *@
+            </MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager PageSizeOptions="@_pageSizeOption" RowsPerPageString="Количество" /> 
+        </PagerContent>
+    </MudTable>
+
+

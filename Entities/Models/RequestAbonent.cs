@@ -17,7 +17,7 @@ namespace Entities.Models
         public AddressInfo? LocationAddress { get; set; }
         public PersonRequestInfo? Person { get; set; }
         public Leader? Leader { get; set; }
-        public List<RequestFile> Files { get; set; } = new List<RequestFile>();
+        public List<RequestFile>? Files { get; set; } = new List<RequestFile>();
         public string? CertRequest { get; set; }
         public string? CertificationCenter { get; set; }
         public string? ContainerName { get; set; }

@@ -11,6 +11,8 @@ namespace Client.Profiles
             // Source --> Destination
             CreateMap<RequestAbonentReadDto, RequestAbonentUpdateDto>().ReverseMap();
             CreateMap<RequestAbonent, RequestAbonentReadDto>().ReverseMap();
+            // CreateMap<RequestAbonentReadDto, RequestAbonent>()
+            //     .ForMember(x => x.Files, opt => opt.Ignore()).ReverseMap();
             CreateMap<RequestAbonentReadDto, RequestAbonentCreateDto>().ReverseMap();
         }
         

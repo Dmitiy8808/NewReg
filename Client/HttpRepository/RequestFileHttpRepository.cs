@@ -5,6 +5,7 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Entities.DTOs;
 using Entities.FileFeatures;
+using Entities.Models;
 using Microsoft.AspNetCore.WebUtilities;
 
 namespace Client.HttpRepository
@@ -21,6 +22,13 @@ namespace Client.HttpRepository
         public async Task DeleteRequestFile(Guid id)
         {
             await _client.DeleteAsync($"file/{id}");
+        }
+
+        public async Task<byte[]> GetRequestFile(Guid id)
+        {
+            var request = await _client.GetFromJsonAsync<RequestFile>($"file/{id}");
+            
+            return request.Data;
         }
 
         public async Task<List<RequestFileReadDto>> GetRequestFiles(Guid id)

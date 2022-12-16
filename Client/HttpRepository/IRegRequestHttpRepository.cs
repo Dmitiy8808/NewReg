@@ -9,6 +9,7 @@ namespace Client.HttpRepository
     {
         Task<CertRequestDataDto> GetCertRequestData(RequestAbonent clientAbonent);
         Task<PagingResponse<RequestAbonent>> GetRequestAbonents(RequestAbonentParameters requestAbonentParameters);
+        Task<PagingResponse<RequestAbonent>> GetDraftRequestAbonents(RequestAbonentParameters requestAbonentParameters);
         Task<RequestAbonentReadDto> GetRequestAbonent(Guid id);
         Task CreateRequestAbonent(RequestAbonentCreateDto requestAbonentCreateDto);
         Task CreateRequestAbonents(RequestAbonentListDto requestAbonentListDto);

@@ -59,7 +59,10 @@ namespace Server.Services
             StringHelper stringHelper = new StringHelper();
             refCertStruct.Surname = stringHelper.RemoveCertSpace(clientAbonent.Person.LastName);
             refCertStruct.Country = QualifiedCertificateVolatile.Country;
-            refCertStruct.State = string.Format("{0} {1}", (object) region.RegionCode, (object) region.RegionName);
+            if (region != null)
+            {
+                 refCertStruct.State = string.Format("{0} {1}", (object) region.RegionCode, (object) region.RegionName);
+            }
             refCertStruct.Street = str1;
             refCertStruct.Snils = stringHelper.RemoveSpaces(stringHelper.RemoveDashs(clientAbonent.Person.Snils));
             refCertStruct.Locality = str2;

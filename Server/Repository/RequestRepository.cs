@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Reg.Server.Context;
 using Server.Paging;
 using Entities.RequestFeatures;
+using Server.Repository.RepositoryEtensions;
 
 namespace Server.Repository
 {
@@ -36,7 +37,26 @@ namespace Server.Repository
 
         public async Task<PagedList<RequestAbonent>> GetRequests(RequestAbonentParameters requestAbonentParameters)
         {
-           var requests =  await _context.Requests.ToListAsync();
+           var requests =  await _context.Requests
+                .Include(c => c.Person)
+                .Where(s => s.StepId != 1)
+                .Search(requestAbonentParameters.SearchTerm)
+				.Sort(requestAbonentParameters.OrderBy)
+                .ToListAsync();
+
+           return PagedList<RequestAbonent>
+                .ToPagedList(requests, requestAbonentParameters.PageNumber, requestAbonentParameters.PageSize);
+
+        }
+
+        public async Task<PagedList<RequestAbonent>> GetDraftRequests(RequestAbonentParameters requestAbonentParameters)
+        {
+           var requests =  await _context.Requests
+                .Include(c => c.Person)
+                .Where(s => s.StepId == 1)
+                .Search(requestAbonentParameters.SearchTerm)
+                .Sort(requestAbonentParameters.OrderBy)
+                .ToListAsync();
 
            return PagedList<RequestAbonent>
                 .ToPagedList(requests, requestAbonentParameters.PageNumber, requestAbonentParameters.PageSize);

@@ -86,6 +86,7 @@ namespace Entities.DTOs
         public string? ContainerName { get; set; }
 
         public string? OrganisationUnit { get; set; }
+        public int StepId { get; set; } 
         public bool IsJuridical { get; set; }
 
     }

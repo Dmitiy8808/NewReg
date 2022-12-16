@@ -155,12 +155,16 @@ namespace Reg.Client.Pages
         {
             await form.Validate();
             await formdoc.Validate();
-            if (dataSuccess & dataSuccess)
+            if (dataSuccess & docSuccess)
             {
                 await Update();
                 
                 Console.WriteLine("Сообщение после валидации ");
                 await Confirm();
+            }
+            else if (!docSuccess)
+            {
+                Snackbar.Add("Загрузите документы", Severity.Error);
             }
     
 
@@ -252,7 +256,7 @@ namespace Reg.Client.Pages
             ClearDragClassSnils();
             var file = e.File;
             fileNamesSnils.Add(file.Name);
-            snilsValidation.Validate();
+            await snilsValidation.Validate();
             using (var ms = file.OpenReadStream(file.Size))
             {
                 var content = new MultipartFormDataContent();
@@ -295,7 +299,7 @@ namespace Reg.Client.Pages
             ClearDragClass();
             var file = e.File;
             fileNames.Add(file.Name);
-            passportValidation.Validate();
+            await passportValidation.Validate();
             using (var ms = file.OpenReadStream(file.Size))
             {
                 var content = new MultipartFormDataContent();
@@ -338,7 +342,7 @@ namespace Reg.Client.Pages
             ClearDragClassDov();
             var file = e.File;
             fileNamesDov.Add(file.Name);
-            dovValidation.Validate();
+            await dovValidation.Validate();
             using (var ms = file.OpenReadStream(file.Size))
             {
                 var content = new MultipartFormDataContent();
@@ -381,7 +385,7 @@ namespace Reg.Client.Pages
             ClearDragClassClaim();
             var file = e.File;
             fileNamesClaim.Add(file.Name);
-            claimValidation.Validate();
+            await claimValidation.Validate();
             using (var ms = file.OpenReadStream(file.Size))
             {
                 var content = new MultipartFormDataContent();
@@ -418,22 +422,35 @@ namespace Reg.Client.Pages
 
         protected async Task ClaimPrint() 
         {
-            var fileBytes = await PdfGeneratorHttpRepo.GenerateClaim(Mapper.Map<RequestAbonentUpdateDto>(_request)); 
-            var fileName = $"Заявление {_request.PersonLastName} {_request.PersonFirstName} {_request.PersonPatronymic}.pdf";
-            await JSRuntime.InvokeAsync<object>("saveAsFile", fileName, Convert.ToBase64String(fileBytes));
+            await form.Validate();
+            
+            if (dataSuccess)
+            {
+                var fileBytes = await PdfGeneratorHttpRepo.GenerateClaim(Mapper.Map<RequestAbonentUpdateDto>(_request)); 
+                var fileName = $"Заявление {_request.PersonLastName} {_request.PersonFirstName} {_request.PersonPatronymic}.pdf";
+                await JSRuntime.InvokeAsync<object>("saveAsFile", fileName, Convert.ToBase64String(fileBytes));
+                await Update();
+            }
+            
         }
 
         protected async Task DoverPrint() 
         {
-            var fileBytes = await PdfGeneratorHttpRepo.GenerateDover(Mapper.Map<RequestAbonentUpdateDto>(_request)); 
-            var fileName = $"Доверенность {_request.PersonLastName} {_request.PersonFirstName} {_request.PersonPatronymic}.pdf";
-            await JSRuntime.InvokeAsync<object>("saveAsFile", fileName, Convert.ToBase64String(fileBytes));
+            await form.Validate();
+            
+            if (dataSuccess)
+            {
+                var fileBytes = await PdfGeneratorHttpRepo.GenerateDover(Mapper.Map<RequestAbonentUpdateDto>(_request)); 
+                var fileName = $"Доверенность {_request.PersonLastName} {_request.PersonFirstName} {_request.PersonPatronymic}.pdf";
+                await JSRuntime.InvokeAsync<object>("saveAsFile", fileName, Convert.ToBase64String(fileBytes));
+                await Update();
+            }
         }
 
         private async Task Confirm()
         {
             var parameters = new DialogParameters();
-            parameters.Add("ContentText", "Заявление будет закрыто для редактирования и получит статус «Готово к формированию контейнера» Больше не будет возможности внести изменения в заявление");
+            parameters.Add("ContentText", "Заявление будет закрыто для редактирования и получит статус «Подготовлено» Больше не будет возможности внести изменения в заявление. Нажимая кнопку \"Отправить\" Вы подтверждаете идентификацию личности лица указанного в заявке");
             parameters.Add("ButtonText", "Отправить");
             parameters.Add("Color", Color.Primary);
 

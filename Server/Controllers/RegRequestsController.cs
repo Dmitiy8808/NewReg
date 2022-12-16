@@ -79,6 +79,17 @@ namespace Server.Controllers
             return NotFound();
         }
 
+        [Route("DraftRequestAbonent")]
+        [HttpGet]
+        public async Task<IActionResult> GetDraftRegRequestAbonents([FromQuery] RequestAbonentParameters requestAbonentParameters)
+        {
+            var requestAbonents = await _requestRepository.GetDraftRequests(requestAbonentParameters);
+
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(requestAbonents.MetaData));
+
+            return Ok(requestAbonents);
+        }
+
         [Route("RequestAbonent")]
         [HttpGet]
         public async Task<IActionResult> GetRegRequestAbonents([FromQuery] RequestAbonentParameters requestAbonentParameters)

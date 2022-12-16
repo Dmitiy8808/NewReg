@@ -12,8 +12,16 @@ namespace Reg.Client.Pages
 {
     public partial class CreateRequest
     {
+        MudForm form; 
+        bool dataSuccess;
+        MudForm formUl; 
+        bool dataSuccessUl;
+        MudForm formLead; 
+        bool dataSuccessLead;
         [Inject]
         NavigationManager NavigationManager { get; set; }
+        [Inject]
+        ISnackbar Snackbar { get; set; }
         private RequestAbonentReadDto _request = new RequestAbonentReadDto();
         public string address { get; set; } = string.Empty;
         public string regionText { get; set; } = string.Empty;
@@ -38,6 +46,7 @@ namespace Reg.Client.Pages
             _request.PersonCryptoProviderCode = "80";
             _request.PersonCryptoProviderId = 11;
             _request.PersonCryptoProviderName = "Crypto-Pro GOST R 34.10-2012 Cryptographic Service Provider";
+            _request.StepId = 1;
         }
 
         private void OnActivePanelIndexChanged(int tabIndex)
@@ -406,18 +415,23 @@ namespace Reg.Client.Pages
 
         private List<PersonItem> _persons = new List<PersonItem>();
         
-        void AddPerson()
+        private async Task AddPerson()
         {
-            _requestList.AbonentList.Add(Mapper.Map<RequestAbonentCreateDto>(_request));
 
-            _persons.Add(new PersonItem
-            (
-                _request.PersonEmail,
-                _request.PersonLastName
-            ));
+            await form.Validate();
+            if (dataSuccess)
+            {
+                _requestList.AbonentList.Add(Mapper.Map<RequestAbonentCreateDto>(_request));
 
-            _request.PersonEmail = string.Empty;
-            _request.PersonLastName = string.Empty;
+                _persons.Add(new PersonItem
+                (
+                    _request.PersonEmail,
+                    _request.PersonLastName
+                ));
+
+                _request.PersonEmail = string.Empty;
+                _request.PersonLastName = string.Empty;
+            }
 
         }
 
@@ -429,8 +443,21 @@ namespace Reg.Client.Pages
 
         async Task SendRequest()
         {
-            await RegRequestRepo.CreateRequestAbonents(_requestList);
-            NavigationManager.NavigateTo("/createRequestConfirm");
+            await formUl.Validate();
+            await formLead.Validate();
+            if (!_persons.Any())
+            {
+                Snackbar.Add("Добавьте владельцев ЭП", Severity.Error);
+            }
+            
+        
+            
+            if (dataSuccessUl & dataSuccessLead & _persons.Any())
+            {
+                await RegRequestRepo.CreateRequestAbonents(_requestList);
+                NavigationManager.NavigateTo("/createRequestConfirm");
+            }
+           
         }
 
         

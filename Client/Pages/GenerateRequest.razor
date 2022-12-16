@@ -8,7 +8,7 @@
     }
 </style>
 
-@page "/request/{Id:guid}"
+@page "/requestGenerate/{Id:guid}"
 
 @using Entities.Models;
 @if(_request != null)
@@ -30,10 +30,10 @@
                             Color="Color.Primary">Сохранить
                         </MudButton>
                         <MudButton 
-                            OnClick="@GenerateRequest" 
+                            OnClick="@GenRequest" 
                             EndIcon="@Icons.Material.Filled.Send" 
                             Variant="Variant.Filled" 
-                            Color="Color.Primary">Отправить
+                            Color="Color.Primary">Генерация
                         </MudButton> 
                     </MudPaper>
                     
@@ -41,25 +41,30 @@
                 
                     @if (_request.IsJuridical)
                     {
-                        <MudPaper Elevation=0 Class="d-flex  mud-width-full justify-space-between align-center">
-                            <MudText Class="d-flex pl-4  " >Организация: @_request.ShortName</MudText>  
+                        <MudPaper Elevation=0 Class="d-flex  mud-width-full justify-start align-center">
+                            <MudText Class="d-flex pl-4  " >Организация: </MudText> 
+                            <MudChip Class="d-flex" Disabled="true" Color="Color.Default">@_request.ShortName</MudChip> 
                         </MudPaper>
-                        <MudPaper Elevation=0 Class="d-flex  mud-width-full justify-space-between align-center">
-                            <MudText Class="d-flex pl-4 " >ИНН: @_request.Inn</MudText>
+                        <MudPaper Elevation=0 Class="d-flex  mud-width-full justify-start align-center">
+                            <MudText Class="d-flex pl-4 " >ИНН:</MudText>
+                            <MudChip Class="d-flex" Disabled="true" Color="Color.Default">@_request.Inn</MudChip>
                         </MudPaper>
                     }
                     else if (!_request.IsJuridical)
                     {
-                        <MudPaper Elevation=0 Class="d-flex  mud-width-full justify-space-between align-center">
-                            <MudText Class="d-flex pl-4  " >Физическое лицо: @_request.PersonLastName @_request.PersonFirstName @_request.PersonPatronymic</MudText>  
+                        <MudPaper Elevation=0 Class="d-flex  mud-width-full justify-start align-center">
+                            <MudText Class="d-flex pl-4  " >Физическое лицо:</MudText> 
+                            <MudChip Class="d-flex" Disabled="true" Color="Color.Default"> @_request.PersonLastName @_request.PersonFirstName @_request.PersonPatronymic</MudChip> 
                         </MudPaper>
-                        <MudPaper Elevation=0 Class="d-flex  mud-width-full justify-space-between align-center">
-                            <MudText Class="d-flex pl-4 " >Email: @_request.PersonEmail</MudText>
+                        <MudPaper Elevation=0 Class="d-flex  mud-width-full justify-start align-center">
+                            <MudText Class="d-flex pl-4 " >Email: </MudText>
+                            <MudChip Class="d-flex" Disabled="true" Color="Color.Default">@_request.PersonEmail</MudChip>
                         </MudPaper>
                     }
                     
-                    <MudPaper Elevation=0 Class="d-flex  mud-width-full justify-space-between align-center">
-                        <MudText Class="d-flex pl-4  mb-4 " >Криптопровайдер: @providerRuName</MudText>
+                    <MudPaper Elevation=0 Class="d-flex  mud-width-full justify-start align-center">
+                        <MudText Class="d-flex pl-4  mb-4 " >Криптопровайдер: </MudText>
+                        <MudChip Class="d-flex mb-4" Disabled="true" Color="Color.Default">@providerRuName</MudChip>
                     </MudPaper>
                 </MudPaper>
             <MudPaper 
@@ -72,6 +77,7 @@
                         <MudGrid>
                             <MudItem xs="12" Class="d-flex align-stretch gap-4" >
                                 <MudTextField 
+                                    Disabled="true"
                                     RequiredError="Поле на заполнено" Required=true
                                     @bind-Value="_request.PersonLastName"  
                                     Label="Фамилия" 
@@ -79,12 +85,14 @@
                                     Margin="Margin.Normal" >
                                 </MudTextField>
                                 <MudTextField 
+                                    Disabled="true"
                                     RequiredError="Поле на заполнено" Required=true 
                                     @bind-Value="_request.PersonFirstName" 
                                     Label="Имя" Variant="Variant.Outlined" 
                                     Margin="Margin.Normal">
                                 </MudTextField>
-                                <MudTextField 
+                                <MudTextField
+                                     Disabled="true"
                                     @bind-Value="_request.PersonPatronymic" 
                                     Label="Отчество" Variant="Variant.Outlined" 
                                     Margin="Margin.Normal">
@@ -97,28 +105,29 @@
                                     <MudAutocomplete 
                                         Variant="Variant.Outlined"
                                         RequiredError="Поле на заполнено" Required=true
+                                        Disabled="true"
                                         T="Country" 
                                         Label="Гражданство"
                                         Clearable=true 
                                         Value="CyrrentCountry" 
                                         ValueChanged="@CountryChanged"
-                                        SearchFunc="@SearchCountry" 
                                         ToStringFunc="@(state => state.CountryName)">
                                     </MudAutocomplete>
                                 </MudPaper>
                                 
                                 <MudPaper MaxWidth=50% Elevation=0  Class="d-flex align-center ">
-                                    <MudText Class="pr-4">Пол:</MudText>
+                                    <MudText  Class="pr-4">Пол:</MudText>
                                     <MudForm Class="d-flex align-center">
                                         <MudRadioGroup 
                                             @bind-SelectedOption="_request.PersonGender"
+                                            
                                             Class="d-flex" 
                                             T="int?"
                                             Required=true
                                             RequiredError="Укажите пол"
                                             >
-                                            <MudRadio T="int?" Option="@(1)" Color="Color.Primary">Муж</MudRadio>
-                                            <MudRadio T="int?" Option="@(2)" Color="Color.Primary">Жен</MudRadio>
+                                            <MudRadio Disabled="true" T="int?" Option="@(1)" Color="Color.Primary">Муж</MudRadio>
+                                            <MudRadio Disabled="true" T="int?" Option="@(2)" Color="Color.Primary">Жен</MudRadio>
                                         </MudRadioGroup>
                                     </MudForm>
                                 </MudPaper>
@@ -127,6 +136,7 @@
                         <MudGrid>
                             <MudItem xs="12" Class="d-flex align-start gap-4" >
                                 <MudTextField 
+                                    Disabled="true"
                                     RequiredError="Поле на заполнено" Required=true
                                     @bind-Value="_request.PersonPassportSeries"  
                                     Label="Серия" 
@@ -135,6 +145,7 @@
                                     >
                                 </MudTextField>
                                 <MudTextField 
+                                    Disabled="true"
                                     RequiredError="Поле на заполнено" Required=true 
                                     @bind-Value="_request.PersonPassportNumber" 
                                     Label="Номер" 
@@ -142,6 +153,7 @@
                                     Margin="Margin.Normal">
                                 </MudTextField>
                                 <MudDatePicker Class="d-flex mt-2" Style="margin-top:2px"
+                                    Disabled="true"
                                     RequiredError="Поле на заполнено" Required=true 
                                     Variant="Variant.Outlined" 
                                     Label="Дата выдачи" 
@@ -157,6 +169,7 @@
                             <MudItem xs="12" Class="d-flex align-stretch gap-4" >
                                 <MudPaper Elevation=0 Class="d-flex mud-width-full">
                                     <MudTextField  
+                                    Disabled="true"
                                     RequiredError="Поле на заполнено" Required=true
                                     @bind-Value="_request.PersonPassportAddon"  
                                     Label="Кем выдан" 
@@ -166,6 +179,7 @@
                                 </MudPaper>
                                 <MudPaper Elevation=0 MaxWidth=35% MinWidth=200px Class="d-flex mud-width-full">
                                     <MudTextField 
+                                        Disabled="true"
                                         @bind-Value="_request.PersonPassportUnit" 
                                         RequiredError="Поле на заполнено" Required=true
                                         Label="Код подразделения" 
@@ -179,7 +193,8 @@
                         <MudGrid>
                             <MudItem xs="12" Class="d-flex align-stretch gap-4" >
                                 <MudPaper Elevation=0 Class="d-flex mud-width-full">
-                                    <MudTextField  
+                                    <MudTextField
+                                    Disabled="true"  
                                     RequiredError="Поле на заполнено" Required=true
                                     @bind-Value="_request.PersonBirthPlace"  
                                     Label="Место рождения" 
@@ -189,6 +204,7 @@
                                 </MudPaper>
                                 <MudPaper Elevation=0 MaxWidth=35% MinWidth=200px Class="d-flex mud-width-full">
                                     <MudDatePicker Class="d-flex mt-2" Style="margin-top:2px"
+                                        Disabled="true"
                                         RequiredError="Поле на заполнено" Required=true 
                                         Variant="Variant.Outlined" 
                                         Label="Дата рождения" 
@@ -205,6 +221,7 @@
                             <MudItem xs="12" Class="d-flex align-stretch gap-4" >
                                 <MudPaper Elevation=0 Class="d-flex mud-width-full">
                                     <MudTextField  
+                                    Disabled="true"
                                     RequiredError="Поле на заполнено" Required=true
                                     @bind-Value="_request.PersonInn"  
                                     Label="ИНН ФЛ" 
@@ -214,6 +231,7 @@
                                 </MudPaper>
                                 <MudPaper Elevation=0  Class="d-flex mud-width-full">
                                     <MudTextField 
+                                        Disabled="true"
                                         @bind-Value="_request.PersonSnils" 
                                         RequiredError="Поле на заполнено" Required=true
                                         Label="СНИЛС" 
@@ -227,7 +245,8 @@
                         <MudGrid>
                             <MudItem xs="12" Class="d-flex align-stretch gap-4" >
                                 <MudPaper Elevation=0 Class="d-flex mud-width-full">
-                                    <MudTextField  
+                                    <MudTextField
+                                    Disabled="true"  
                                     RequiredError="Поле на заполнено" Required=true
                                     @bind-Value="_request.PersonEmail"  
                                     Label="Email" 
@@ -236,7 +255,8 @@
                                 </MudTextField>
                                 </MudPaper>
                                 <MudPaper Elevation=0  Class="d-flex mud-width-full">
-                                    <MudTextField 
+                                    <MudTextField
+                                        Disabled="true" 
                                         @bind-Value="_request.Phone" 
                                         RequiredError="Поле на заполнено" Required=true
                                         Label="Мобильный Телефон" 
@@ -253,6 +273,7 @@
                             <MudItem xs="12" Class="d-flex align-stretch gap-4" >
                                 <MudPaper Elevation=0 Class="d-flex mud-width-full">
                                     <MudTextField  
+                                    Disabled="true"
                                     RequiredError="Поле на заполнено" Required=true
                                     @bind-Value="_request.PersonPost"  
                                     Label="Должность" 
@@ -272,13 +293,8 @@
                   Style="@($"border:1px solid {Colors.BlueGrey.Lighten5};")">
             <MudForm Class="d-flex mud-width-full justify-center " @ref="formdoc" @bind-IsValid="@docSuccess" >
                 <MudCardContent Class="mud-width-full">
-                    <MudText>Требуемые документы</MudText>
-                    <MudText 
-                        Class="pt-3"  
-                        Style="@($"color:{Colors.BlueGrey.Lighten3};")" 
-                        Typo="Typo.body2">
-                        Загрузите цветные сканы или фото оригиналов документов
-                    </MudText>
+                    <MudText>Загруженные документы</MudText>
+                    
                     <MudGrid>
                         <MudItem xs="12" Class="d-flex align-start justify-space-between  gap-4 mt-4" >
                             <MudPaper Elevation=0 Width=48% Class="d-flex flex-column">
@@ -287,32 +303,24 @@
                                     
                                 </MudPaper>
                                 <MudPaper Elevation=0 Class="d-flex">
-                                    <MudStack Style="width: 100%">
-                                        <MudFileUpload @ref="passportValidation" Accept=".pdf, .png"   
-                                                        T="IReadOnlyList<IBrowserFile>" 
-                                                        OnFilesChanged="OnInputFileChanged" 
-                                                        Validation="@(new Func<IReadOnlyList<IBrowserFile>, string>(ValidationPass))"
-                                                        Hidden="false" 
-                                                        Class="flex-1" 
-                                                        InputClass="absolute mud-width-full mud-height-full overflow-hidden z-20" 
-                                                        InputStyle="opacity:0"
-                                                    @ondragenter="@SetDragClass" @ondragleave="@ClearDragClass" @ondragend="@ClearDragClass">
-                                            <ButtonTemplate>
+                                    <MudStack  Style="width: 100%">
+                                        
+                                            
                                                 <MudPaper Elevation=0  MinHeight=130px Outlined="true" Class="@DragClass">
-                                                    <MudText Class="z-30" >Загрузить файл</MudText>
+                                                    <MudText Class="z-30" >Скачать файл</MudText>
                                                     @foreach (var file in fileNames)
                                                     {   <MudPaper  Elevation=0 Class="d-flex gap-4 mt-4" >
                                                             <MudPaper Elevation=0 MinWidth=70%>
                                                                 <MudChip Color="Color.Dark" Text="@file" />
                                                             </MudPaper>
                                                             <MudPaper Elevation=0 MinWidth=20%>
-                                                                <MudFab Class="d-flex z-30" OnClick="@Clear" Color="Color.Primary" StartIcon="@Icons.Filled.DeleteOutline"  Size="Size.Small" />
+                                                                <MudFab Class="d-flex z-30" OnClick="@DownloadPassport" Color="Color.Primary" StartIcon="@Icons.Filled.Download"  Size="Size.Small" />
                                                             </MudPaper>
                                                         </MudPaper>  
                                                     }
                                                 </MudPaper>
-                                            </ButtonTemplate>
-                                        </MudFileUpload>
+                                           
+                                        
                                         
                                     </MudStack>
                                 </MudPaper>
@@ -323,29 +331,22 @@
                                 </MudPaper>
                                 <MudPaper Elevation=0 Class="d-flex">
                                     <MudStack Style="width: 100%">
-                                        <MudFileUpload @ref="snilsValidation" T="IReadOnlyList<IBrowserFile>" OnFilesChanged="OnInputFileChangedSnils" Hidden="false" 
-                                                        Accept=".pdf, .png" 
-                                                        Class="flex-1" 
-                                                        Validation="@(new Func<IReadOnlyList<IBrowserFile>, string>(ValidationSnils))"
-                                                        InputClass="absolute mud-width-full mud-height-full overflow-hidden z-20" 
-                                                        InputStyle="opacity:0"
-                                                    @ondragenter="@SetDragClassSnils" @ondragleave="@ClearDragClassSnils" @ondragend="@ClearDragClassSnils">
-                                            <ButtonTemplate>
+                                        
                                                 <MudPaper Elevation=0  MinHeight=130px Outlined="true" Class="@DragClass">
-                                                    <MudText Class="z-30" >Загрузить файл</MudText>
+                                                    <MudText Class="z-30" >Скачать файл</MudText>
                                                     @foreach (var file in fileNamesSnils)
                                                     {   <MudPaper  Elevation=0 Class="d-flex gap-4 mt-4" >
                                                             <MudPaper Elevation=0 MinWidth=70%>
                                                                 <MudChip Color="Color.Dark" Text="@file" />
                                                             </MudPaper>
                                                             <MudPaper Elevation=0 MinWidth=20%>
-                                                                <MudFab Class="d-flex z-30" OnClick="@ClearSnils" Color="Color.Primary" StartIcon="@Icons.Filled.DeleteOutline"  Size="Size.Small" />
+                                                                <MudFab Class="d-flex z-30" OnClick="@ClearSnils" Color="Color.Primary" StartIcon="@Icons.Filled.Download"  Size="Size.Small" />
                                                             </MudPaper>
                                                         </MudPaper>  
                                                     }
                                                 </MudPaper>
-                                            </ButtonTemplate>
-                                        </MudFileUpload>
+                                          
+                                
                                         
                                     </MudStack>
                                 </MudPaper>
@@ -358,33 +359,25 @@
                             <MudPaper Elevation=0 Width=48% Class="d-flex flex-column pb-4">
                                 <MudPaper Elevation=0 Class="d-flex justify-space-between align-center">
                                     <MudText>Заявление</MudText>
-                                    <MudFab Class="d-flex " OnClick="@ClaimPrint" Color="Color.Primary" StartIcon="@Icons.Filled.Print"  Size="Size.Small" />
+                                    
                                 </MudPaper>
                                 <MudPaper Elevation=0 Class="d-flex">
                                     <MudStack Style="width: 100%">
-                                        <MudFileUpload @ref="claimValidation" T="IReadOnlyList<IBrowserFile>" OnFilesChanged="OnInputFileChangedClaim" Hidden="false" 
-                                                        Accept=".pdf, .png" 
-                                                        Class="flex-1" 
-                                                        Validation="@(new Func<IReadOnlyList<IBrowserFile>, string>(ValidationClaim))"
-                                                        InputClass="absolute mud-width-full mud-height-full overflow-hidden z-20" 
-                                                        InputStyle="opacity:0"
-                                                    @ondragenter="@SetDragClassClaim" @ondragleave="@ClearDragClassClaim" @ondragend="@ClearDragClassClaim">
-                                            <ButtonTemplate>
+                                        
                                                 <MudPaper Elevation=0  MinHeight=130px Outlined="true" Class="@DragClass">
-                                                    <MudText Class="z-30" >Загрузить файл</MudText>
+                                                    <MudText Class="z-30" >Скачать файл</MudText>
                                                     @foreach (var file in fileNamesClaim)
                                                     {   <MudPaper  Elevation=0 Class="d-flex gap-4 mt-4" >
                                                             <MudPaper Elevation=0 MinWidth=70%>
                                                                 <MudChip Color="Color.Dark" Text="@file" />
                                                             </MudPaper>
                                                             <MudPaper Elevation=0 MinWidth=20%>
-                                                                <MudFab Class="d-flex z-30" OnClick="@ClearClaim" Color="Color.Primary" StartIcon="@Icons.Filled.DeleteOutline"  Size="Size.Small" />
+                                                                <MudFab Class="d-flex z-30" OnClick="@DownloadClaim" Color="Color.Primary" StartIcon="@Icons.Filled.Download"  Size="Size.Small" />
                                                             </MudPaper>
                                                         </MudPaper>  
                                                     }
                                                 </MudPaper>
-                                            </ButtonTemplate>
-                                        </MudFileUpload>
+                                      
                                         
                                     </MudStack>
                                 </MudPaper>
@@ -394,33 +387,24 @@
                                 <MudPaper Elevation=0 Width=48% Class="d-flex flex-column">
                                     <MudPaper Elevation=0 Class="d-flex justify-space-between align-center">
                                         <MudText>Доверенность</MudText>
-                                        <MudFab Class="d-flex z-30" OnClick="@DoverPrint" Color="Color.Primary" StartIcon="@Icons.Filled.Print"  Size="Size.Small" />
                                     </MudPaper>
                                     <MudPaper Elevation=0 Class="d-flex">
                                         <MudStack Style="width: 100%">
-                                            <MudFileUpload @ref="dovValidation" T="IReadOnlyList<IBrowserFile>" OnFilesChanged="OnInputFileChangedDov" Hidden="false" 
-                                                            Accept=".pdf, .png" 
-                                                            Class="flex-1" 
-                                                            Validation="@(new Func<IReadOnlyList<IBrowserFile>, string>(ValidationDov))"
-                                                            InputClass="absolute mud-width-full mud-height-full overflow-hidden z-20" 
-                                                            InputStyle="opacity:0"
-                                                        @ondragenter="@SetDragClassDov" @ondragleave="@ClearDragClassDov" @ondragend="@ClearDragClassDov">
-                                                <ButtonTemplate>
+                                           
                                                     <MudPaper Elevation=0  MinHeight=130px Outlined="true" Class="@DragClass">
-                                                        <MudText Class="z-30" >Загрузить файл</MudText>
+                                                        <MudText Class="z-30" >Скачать файл</MudText>
                                                         @foreach (var file in fileNamesDov)
                                                         {   <MudPaper  Elevation=0 Class="d-flex gap-4 mt-4" >
                                                                 <MudPaper Elevation=0 MinWidth=70%>
                                                                     <MudChip Color="Color.Dark" Text="@file" />
                                                                 </MudPaper>
                                                                 <MudPaper Elevation=0 MinWidth=20%>
-                                                                    <MudFab Class="d-flex z-30" OnClick="@ClearDov" Color="Color.Primary" StartIcon="@Icons.Filled.DeleteOutline"  Size="Size.Small" />
+                                                                    <MudFab Class="d-flex z-30" OnClick="@DownloadDov" Color="Color.Primary" StartIcon="@Icons.Filled.Download"  Size="Size.Small" />
                                                                 </MudPaper>
                                                             </MudPaper>  
                                                         }
                                                     </MudPaper>
-                                                </ButtonTemplate>
-                                            </MudFileUpload>
+                                 
                                             
                                         </MudStack>
                                     </MudPaper>

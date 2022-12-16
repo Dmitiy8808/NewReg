@@ -46,13 +46,44 @@ namespace Client.HttpRepository
             return requestAbonent;
         }
 
+        public async Task<PagingResponse<RequestAbonent>> GetDraftRequestAbonents(RequestAbonentParameters requestAbonentParameters)
+        {
+            var queryStringParam = new Dictionary<string, string>
+            {
+                
+                ["pageNumber"] = requestAbonentParameters.PageNumber.ToString(),
+                ["pageSize"] = requestAbonentParameters.PageSize.ToString(),
+                ["searchTerm"] = requestAbonentParameters.SearchTerm ?? "",
+                ["orderBy"] = requestAbonentParameters.OrderBy ?? "creationtime desc"
+            };
+            var response = await _client.GetAsync(QueryHelpers
+                            .AddQueryString("regrequests/DraftRequestAbonent", queryStringParam)); 
+
+            var content = await response.Content.ReadAsStringAsync();
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new ApplicationException(content);
+            }
+
+            var pagingResponse = new PagingResponse<RequestAbonent>
+            {
+                Items = JsonSerializer.Deserialize<List<RequestAbonent>>(content, _options),
+                MetaData = JsonSerializer.Deserialize<MetaData>(
+                    response.Headers.GetValues("X-Pagination").First(), _options)
+            };
+
+            return pagingResponse;
+        }
+
         public async Task<PagingResponse<RequestAbonent>> GetRequestAbonents(RequestAbonentParameters requestAbonentParameters)
         {
             var queryStringParam = new Dictionary<string, string>
             {
                 
                 ["pageNumber"] = requestAbonentParameters.PageNumber.ToString(),
-                ["pageSize"] = requestAbonentParameters.PageSize.ToString()
+                ["pageSize"] = requestAbonentParameters.PageSize.ToString(),
+                ["searchTerm"] = requestAbonentParameters.SearchTerm ?? "",
+                ["orderBy"] = requestAbonentParameters.OrderBy ?? "creationtime desc"
             };
             var response = await _client.GetAsync(QueryHelpers
                             .AddQueryString("regrequests/RequestAbonent", queryStringParam)); 

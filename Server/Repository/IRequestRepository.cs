@@ -7,6 +7,7 @@ namespace Server.Repository
     public interface IRequestRepository
     {
         Task<PagedList<RequestAbonent>> GetRequests(RequestAbonentParameters requestAbonentParameters);
+        Task<PagedList<RequestAbonent>> GetDraftRequests(RequestAbonentParameters requestAbonentParameters);
         Task<RequestAbonent> GetRequest(Guid id);
         Task CreateRequest(RequestAbonent request);
         Task CreateRequests(List<RequestAbonent> requests);
