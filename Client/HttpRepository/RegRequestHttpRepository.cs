@@ -9,6 +9,7 @@ using Client.Features;
 using Entities.DTOs;
 using Entities.Models;
 using Entities.RequestFeatures;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.WebUtilities;
 
 namespace Client.HttpRepository
@@ -19,9 +20,11 @@ namespace Client.HttpRepository
         private readonly IMapper _mapper;
         private readonly JsonSerializerOptions _options =
             new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        private readonly NavigationManager _navManager;
 
-        public RegRequestHttpRepository( HttpClient client, IMapper mapper)
+        public RegRequestHttpRepository( HttpClient client, IMapper mapper, NavigationManager navManager)
         {
+            _navManager = navManager;
             _mapper = mapper;
             _client = client;
         }

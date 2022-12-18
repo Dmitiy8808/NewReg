@@ -1,6 +1,22 @@
 @page "/404"
 
-<div class="card customNotFound">
+
+<MudGrid>
+    <MudItem xs="12">
+        <MudPaper  MinHeight=91vh Class="d-flex flex-column align-center justify-center mud-width-full gap-4">
+            <MudPaper Elevation=0 MinWidth=500px MaxWidth=50% Class="d-flex flex-column align-center justify-center mud-width-full gap-4">
+                <MudText Typo="Typo.h2">404</MudText>
+                
+                <MudText Align=Align.Center Style="@($"color:{Colors.BlueGrey.Lighten3};")" Typo="Typo.body2">Страница не найдена</MudText>
+                <MudPaper Elevation=0 Class="d-flex align-center justify-center mud-width-full gap-4">
+                    <MudButton  OnClick="@NavigateToHome" Variant="Variant.Outlined" Color="Color.Primary">На главную</MudButton>
+                </MudPaper>
+            </MudPaper>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+@* <div class="card customNotFound">
     <div class="card-body">
         <div class="row">
             <div class="col">
@@ -19,5 +35,5 @@
     <div class="col">
         Report bug link : <a href="/reportError/404/the page is missing">Report Error</a>
     </div>
-</div>
+</div> *@
 

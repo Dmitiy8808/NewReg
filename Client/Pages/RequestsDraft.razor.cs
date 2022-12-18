@@ -4,15 +4,18 @@ using Microsoft.AspNetCore.Components;
 using Entities.RequestFeatures;
 using MudBlazor;
 using Client.Features;
+using Client.HttpRepository.HttpInterceptor;
 
 namespace Reg.Client.Pages
 {
-    public partial class RequestsDraft
+    public partial class RequestsDraft : IDisposable
     {
         [Inject]
 		public NavigationManager NavigationManager { get; set; }
         [Inject] 
         private IDialogService DialogService { get; set; }
+        [Inject] 
+        private HttpInterceptorService Interceptor { get; set; }
         public List<RequestAbonent> RequestAbonentList { get; set; } = new List<RequestAbonent>();
         public MetaData MetaData { get; set; } = new MetaData();
 
@@ -63,7 +66,8 @@ namespace Reg.Client.Pages
 
         protected async override Task OnInitializedAsync()
         {
-          
+            Interceptor.RegisterEvent();
+            Interceptor.RegisterBeforeSendEvent();
         }
 
         private async void Delete(Guid id)
@@ -97,6 +101,9 @@ namespace Reg.Client.Pages
             _table.ReloadServerData();
         }
 
-  
+        public void Dispose()
+        {
+            Interceptor.DisposeEvent();
+        }
     }
 }

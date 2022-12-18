@@ -9,10 +9,11 @@ using Microsoft.AspNetCore.Components.Forms;
 using System.Net.Http.Headers;
 using Entities.FileFeatures;
 using Microsoft.JSInterop;
+using Client.HttpRepository.HttpInterceptor;
 
 namespace Reg.Client.Pages
 {
-    public partial class UpdateRequest 
+    public partial class UpdateRequest : IDisposable
     {
         MudForm form; 
         MudForm formdoc;
@@ -46,6 +47,8 @@ namespace Reg.Client.Pages
         public NavigationManager NavigationManager { get; set; }
         [Inject]
         IMapper Mapper { get; set; }
+        [Inject] 
+        private HttpInterceptorService Interceptor { get; set; }
         [Inject]
         public IWebSocketService WebSocketService { get; set; }
         [Inject]
@@ -72,6 +75,8 @@ namespace Reg.Client.Pages
         private List<string> fileNamesClaim = new List<string>();
         protected async override Task OnInitializedAsync()
         {
+            Interceptor.RegisterEvent();
+            Interceptor.RegisterBeforeSendEvent();
             
             _request = await RequestRepo.GetRequestAbonent(Id);
 
@@ -465,6 +470,9 @@ namespace Reg.Client.Pages
             }
         }
 
-        
+        public void Dispose()
+        {
+            Interceptor.DisposeEvent();
+        }
     }
 }

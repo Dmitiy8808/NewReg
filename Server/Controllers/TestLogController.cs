@@ -1,27 +1,28 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Server.Contracts;
+using Server.Services.EmailService;
 
 namespace Server.Controllers
 {
-    [Route("[controller]")]
+    [Route("api/test")]
     [ApiController]
+    [Authorize]
     public class TestLogController : ControllerBase
     {
-        private readonly ILoggerManager _logger;
-        public TestLogController(ILoggerManager logger)
+        private readonly IEmailSender _emailSender;
+        public TestLogController(IEmailSender emailSender)
         {
-            _logger = logger;
+            _emailSender = emailSender;
+            
         }
-
         [HttpGet]
-        public IEnumerable<string> Get()
+        public void Get()
         {
-            _logger.LogInfo("Info message");
-            _logger.LogError("Error message");
-            _logger.LogDebug("Debug message");
-            _logger.LogWarn("Warn message");
+            var message = new EmailMessage(new string[] { "dmitriy-stupin@mail.ru" }, "Test email", "This is the content from our email.");
+            _emailSender.SendEmail(message);
 
-            return new string [] {"value1", "value2"};
         }
+
     }
 }

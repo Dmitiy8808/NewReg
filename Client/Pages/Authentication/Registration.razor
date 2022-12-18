@@ -1,0 +1,64 @@
+﻿@page "/register"
+@using System.ComponentModel.DataAnnotations
+
+@if (ShowRegistrationErrors)
+{
+    <div class="alert alert-danger" role="alert">
+        @foreach (var error in Errors)
+        {
+            <p>@error</p>
+        }
+    </div>
+}
+
+<MudForm @ref="form" @bind-IsValid="@success" OnValidSubmit="Register">
+    <MudGrid>
+        <MudItem xs="12">
+            <div class="d-flex justify-center">
+                <MudIcon Icon="@Icons.Filled.AppRegistration" Color="Color.Primary" Size="Size.Large"  Style="width: 100px; height: 100px;" />
+            </div>
+        </MudItem>
+        <MudItem xs="12">
+            <div class="d-flex justify-center">
+                <MudText Typo="Typo.h4">Регистрация</MudText>
+            </div>
+        </MudItem>
+        <MudItem  xs="12">
+            <div class="d-flex justify-center">
+                <MudText>Есть аккаунт?<MudLink Href="/login"> Авторизуйтесь</MudLink></MudText>
+            </div>
+        </MudItem>
+        <MudItem  xs="12">
+            <MudTextField
+                Variant="Variant.Outlined"   
+                @bind-Value="_userForRegistrationDto.Email" 
+                Label="Email"
+                Validation="@(new EmailAddressAttribute() {ErrorMessage = "Заполните Email"})" />
+        </MudItem>
+        <MudItem  xs="12" sm="6" md="6">
+            <MudTextField
+                Variant="Variant.Outlined"  
+                @ref="pwField1"
+                InputType="@_passwordInput" 
+                Adornment="Adornment.End" 
+                AdornmentIcon="@_passwordInputIcon" 
+                OnAdornmentClick="TogglePasswordVisibility" 
+                @bind-Value="_userForRegistrationDto.Password" 
+                Label="Пароль" 
+                Validation="@(new Func<string, IEnumerable<string>>(PasswordStrength))" 
+                Required="true"
+                RequiredError="Укажите пароль!"/>
+        </MudItem>
+        <MudItem  xs="12" sm="6" md="6">
+            <MudTextField 
+            Variant="Variant.Outlined"  
+            InputType="InputType.Password" 
+            @bind-Value="_userForRegistrationDto.ConfirmPassword" 
+            Label="Подтверждение пароля" 
+             Validation="@(new Func<string, string>(PasswordMatch))"/>
+        </MudItem>
+        <MudItem  xs="12" Class="d-flex justify-center">
+            <MudButton  Variant="Variant.Filled" Disabled="@(!success)" OnClick="@(()=>Register())" Color="Color.Primary" Size="Size.Large" Style="width: 100%;">Зарегистрироваться</MudButton>
+        </MudItem>
+    </MudGrid>
+</MudForm>

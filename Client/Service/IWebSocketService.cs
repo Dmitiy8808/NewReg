@@ -9,8 +9,8 @@ namespace Client.Service
 {
     public interface IWebSocketService
     {
-        Task<string> SendMessage(string message);
-        Task GenerateRequest(RequestAbonent requestAbonent);
+        Task<MessageResponse> SendMessage(string message);
+        Task<MessageResponse> GenerateRequest(RequestAbonent requestAbonent);
         Task<CertRequestDataDto> GetCertRequestData(RequestAbonent clientAbonent);
     }
 }

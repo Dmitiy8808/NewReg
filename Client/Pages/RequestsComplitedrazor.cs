@@ -4,10 +4,11 @@ using Microsoft.AspNetCore.Components;
 using Entities.RequestFeatures;
 using MudBlazor;
 using Client.Features;
+using Client.HttpRepository.HttpInterceptor;
 
 namespace Reg.Client.Pages
 {
-    public partial class RequestsComplited
+    public partial class RequestsComplited : IDisposable
     {
         [Inject]
 		public NavigationManager NavigationManager { get; set; }
@@ -19,6 +20,8 @@ namespace Reg.Client.Pages
         private RequestAbonentParameters _requestAbonentParameters = new RequestAbonentParameters();
         [Inject]
         public IRegRequestHttpRepository RequestRepo { get; set; }
+        [Inject] 
+        private HttpInterceptorService Interceptor { get; set; }
         private PagingResponse<RequestAbonent> _response;
         private MudTable<RequestAbonent> _table;
         private readonly int[] _pageSizeOption = { 15, 25, 50};
@@ -63,7 +66,8 @@ namespace Reg.Client.Pages
 
         protected async override Task OnInitializedAsync()
         {
-          
+          Interceptor.RegisterEvent();
+          Interceptor.RegisterBeforeSendEvent();
         }
 
         private async void Delete(Guid id)
@@ -97,6 +101,9 @@ namespace Reg.Client.Pages
             _table.ReloadServerData();
         }
 
-  
+        public void Dispose()
+        {
+            Interceptor.DisposeEvent();
+        }
     }
 }

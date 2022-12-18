@@ -1,14 +1,24 @@
 ﻿
 using Entities.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Server.Data;
+using Server.Data.Configuration;
 
 namespace Reg.Server.Context
 {
-    public class RegContext : DbContext
+    public class RegContext : IdentityDbContext<User>
     {
         public RegContext(DbContextOptions<RegContext> options)
             :base(options)
         {
+        }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+            builder.ApplyConfiguration(new RoleConfiguration());
         }
 
 

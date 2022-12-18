@@ -1,0 +1,10 @@
+<AuthorizeView>
+    <Authorized>
+        @context.User.Identity.Name
+        <a href="Logout">Выйти</a>
+    </Authorized>
+    <NotAuthorized>
+        <a href="Register">Зарегистрироваться</a>
+        <a href="Login">Авторизоваться</a>
+    </NotAuthorized>
+</AuthorizeView>

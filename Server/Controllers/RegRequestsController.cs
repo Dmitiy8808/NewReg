@@ -6,11 +6,13 @@ using Microsoft.AspNetCore.Mvc;
 using Server.Repository;
 using Entities.RequestFeatures;
 using Server.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Server.Controllers
 {
     [Route("api/regrequests")]
     [ApiController]
+    [Authorize]
     public class RegRequestsController : ControllerBase
     {
         private readonly IQualifiedCertificateManager _qualifiedCertificateManager;

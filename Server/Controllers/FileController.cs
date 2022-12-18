@@ -3,6 +3,7 @@ using AutoMapper;
 using Entities.DTOs;
 using Entities.FileFeatures;
 using Entities.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Server.Repository;
 
@@ -10,6 +11,7 @@ namespace Server.Controllers
 {
     [Route("api/file")]
     [ApiController]
+    [Authorize]
     public class FileController : ControllerBase
     {
         private readonly IFileRepository _fileRepository;

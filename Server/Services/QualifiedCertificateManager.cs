@@ -30,9 +30,9 @@ namespace Server.Services
                 return;
                 refCertStruct.OrganisationUnit = clientAbonent.OrganisationUnit;
             }
-            else
+            else 
             {
-                refCertStruct.Inn = clientAbonent.Inn;
+                refCertStruct.Inn = clientAbonent.Person.Inn;
                 refCertStruct.Ogrnip = string.IsNullOrEmpty(clientAbonent.Ogrn) ? (string) null : clientAbonent.Ogrn;
                 refCertStruct.ComonName = string.Format("{0} {1}{2}", (object) clientAbonent.Person.LastName.Trim(), (object) clientAbonent.Person.FirstName.Trim(), string.IsNullOrWhiteSpace(clientAbonent.Person.Patronymic) ? (object) string.Empty : (object) (" " + clientAbonent.Person.Patronymic.Trim()));
             }
@@ -120,10 +120,14 @@ namespace Server.Services
             addAttribute("2.5.4.3", certStruct.ComonName);
             addAttribute("2.5.4.4", certStruct.Surname);
             addAttribute("2.5.4.42", certStruct.GivenName);
+
             addAttribute("2.5.4.6", certStruct.Country);
-            addAttribute("2.5.4.8", certStruct.State);
-            addAttribute("2.5.4.7", certStruct.Locality);
-            addAttribute("2.5.4.9", certStruct.Street);
+            if (certStruct.State != null)
+                addAttribute("2.5.4.8", certStruct.State);
+            if (certStruct.Locality != "0")
+                addAttribute("2.5.4.7", certStruct.Locality);
+            if (certStruct.Street != "0")
+                addAttribute("2.5.4.9", certStruct.Street);
             action("1.2.643.3.131.1.1", certStruct.Inn);
             action("1.2.643.100.4", certStruct.InnLe);
             action("2.5.4.10", certStruct.Organisation);
@@ -137,9 +141,6 @@ namespace Server.Services
             return certAttributes.ToArray();
         }
 
-        public string CreateRegRequest(RequestAbonent requestInfo)
-        {
-            return "Nrcn";
-        }
+
     }
 }

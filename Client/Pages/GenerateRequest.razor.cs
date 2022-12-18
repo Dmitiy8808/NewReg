@@ -9,10 +9,11 @@ using Microsoft.AspNetCore.Components.Forms;
 using System.Net.Http.Headers;
 using Entities.FileFeatures;
 using Microsoft.JSInterop;
+using Client.HttpRepository.HttpInterceptor;
 
 namespace Reg.Client.Pages
 {
-    public partial class GenerateRequest 
+    public partial class GenerateRequest : IDisposable
     {
         MudForm form; 
         MudForm formdoc;
@@ -26,6 +27,8 @@ namespace Reg.Client.Pages
         private RequestAbonentReadDto _request;
         [Inject]
         ISnackbar Snackbar { get; set; }
+        [Inject] 
+        private HttpInterceptorService Interceptor { get; set; }
         [Inject]
         IDialogService DialogService { get; set; }
         [Inject]
@@ -63,6 +66,8 @@ namespace Reg.Client.Pages
 
         protected async override Task OnInitializedAsync()
         {
+            Interceptor.RegisterEvent();
+            Interceptor.RegisterBeforeSendEvent();
             
             _request = await RequestRepo.GetRequestAbonent(Id);
 
@@ -242,10 +247,18 @@ namespace Reg.Client.Pages
         public async Task RunWebSocket()
         {
             var mappedPerson = Mapper.Map<RequestAbonent>(_request);
-            await WebSocketService.GenerateRequest(mappedPerson);
-           
+            var messageResponse = await WebSocketService.GenerateRequest(mappedPerson);
+            if (messageResponse != null)
+                if(messageResponse.Success)
+                    Console.WriteLine("Запрос сформирован");
+                    _request.CertRequest = messageResponse.Data.value;
+                    _request.StepId = 3;
+                    await Update();
         }
 
-        
+        public void Dispose()
+        {
+            Interceptor.DisposeEvent();
+        }
     }
 }

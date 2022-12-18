@@ -1,0 +1,16 @@
+<AuthorizeView>
+    <Authorized>
+        <MudCard Elevation="0" Square="true" Class="@Class">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    
+                    <MudAvatar Color="Color.Primary">@context.User.Identity.Name.ToUpper()[0]</MudAvatar>
+                </CardHeaderContent>
+                <CardHeaderAvatar>
+                    <MudText Typo="Typo.caption">@context.User.Identity.Name</MudText>
+                </CardHeaderAvatar>
+            </MudCardHeader>
+        </MudCard>
+    </Authorized>
+</AuthorizeView>
+

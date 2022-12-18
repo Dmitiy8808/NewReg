@@ -7,10 +7,11 @@ using Newtonsoft.Json;
 using ValidationsCollection;
 using System.ComponentModel.DataAnnotations;
 using AutoMapper;
+using Client.HttpRepository.HttpInterceptor;
 
 namespace Reg.Client.Pages
 {
-    public partial class CreateRequest
+    public partial class CreateRequest : IDisposable
     {
         MudForm form; 
         bool dataSuccess;
@@ -32,6 +33,8 @@ namespace Reg.Client.Pages
         public IRegRequestHttpRepository? RegRequestRepo { get; set; }
         [Inject]
         IDialogService DialogService { get; set; }
+        [Inject] 
+        private HttpInterceptorService Interceptor { get; set; }
         [Inject]
         IMapper Mapper { get; set; }
         [Inject]
@@ -42,6 +45,8 @@ namespace Reg.Client.Pages
 
         protected override void OnInitialized()
         {
+            Interceptor.RegisterEvent();
+            Interceptor.RegisterBeforeSendEvent();
             _request.IsJuridical = IsJuridical;
             _request.PersonCryptoProviderCode = "80";
             _request.PersonCryptoProviderId = 11;
@@ -460,10 +465,9 @@ namespace Reg.Client.Pages
            
         }
 
-        
-
-    
-
-        
+        public void Dispose()
+        {
+            Interceptor.DisposeEvent();
+        }
     }
 }

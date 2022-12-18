@@ -41,25 +41,30 @@
                 
                     @if (_request.IsJuridical)
                     {
-                        <MudPaper Elevation=0 Class="d-flex  mud-width-full justify-space-between align-center">
-                            <MudText Class="d-flex pl-4  " >Организация: @_request.ShortName</MudText>  
+                        <MudPaper Elevation=0 Class="d-flex  mud-width-full justify-start align-center">
+                            <MudText Class="d-flex pl-4  " >Организация: </MudText> 
+                            <MudChip Class="d-flex" Disabled="true" Color="Color.Default">@_request.ShortName</MudChip> 
                         </MudPaper>
-                        <MudPaper Elevation=0 Class="d-flex  mud-width-full justify-space-between align-center">
-                            <MudText Class="d-flex pl-4 " >ИНН: @_request.Inn</MudText>
+                        <MudPaper Elevation=0 Class="d-flex  mud-width-full justify-start align-center">
+                            <MudText Class="d-flex pl-4 " >ИНН:</MudText>
+                            <MudChip Class="d-flex" Disabled="true" Color="Color.Default">@_request.Inn</MudChip>
                         </MudPaper>
                     }
                     else if (!_request.IsJuridical)
                     {
-                        <MudPaper Elevation=0 Class="d-flex  mud-width-full justify-space-between align-center">
-                            <MudText Class="d-flex pl-4  " >Физическое лицо: @_request.PersonLastName @_request.PersonFirstName @_request.PersonPatronymic</MudText>  
+                        <MudPaper Elevation=0 Class="d-flex  mud-width-full justify-start align-center">
+                            <MudText Class="d-flex pl-4  " >Физическое лицо:</MudText> 
+                            <MudChip Class="d-flex" Disabled="true" Color="Color.Default"> @_request.PersonLastName @_request.PersonFirstName @_request.PersonPatronymic</MudChip> 
                         </MudPaper>
-                        <MudPaper Elevation=0 Class="d-flex  mud-width-full justify-space-between align-center">
-                            <MudText Class="d-flex pl-4 " >Email: @_request.PersonEmail</MudText>
+                        <MudPaper Elevation=0 Class="d-flex  mud-width-full justify-start align-center">
+                            <MudText Class="d-flex pl-4 " >Email: </MudText>
+                            <MudChip Class="d-flex" Disabled="true" Color="Color.Default">@_request.PersonEmail</MudChip>
                         </MudPaper>
                     }
                     
-                    <MudPaper Elevation=0 Class="d-flex  mud-width-full justify-space-between align-center">
-                        <MudText Class="d-flex pl-4  mb-4 " >Криптопровайдер: @providerRuName</MudText>
+                    <MudPaper Elevation=0 Class="d-flex  mud-width-full justify-start align-center">
+                        <MudText Class="d-flex pl-4  mb-4 " >Криптопровайдер: </MudText>
+                        <MudChip Class="d-flex mb-4" Disabled="true" Color="Color.Default">@providerRuName</MudChip>
                     </MudPaper>
                 </MudPaper>
             <MudPaper 

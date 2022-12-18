@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Entities.DTOs;
 using Entities.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Server.Repository;
 
@@ -12,6 +13,7 @@ namespace Server.Controllers
 {
     [Route("api/country")]
     [ApiController]
+    [Authorize]
     public class CountryController : ControllerBase
     {
         private readonly ICountryRepository _countryRepository;

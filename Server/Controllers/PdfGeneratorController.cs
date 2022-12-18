@@ -2,6 +2,7 @@ using AutoMapper;
 using DinkToPdf;
 using DinkToPdf.Contracts;
 using Entities.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Server.Utility;
 
@@ -9,6 +10,7 @@ namespace Server.Controllers
 {
     [Route("api/pdfcreator")]
     [ApiController]
+    [Authorize]
     public class PdfGeneratorController : ControllerBase
     {
         private string htmlContent { get; set; }
