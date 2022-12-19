@@ -225,7 +225,7 @@ namespace Reg.Server.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ProviderId"));
 
                     b.Property<DateTime>("CreationTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("ProviderName")
                         .IsRequired()
@@ -289,7 +289,7 @@ namespace Reg.Server.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreationTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("FullName")
                         .HasColumnType("text");
@@ -392,19 +392,19 @@ namespace Reg.Server.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "9dfbf7c1-34ce-40ba-9a71-0c7b1b7c1538",
+                            Id = "c9e1bb83-1f19-45ca-bca4-6b988923ca4a",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "7fe0569a-3656-4a3e-b2f8-0f533b217e79",
+                            Id = "8f7f5340-3891-4adb-a71c-ada748f5286e",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         },
                         new
                         {
-                            Id = "77425029-cf1f-412c-8af1-9a19f56c4d05",
+                            Id = "67371b1f-6c3b-4b11-aacb-80339892a3d0",
                             Name = "AppAdministrator",
                             NormalizedName = "APPADMINISTRATOR"
                         });
@@ -559,11 +559,10 @@ namespace Reg.Server.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("RefreshToken")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("RefreshTokenExpiryTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");

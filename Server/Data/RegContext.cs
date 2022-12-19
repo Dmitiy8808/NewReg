@@ -13,6 +13,7 @@ namespace Reg.Server.Context
         public RegContext(DbContextOptions<RegContext> options)
             :base(options)
         {
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
         }
 
         protected override void OnModelCreating(ModelBuilder builder)

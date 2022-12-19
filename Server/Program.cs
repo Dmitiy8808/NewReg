@@ -51,7 +51,11 @@ builder.Services.AddTransient<IRequestRepository, RequestRepository>();
 builder.Services.AddScoped<IEmailSender, EmailSender>();
 
 builder.Services.AddIdentity<User, IdentityRole>()
-    .AddEntityFrameworkStores<RegContext>();
+    .AddEntityFrameworkStores<RegContext>()
+    .AddDefaultTokenProviders();
+
+builder.Services.Configure<DataProtectionTokenProviderOptions>(opt => 
+    opt.TokenLifespan = TimeSpan.FromHours(1));
 
 var jwtSettings = builder.Configuration.GetSection("JWTSettings"); 
 builder.Services.AddAuthentication(opt => 

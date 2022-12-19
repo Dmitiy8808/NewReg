@@ -1,7 +1,56 @@
 @page "/login"
 @layout LoginLayout
 
-<MudGrid>
+@if (ShowAuthError)
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            <p>@Error</p>
+                        </div>
+                    } 
+
+<EditForm Model="@_userForAuthentication" OnValidSubmit="ExecuteLogin">
+
+    <MudGrid>
+        <MudItem xs="12">
+            <div class="d-flex justify-center">
+                <MudIcon Icon="@Icons.Filled.Lock" Color="Color.Primary" Size="Size.Large"  Style="width: 100px; height: 100px;" />
+            </div>
+        </MudItem>
+        <DataAnnotationsValidator />
+        <MudItem xs="12">
+            <div class="d-flex justify-center">
+                <MudText Typo="Typo.h4">Вход в 1С:Подпись</MudText>
+            </div>
+        </MudItem>
+        @* <MudItem xs="12">
+            <div class="d-flex justify-center">
+                <MudText>@_localizer["Description"]</MudText>
+            </div>
+        </MudItem> *@
+        @* <MudItem xs="12">
+            <div class="d-flex justify-center">
+                <MudText>@_localizer["Don't have an account?"] <MudLink Href="/register">@_localizer["Register here"]</MudLink></MudText>
+            </div>
+        </MudItem> *@
+        <MudItem xs="12">
+            <MudTextField T="string" Label="Email" Variant="Variant.Outlined"
+                          @bind-Value="_userForAuthentication.Email" For="@(() => _userForAuthentication.Email)" />
+        </MudItem>
+        <MudItem xs="12">
+            <MudTextField Label="Пароль" Variant="Variant.Outlined"
+                          @bind-Value="_userForAuthentication.Password" For="@(() => _userForAuthentication.Password)"
+                          InputType="@_passwordInput" Adornment="Adornment.End" AdornmentIcon="@_passwordInputIcon" OnAdornmentClick="TogglePasswordVisibility" />
+        </MudItem>
+        <MudItem xs="12" Class="d-flex justify-space-between align-center">
+            <MudLink Href="/forgotpassword">Забыли пароль?</MudLink>
+        </MudItem>
+        <MudItem xs="12" Class="d-flex justify-center">
+            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled"  Color="Color.Primary" Size="Size.Large" Style="width: 100%;">Войти</MudButton>
+        </MudItem>
+    </MudGrid>
+</EditForm>
+
+@* <MudGrid>
     <MudItem xs="12">
         <MudPaper MinHeight=82vh Elevation=0 Class="d-flex  justify-center mud-width-full" >
                 <MudPaper Elevation=0 Class="d-flex flex-column align-center justify-center mud-width-full py-8" Width=30% MinWidth=500px>
@@ -27,11 +76,11 @@
                                         InputType="@_passwordInput" Adornment="Adornment.End" AdornmentIcon="@_passwordInputIcon" OnAdornmentClick="TogglePasswordVisibility"/>
                         </MudPaper>
                         
-                        @* <MudCheckBox T="bool" Label="Запомнить?" Color="Color.Primary" Class="ml-n1"></MudCheckBox>  *@
-                        <MudLink Href="/account/forgot-password">Забыли пароль?</MudLink>
+                        <MudCheckBox T="bool" Label="Запомнить?" Color="Color.Primary" Class="ml-n1"></MudCheckBox>  
+                        <MudLink Href="/forgotpassword">Забыли пароль?</MudLink>
                         <MudButton Class="mt-4" ButtonType="ButtonType.Submit" Variant="Variant.Filled"  Color="Color.Primary" Size="Size.Large" Style="width: 100%;">Войти</MudButton>
                     </EditForm>
                 </MudPaper>
         </MudPaper>
     </MudItem>
-</MudGrid>
+</MudGrid> *@

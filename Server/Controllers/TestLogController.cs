@@ -19,8 +19,8 @@ namespace Server.Controllers
         [HttpGet]
         public void Get()
         {
-            var message = new EmailMessage(new string[] { "dmitriy-stupin@mail.ru" }, "Test email", "This is the content from our email.");
-            _emailSender.SendEmail(message);
+            // var message = new EmailMessage(new string[] { "dmitriy-stupin@mail.ru" }, "Test email", "This is the content from our email.");
+            // _emailSender.SendEmail(message);
 
         }
 

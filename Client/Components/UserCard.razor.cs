@@ -4,6 +4,8 @@ namespace Reg.Client.Components
 {
     public partial class UserCard
     {
+        [Inject]
+        NavigationManager NavigationManager { get; set; }
         [Parameter] public string Email { get; set; }
         [Parameter] public string Class { get; set; }
         private char FirstLetterOfEmail { get; set; }
@@ -13,6 +15,13 @@ namespace Reg.Client.Components
         {
             FirstLetterOfEmail = Email[0];
         }
+
+        void Logout()
+        {
+            NavigationManager.NavigateTo("/logout");
+        }
+
+
 
         // private async Task LoadDataAsync()
         // {

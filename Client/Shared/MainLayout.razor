@@ -6,12 +6,30 @@
     MaxWidth="MaxWidth.Small"/>
 <MudSnackbarProvider />
 
+<AuthorizeView>
 <MudLayout>
     <MudAppBar Elevation="0">
         
         <MudSpacer />
         
-        <Reg.Client.Components.UserCard></Reg.Client.Components.UserCard>
+        @* <Reg.Client.Components.UserCard></Reg.Client.Components.UserCard> *@
+        
+            
+                <MudText Color="Color.Dark" Typo="Typo.body2">@context.User.Identity.Name</MudText>   
+            <MudMenu Direction="_rightToLeft ? Direction.Right : Direction.Left" OffsetX="true" Dense="true" Class="mt-1 ml-4">
+                        <ActivatorContent>
+                            
+                            <MudAvatar Style="@($"background-color: #FF1313;")">@context.User.Identity.Name.ToUpper()[0]</MudAvatar>
+                                
+                        </ActivatorContent>
+                        <ChildContent>
+                            
+                            @* <MudListItem Text="Аккаунт" Href="/account" Icon="@Icons.Material.Outlined.Person" /> *@
+                            <MudListItem Text="Выйти" Icon="@Icons.Material.Filled.Logout" OnClick="Logout" />
+                        </ChildContent>
+            </MudMenu>
+            
+
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" Elevation="1">
         <MudDrawerHeader>
@@ -25,26 +43,5 @@
         </MudContainer>
     </MudMainContent>
 </MudLayout>
+</AuthorizeView>
 
-@code {
-    bool _drawerOpen = true;
-
-    void DrawerToggle()
-    {
-        _drawerOpen = !_drawerOpen;
-    }
-
-    MudTheme MyCustomTheme = new MudTheme()
-    {
-        Palette = new Palette()
-        {
-            Primary = Colors.Yellow.Darken1,
-            PrimaryContrastText = Colors.Shades.Black,
-            Secondary = Colors.Green.Accent4,
-            AppbarBackground = Colors.Yellow.Darken1,
-            Background = Colors.Grey.Lighten5
-        }
-
-    };
-
-}

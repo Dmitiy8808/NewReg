@@ -5,6 +5,8 @@ using Blazored.LocalStorage;
 using Client.AuthProviders;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Net.Http.Headers;
+using System.Net;
+using Microsoft.AspNetCore.Components;
 
 namespace Client.HttpRepository
 {
@@ -15,13 +17,17 @@ namespace Client.HttpRepository
         private readonly AuthenticationStateProvider _authStateProvider;
         private readonly JsonSerializerOptions _options = 
             new JsonSerializerOptions {PropertyNameCaseInsensitive = true};
+		private readonly NavigationManager _navManager;
+
         public AuthenticationService(HttpClient client,
 			AuthenticationStateProvider authStateProvider,
-			ILocalStorageService localStorage)
+			ILocalStorageService localStorage,
+			NavigationManager navManager)
         {
             _authStateProvider = authStateProvider;
             _localStorage = localStorage;
             _client = client;
+			_navManager = navManager;
             
         }
         public async Task<ResponseDto> RegisterUser(UserForRegistrationDto userForRegistrationDto)
@@ -94,6 +100,30 @@ namespace Client.HttpRepository
 				("bearer", result.Token);
 
 			return result.Token;
+		}
+
+        public async Task<HttpStatusCode> ForgotPassword(ForgotPasswordDto forgotPasswordDto)
+		{
+			forgotPasswordDto.ClientURI =
+				Path.Combine(_navManager.BaseUri, "setpassword");
+
+			var result = await _client.PostAsJsonAsync("account/forgotpassword",
+				forgotPasswordDto);
+
+			return result.StatusCode;
+		}
+
+        public async Task<ResetPasswordResponseDto> ResetPassword(ResetPasswordDto resetPasswordDto)
+		{
+			var resetResult = await _client.PostAsJsonAsync("account/resetpassword",
+				resetPasswordDto);
+
+			var resetContent = await resetResult.Content.ReadAsStringAsync();
+
+			var result = JsonSerializer.Deserialize<ResetPasswordResponseDto>(resetContent,
+				_options);
+
+			return result;
 		}
     }
 }

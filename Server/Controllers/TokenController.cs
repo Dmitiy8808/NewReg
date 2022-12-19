@@ -10,7 +10,7 @@ using Server.Services;
 
 namespace Server.Controllers
 {
-    [Route("api/account")]
+    [Route("api/token")]
     [ApiController]
     public class TokenController : ControllerBase
     {

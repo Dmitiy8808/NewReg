@@ -1,4 +1,4 @@
-@page "/requests"
+@page "/"
 @using Entities.Models
 
 <MudTable  ServerData="@(new Func<TableState, Task<TableData<RequestAbonent>>>(GetServerData))"
