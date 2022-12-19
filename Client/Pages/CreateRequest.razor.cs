@@ -13,6 +13,7 @@ namespace Reg.Client.Pages
 {
     public partial class CreateRequest : IDisposable
     {
+        // private UserForRegistrationListDto _userForRegistrationList = new UserForRegistrationListDto();
         MudForm form; 
         bool dataSuccess;
         MudForm formUl; 
@@ -427,6 +428,10 @@ namespace Reg.Client.Pages
             if (dataSuccess)
             {
                 _requestList.AbonentList.Add(Mapper.Map<RequestAbonentCreateDto>(_request));
+
+                // _userForRegistrationList.UserForRegistrationList.Add(new UserForRegistrationDto {
+                //     Email = _request.PersonEmail
+                // });
 
                 _persons.Add(new PersonItem
                 (

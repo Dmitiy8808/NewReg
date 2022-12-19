@@ -45,8 +45,9 @@ builder.Services.AddScoped<ICountryRepository, CountryRepository>();
 builder.Services.AddScoped<ICompanyRepository, CompanyRepository>(); 
 builder.Services.AddScoped<IProviderRepository, ProviderRepository>(); 
 builder.Services.AddScoped<IRegionRepository, RegionRepository>();
-builder.Services.AddTransient<IQualifiedCertificateManager, QualifiedCertificateManager>();  
-builder.Services.AddTransient<IRequestRepository, RequestRepository>();
+builder.Services.AddTransient<IQualifiedCertificateManager, QualifiedCertificateManager>();   
+builder.Services.AddTransient<IRequestRepository, RequestRepository>(); 
+builder.Services.AddTransient<IRegistrationService, RegistrationService>(); 
 
 builder.Services.AddScoped<IEmailSender, EmailSender>();
 

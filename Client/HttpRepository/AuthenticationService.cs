@@ -45,6 +45,21 @@ namespace Client.HttpRepository
             return new ResponseDto { IsSuccessfulRegistration = true};
         }
 
+		// public async Task<ResponseDto> RegisterUserByEmail(UserForRegistrationListDto userForRegistrationListDto)
+        // {
+        //     var response = await _client.PostAsJsonAsync("account/registerEmail", userForRegistrationListDto);
+        //     if (!response.IsSuccessStatusCode)
+        //     {
+        //         var content = await response.Content.ReadAsStringAsync();
+
+        //         var result = JsonSerializer.Deserialize<ResponseDto>(content, _options);
+
+        //         return result;
+        //     }
+
+        //     return new ResponseDto { IsSuccessfulRegistration = true};
+        // }
+
         public async Task<AuthResponseDto> Login(UserForAuthenticationDto userForAuthentication)
 		{
 			var response = await _client.PostAsJsonAsync("account/login",

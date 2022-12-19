@@ -18,9 +18,12 @@ namespace Server.Controllers
         private readonly IQualifiedCertificateManager _qualifiedCertificateManager;
         private readonly IRequestRepository _requestRepository;
         private readonly IMapper _mapper;
+        private readonly IRegistrationService _registrationService;
         public RegRequestsController(IQualifiedCertificateManager qualifiedCertificateManager, 
-                IRequestRepository requestRepository, IMapper mapper)
+        
+                IRequestRepository requestRepository, IMapper mapper, IRegistrationService registrationService)
         {
+            _registrationService = registrationService;
             _mapper = mapper;
             _requestRepository = requestRepository;
             _qualifiedCertificateManager = qualifiedCertificateManager;
@@ -65,6 +68,7 @@ namespace Server.Controllers
             var requestAbonentModelList = _mapper.Map<List<RequestAbonent>>(requestAbonentCreateDtoList.AbonentList);
             
             await _requestRepository.CreateRequests(requestAbonentModelList);
+            await _registrationService.CreateIdentityUsersFromRequestAbonentList(requestAbonentCreateDtoList);
 
             return Ok(); //Ответ должен быть 201 Ceratedc с указанием созданных Id
         }
