@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace Reg.Client.Pages
 {
-    public partial class GenerateRequestConfirm
+    public partial class SendUcRequestConfirm
     {
         [Inject]
         NavigationManager NavigationManager { get; set; }

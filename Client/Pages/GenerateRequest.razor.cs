@@ -17,7 +17,9 @@ namespace Reg.Client.Pages
     {
         MudForm form; 
         MudForm formdoc;
+        MudForm formId;
         bool dataSuccess;
+        bool idSuccess;
         bool docSuccess;
         public EventCallback<RequestFileReadDto> OnChange { get; set; }
         public DateTime? PassportDate { get; set; }
@@ -37,6 +39,8 @@ namespace Reg.Client.Pages
         IRequestFileHttpRepository RequestFileHttpRepo { get; set; }
         [Inject]
         IRegRequestHttpRepository RequestRepo { get; set; }
+        private List<string> fileNamesSelfi = new List<string>();
+        public RequestFileReadDto RequestFileReadDtoSelfi = new RequestFileReadDto();
         [Inject]
         public NavigationManager NavigationManager { get; set; }
         [Inject]
@@ -54,6 +58,8 @@ namespace Reg.Client.Pages
         private RequestFileReadDto? _snilsFile { get; set; }
         public RequestFileReadDto RequestFileReadDtoDov = new RequestFileReadDto();
         private RequestFileReadDto? _dovFile { get; set; }
+        private RequestFileReadDto? _selfiFile { get; set; }
+        MudFileUpload<IReadOnlyList<IBrowserFile>> selfiValidation;
         public RequestFileReadDto RequestFileReadDtoClaim = new RequestFileReadDto();
         private RequestFileReadDto? _claimFile { get; set; }
         List<RequestFileReadDto> requestFileList= new List<RequestFileReadDto>();
@@ -105,6 +111,13 @@ namespace Reg.Client.Pages
                RequestFileReadDtoDov.Name = _dovFile.Name;
             }
 
+             _selfiFile = requestFileList.Where(type => type.TypeId == 5).FirstOrDefault();
+            if (_selfiFile != null)
+            {
+               fileNamesSelfi.Add(_selfiFile.Name); 
+               RequestFileReadDtoSelfi.Id = _selfiFile.Id;
+            }
+
             _claimFile = requestFileList.Where(type => type.TypeId == 3).FirstOrDefault();
             if (_claimFile != null)
             {
@@ -146,6 +159,14 @@ namespace Reg.Client.Pages
            
         }
 
+        private async Task SilentUpdate()
+        {   
+            
+            await RequestRepo.UpdateRequestAbonent(Id, Mapper.Map<RequestAbonentUpdateDto>(_request));
+
+           
+        }
+
         private async Task Back()
         {   
             NavigationManager.NavigateTo($"/connection/{Search}", false);
@@ -154,6 +175,33 @@ namespace Reg.Client.Pages
         private async Task GenRequest()
         {
             await Confirm();
+      
+        }
+
+        private async Task Checked()
+        {
+            await formId.Validate();
+            if (idSuccess)
+            {
+                var parameters = new DialogParameters();
+                parameters.Add("ContentText", "Нажимая кнопку \"Отправить\" Вы подтверждаете идентификацию личности лица указанного в заявке");
+                parameters.Add("ButtonText", "Отправить");
+                parameters.Add("Color", Color.Primary);
+
+                var dialog = DialogService.Show<ConfirmDialog>("Подтверждение данных", parameters);
+                var result = await dialog.Result;
+                if (!result.Cancelled)
+                {
+                    _request.StepId = 3;
+                    await Update();
+                    NavigationManager.NavigateTo("/generateRequestConfirm");
+                }
+            }
+            else if (!idSuccess)
+            {
+                Snackbar.Add("Загрузите селфи", Severity.Error);
+            }
+            
       
         }
        
@@ -231,11 +279,11 @@ namespace Reg.Client.Pages
         private async Task Confirm()
         {
             var parameters = new DialogParameters();
-            parameters.Add("ContentText", "Нажмите кнопку \"Выполнить\", чтобы запустить криптографические операции и подготовить заявление к отправке.");
+            parameters.Add("ContentText", "Нажмите кнопку \"Выполнить\", чтобы запустить криптографические операции и подготовить заявление к отправке. Предварительно скачайте и установите 1C Toolbox. ");
             parameters.Add("ButtonText", "Выполнить");
             parameters.Add("Color", Color.Primary);
 
-            var dialog = DialogService.Show<ConfirmDialog>("Подготовка к формированию контейнера", parameters);
+            var dialog = DialogService.Show<ConfirmDialogToolbox>("Подготовка к формированию контейнера", parameters);
             var result = await dialog.Result;
             if (!result.Cancelled)
             {
@@ -252,13 +300,69 @@ namespace Reg.Client.Pages
                 if(messageResponse.Success)
                     Console.WriteLine("Запрос сформирован");
                     _request.CertRequest = messageResponse.Data.value;
-                    _request.StepId = 3;
-                    await Update();
+                    _request.StepId = 4;
+                    await SilentUpdate();
+                    NavigationManager.NavigateTo("/generateRequestConfirm");
+        }
+
+
+        //Загрузка Селфи
+        private async Task OnInputFileChangedSelfi(InputFileChangeEventArgs e)
+        {
+            requestFileFeatures.TypeId = 5;
+            await ClearSelfi();
+            ClearDragClassSelfi();
+            var file = e.File;
+            fileNamesSelfi.Add(file.Name);
+            await selfiValidation.Validate();
+            using (var ms = file.OpenReadStream(file.Size))
+            {
+                var content = new MultipartFormDataContent();
+                content.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data");
+                content.Add(new StreamContent(ms, Convert.ToInt32(file.Size)), file.ContentType, file.Name);
+                RequestFileReadDtoSelfi = await RequestFileHttpRepo.UploadRequestFile(content, requestFileFeatures);
+                await OnChange.InvokeAsync(RequestFileReadDtoSelfi);  
+            }
+            
+        }
+
+        private async Task ClearSelfi()
+        {
+            if (RequestFileReadDtoSelfi.Id != Guid.Empty)
+            {
+                await RequestFileHttpRepo.DeleteRequestFile(RequestFileReadDtoSelfi.Id);
+                RequestFileReadDtoSelfi.Id = Guid.Empty;
+            }
+            
+            fileNamesSelfi.Clear();
+            ClearDragClassSelfi();
+
+        }
+
+        private void SetDragClassSelfi()
+        {
+            DragClass = $"{DefaultDragClass} mud-border-primary";
+        }
+
+        private void ClearDragClassSelfi()
+        {
+            DragClass = DefaultDragClass;
+        }
+
+        private string ValidationSelfi(IReadOnlyList<IBrowserFile> fileList)
+        {
+            if (!fileNamesSelfi.Any())
+            {
+               return "Загрузите документ"; 
+            }
+            return null;
         }
 
         public void Dispose()
         {
             Interceptor.DisposeEvent();
         }
+
+
     }
 }

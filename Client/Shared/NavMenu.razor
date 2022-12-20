@@ -1,9 +1,13 @@
 ﻿<MudNavMenu>
-    <MudNavLink Href="/createRequest" Match="NavLinkMatch.All" Icon="@Icons.Filled.AddCircleOutline">Получить подпись</MudNavLink>
+    <AuthorizeView Roles="Administrator">
+        <Authorized>
+            <MudNavLink Href="/createRequest" Match="NavLinkMatch.All" Icon="@Icons.Filled.AddCircleOutline">Создать заявку</MudNavLink>
+        </Authorized>
+    </AuthorizeView>
     <MudNavGroup Title="Мои заявления" Icon="@Icons.Filled.ReceiptLong" Expanded="true">
             <MudNavLink Href="/" Match="NavLinkMatch.All">Сформированные</MudNavLink>
             <MudNavLink Href="/requestsDraft">Черновики</MudNavLink>
     </MudNavGroup>
-    <MudNavLink Href="counter" Match="NavLinkMatch.Prefix" Icon="@Icons.Filled.FactCheck">Проверка</MudNavLink>
-    <MudNavLink Href="fetchdata" Match="NavLinkMatch.Prefix" Icon="@Icons.Filled.HelpOutline">Помощь</MudNavLink>
+    <MudNavLink Href="/check" Match="NavLinkMatch.Prefix" Icon="@Icons.Filled.FactCheck">Проверка</MudNavLink>
+    <MudNavLink Href="/help" Match="NavLinkMatch.Prefix" Icon="@Icons.Filled.HelpOutline">Помощь</MudNavLink>
 </MudNavMenu>

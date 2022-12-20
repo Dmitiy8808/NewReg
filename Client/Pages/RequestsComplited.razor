@@ -96,13 +96,13 @@
             <MudTd Style="width:15%;" DataLabel="Статус">
                 @if (@context.StepId == 2)
                 {
-                    <MudChip Color="Color.Warning">Подготовлено</MudChip>
+                    <MudChip Color="Color.Warning">На проверке</MudChip>
                 }
                 else if (@context.StepId == 3)
                 {
                     <MudChip Color="Color.Info">Генерация запроса</MudChip>
                 }
-                else if (@context.StepId == 3)
+                else if (@context.StepId == 4)
                 {
                     <MudChip Color="Color.Tertiary">Ожидание сертификата</MudChip>
                 }

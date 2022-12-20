@@ -2,7 +2,8 @@
     div.mud-layout.mud-drawer-open-responsive-md-left.mud-drawer-left-clipped-never > div > div > div > div > div:nth-child(3) > form > div > div:nth-child(3) > div > div:nth-child(1) > div:nth-child(2) > div > div > div.mud-input-control-helper-container > p,
     div.mud-layout.mud-drawer-open-responsive-md-left.mud-drawer-left-clipped-never > div > div > div > div > div:nth-child(3) > form > div > div:nth-child(3) > div > div:nth-child(2) > div:nth-child(2) > div > div > div.mud-input-control-helper-container > p,
     div.mud-layout.mud-drawer-open-responsive-md-left.mud-drawer-left-clipped-never > div > div > div > div > div:nth-child(3) > form > div > div:nth-child(4) > div > div.mud-paper.mud-elevation-0.d-flex.flex-column.pb-4 > div:nth-child(2) > div > div > div.mud-input-control-helper-container > p,
-    div.mud-layout.mud-drawer-open-responsive-md-left.mud-drawer-left-clipped-never > div > div > div > div > div:nth-child(3) > form > div > div:nth-child(4) > div > div:nth-child(2) > div:nth-child(2) > div > div > div.mud-input-control-helper-container > p
+    div.mud-layout.mud-drawer-open-responsive-md-left.mud-drawer-left-clipped-never > div > div > div > div > div:nth-child(3) > form > div > div:nth-child(4) > div > div:nth-child(2) > div:nth-child(2) > div > div > div.mud-input-control-helper-container > p,
+    div.mud-layout.mud-drawer-open-responsive-md-left.mud-drawer-left-clipped-never > div > div > div > div > div:nth-child(4) > form > div > div > div > div > div:nth-child(2) > div > div > div.mud-input-control-helper-container > p
     {
         margin-top: 20px;
     }
@@ -21,21 +22,70 @@
                 Elevation=0 MinWidth=500px MaxWidth=45%
                  Class="d-flex mud-width-full justify-start mt-10 flex-column gap-4"
                   Style="@($"border:1px solid {Colors.BlueGrey.Lighten5};")">
+                
                 <MudPaper Elevation=0 Class="d-flex  mud-width-full justify-space-between align-center">
-                    <MudText Class="d-flex  ml-4 " Typo="Typo.h5">Данные заявки</MudText>
-                    <MudPaper Elevation=0 Class="d-flex mt-6 gap-4 mr-4">
-                        <MudButton 
-                            OnClick="@Update" 
-                            Variant="Variant.Outlined" 
-                            Color="Color.Primary">Сохранить
-                        </MudButton>
-                        <MudButton 
-                            OnClick="@GenRequest" 
-                            EndIcon="@Icons.Material.Filled.Send" 
-                            Variant="Variant.Filled" 
-                            Color="Color.Primary">Генерация
-                        </MudButton> 
-                    </MudPaper>
+                    @if (_request.StepId == 2)
+                    {
+                        <AuthorizeView Roles="User">
+                            <Authorized>
+                                <MudText Class="d-flex  mt-4 ml-4 " Typo="Typo.h5">Заявка на проверке. Дождитесь окончания</MudText>
+                                <MudPaper Elevation=0 Class="d-flex mt-6 gap-4 mr-4">
+                                </MudPaper>
+                            </Authorized>
+                        </AuthorizeView>
+                         <AuthorizeView Roles="Administrator">
+                            <Authorized>
+                                <MudText Class="d-flex  mt-4 ml-4 " Typo="Typo.h5">Подтвердите корректность заявки</MudText>
+                                <MudPaper Elevation=0 Class="d-flex mt-6 gap-4 mr-4">
+                                    <MudButton 
+                                        OnClick="@Checked" 
+                                        EndIcon="@Icons.Material.Filled.Send" 
+                                        Variant="Variant.Filled" 
+                                        Color="Color.Primary">Проверено
+                                    </MudButton> 
+                                </MudPaper>
+                            </Authorized>
+                        </AuthorizeView>
+                        
+                    }
+                    else if (_request.StepId == 3)
+                    {
+                        <AuthorizeView Roles="User">
+                            <Authorized>
+                                <MudText Class="d-flex  ml-4 " Typo="Typo.h5">Данные заявки</MudText>
+                                <MudPaper Elevation=0 Class="d-flex mt-6 gap-4 mr-4">
+                                    <MudButton 
+                                        OnClick="@GenRequest" 
+                                        EndIcon="@Icons.Material.Filled.Send" 
+                                        Variant="Variant.Filled" 
+                                        Color="Color.Primary">Генерация
+                                    </MudButton>  
+                                </MudPaper>
+                            </Authorized>
+                        </AuthorizeView>
+                        <AuthorizeView Roles="Administrator">
+                            <Authorized>
+                                <MudText Class="d-flex mt-4 ml-4 " Typo="Typo.h5">Пользователю необходимо сформировать запрос на сертификат</MudText>
+                               
+                            </Authorized>
+                        </AuthorizeView>    
+                    }
+                    else if (_request.StepId == 4)
+                    {
+                        <AuthorizeView Roles="User">
+                            <Authorized>
+                                <MudText Class="d-flex mt-4 mr-4 ml-4 " Typo="Typo.h5">Ожидайте выпуск сертификата в удостоверяющем центре</MudText>
+
+                            </Authorized>
+                        </AuthorizeView>
+                        <AuthorizeView Roles="Administrator">
+                            <Authorized>
+                                <MudText Class="d-flex mt-4 mr-4 ml-4 " Typo="Typo.h5">Ожидайте выпуск сертификата в удостоверяющем центре</MudText>
+                               
+                            </Authorized>
+                        </AuthorizeView>    
+                    }
+                    
                     
                 </MudPaper>
                 
@@ -416,6 +466,66 @@
                 </MudCardContent>
             </MudForm>
             </MudPaper>
+            <AuthorizeView Roles="Administrator">
+                <Authorized>
+                     <MudPaper 
+                Elevation=0 MinWidth=500px MaxWidth=45%
+                 Class="d-flex mud-width-full justify-center "
+                  Style="@($"border:1px solid {Colors.BlueGrey.Lighten5};")">
+                <MudForm Class="d-flex mud-width-full justify-center " @ref="formId" @bind-IsValid="@idSuccess" >
+                <MudCardContent Class="mud-width-full">
+                    <MudText>Документы идентификации</MudText>
+                    
+                    <MudGrid>
+                        <MudItem xs="12" Class="d-flex align-start justify-space-between  gap-4 mt-4 mb-4" >
+                            <MudPaper Elevation=0 Width=48% Class="d-flex flex-column">
+                                    <MudPaper Elevation=0 Class="d-flex justify-space-between align-center">
+                                        <MudText>Фото владельца</MudText>
+                                        <MudTooltip Text="Приложите Селфи с Паспортом владельца">
+                                            <MudFab Class="d-flex z-30"  Color="Color.Primary" StartIcon="@Icons.Filled.QuestionMark"  Size="Size.Small" />
+                                        </MudTooltip>
+                                        
+                                    </MudPaper>
+                                    <MudPaper Elevation=0 Class="d-flex">
+                                        <MudStack Style="width: 100%">
+                                            <MudFileUpload @ref="selfiValidation" T="IReadOnlyList<IBrowserFile>" OnFilesChanged="OnInputFileChangedSelfi" Hidden="false" 
+                                                            Accept=".pdf, .png" 
+                                                            Class="flex-1" 
+                                                            Validation="@(new Func<IReadOnlyList<IBrowserFile>, string>(ValidationSelfi))"
+                                                            InputClass="absolute mud-width-full mud-height-full overflow-hidden z-20" 
+                                                            InputStyle="opacity:0"
+                                                        @ondragenter="@SetDragClassSelfi" @ondragleave="@ClearDragClassSelfi" @ondragend="@ClearDragClassSelfi">
+                                                <ButtonTemplate Context="SlfiContext">
+                                                    <MudPaper Elevation=0  MinHeight=130px Outlined="true" Class="@DragClass">
+                                                        <MudText Class="z-30" >Загрузить файл</MudText>
+                                                        @foreach (var file in fileNamesSelfi)
+                                                        {   <MudPaper  Elevation=0 Class="d-flex gap-4 mt-4" >
+                                                                <MudPaper Elevation=0 MinWidth=70%>
+                                                                    <MudChip Color="Color.Dark" Text="@file" />
+                                                                </MudPaper>
+                                                                <MudPaper Elevation=0 MinWidth=20%>
+                                                                    <MudFab Class="d-flex z-30" OnClick="@ClearSelfi" Color="Color.Primary" StartIcon="@Icons.Filled.DeleteOutline"  Size="Size.Small" />
+                                                                </MudPaper>
+                                                            </MudPaper>  
+                                                        }
+                                                    </MudPaper>
+                                                </ButtonTemplate>
+                                            </MudFileUpload>
+                                            
+                                        </MudStack>
+                                    </MudPaper>
+                                </MudPaper>
+                            
+                            
+                        </MudItem>
+                    </MudGrid>
+                     
+                </MudCardContent>
+                </MudForm>
+            </MudPaper>
+                </Authorized>
+            </AuthorizeView>
+           
     </MudPaper>
     
 </MudGrid>

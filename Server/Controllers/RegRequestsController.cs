@@ -7,6 +7,8 @@ using Server.Repository;
 using Entities.RequestFeatures;
 using Server.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Server.Data;
 
 namespace Server.Controllers
 {
@@ -15,18 +17,24 @@ namespace Server.Controllers
     [Authorize]
     public class RegRequestsController : ControllerBase
     {
+        
+        private readonly UserManager<User> _userManager;
         private readonly IQualifiedCertificateManager _qualifiedCertificateManager;
+        private readonly IAuthorizationService _authorizationService;
         private readonly IRequestRepository _requestRepository;
         private readonly IMapper _mapper;
         private readonly IRegistrationService _registrationService;
         public RegRequestsController(IQualifiedCertificateManager qualifiedCertificateManager, 
         
-                IRequestRepository requestRepository, IMapper mapper, IRegistrationService registrationService)
+                IRequestRepository requestRepository, IMapper mapper, IRegistrationService registrationService,
+                IAuthorizationService authorizationService, UserManager<User> userManager)
         {
             _registrationService = registrationService;
             _mapper = mapper;
             _requestRepository = requestRepository;
             _qualifiedCertificateManager = qualifiedCertificateManager;
+            _authorizationService = authorizationService;
+            _userManager = userManager;
             
         }
 
@@ -89,10 +97,22 @@ namespace Server.Controllers
         [HttpGet]
         public async Task<IActionResult> GetDraftRegRequestAbonents([FromQuery] RequestAbonentParameters requestAbonentParameters)
         {
+             IEnumerable<RequestAbonent>? queryRequestAbonent = new List<RequestAbonent>();
+            var user = await _userManager.FindByNameAsync(HttpContext.User.Identity.Name);
+            var login = HttpContext.User.Identity.Name;
+            var role = await _userManager.IsInRoleAsync(user, "Administrator");
             var requestAbonents = await _requestRepository.GetDraftRequests(requestAbonentParameters);
 
-            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(requestAbonents.MetaData));
+            if (!role)
+            {
+                
+                queryRequestAbonent = requestAbonents.Where(x => x.Person.Email == login);
+                Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(requestAbonents.MetaData));
+                return Ok(queryRequestAbonent);
+            }
 
+           
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(requestAbonents.MetaData));
             return Ok(requestAbonents);
         }
 
@@ -100,11 +120,25 @@ namespace Server.Controllers
         [HttpGet]
         public async Task<IActionResult> GetRegRequestAbonents([FromQuery] RequestAbonentParameters requestAbonentParameters)
         {
+            IEnumerable<RequestAbonent>? queryRequestAbonent = new List<RequestAbonent>();
+            var user = await _userManager.FindByNameAsync(HttpContext.User.Identity.Name);
+            var login = HttpContext.User.Identity.Name;
+            var role = await _userManager.IsInRoleAsync(user, "Administrator");
             var requestAbonents = await _requestRepository.GetRequests(requestAbonentParameters);
 
-            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(requestAbonents.MetaData));
+            if (!role)
+            {
+                
+                queryRequestAbonent = requestAbonents.Where(x => x.Person.Email == login);
+                Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(requestAbonents.MetaData));
+                return Ok(queryRequestAbonent);
+            }
 
+           
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(requestAbonents.MetaData));
             return Ok(requestAbonents);
+
+            
         }
 
         [Route("RequestAbonent/{id:guid}")]
