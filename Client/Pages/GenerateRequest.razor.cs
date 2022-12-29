@@ -18,8 +18,10 @@ namespace Reg.Client.Pages
         MudForm form; 
         MudForm formdoc;
         MudForm formId;
+        MudForm formCert;
         bool dataSuccess;
         bool idSuccess;
+        bool certSuccess;
         bool docSuccess;
         public EventCallback<RequestFileReadDto> OnChange { get; set; }
         public DateTime? PassportDate { get; set; }
@@ -40,7 +42,9 @@ namespace Reg.Client.Pages
         [Inject]
         IRegRequestHttpRepository RequestRepo { get; set; }
         private List<string> fileNamesSelfi = new List<string>();
+        private List<string> fileNamesCert = new List<string>();
         public RequestFileReadDto RequestFileReadDtoSelfi = new RequestFileReadDto();
+        public RequestFileReadDto RequestFileReadDtoCert = new RequestFileReadDto();
         [Inject]
         public NavigationManager NavigationManager { get; set; }
         [Inject]
@@ -59,7 +63,9 @@ namespace Reg.Client.Pages
         public RequestFileReadDto RequestFileReadDtoDov = new RequestFileReadDto();
         private RequestFileReadDto? _dovFile { get; set; }
         private RequestFileReadDto? _selfiFile { get; set; }
+        private RequestFileReadDto? _certFile { get; set; }
         MudFileUpload<IReadOnlyList<IBrowserFile>> selfiValidation;
+        MudFileUpload<IReadOnlyList<IBrowserFile>> certValidation;
         public RequestFileReadDto RequestFileReadDtoClaim = new RequestFileReadDto();
         private RequestFileReadDto? _claimFile { get; set; }
         List<RequestFileReadDto> requestFileList= new List<RequestFileReadDto>();
@@ -116,6 +122,13 @@ namespace Reg.Client.Pages
             {
                fileNamesSelfi.Add(_selfiFile.Name); 
                RequestFileReadDtoSelfi.Id = _selfiFile.Id;
+            }
+
+             _certFile = requestFileList.Where(type => type.TypeId == 6).FirstOrDefault();
+            if (_certFile != null)
+            {
+               fileNamesCert.Add(_certFile.Name); 
+               RequestFileReadDtoCert.Id = _certFile.Id;
             }
 
             _claimFile = requestFileList.Where(type => type.TypeId == 3).FirstOrDefault();
@@ -178,6 +191,45 @@ namespace Reg.Client.Pages
       
         }
 
+        private async Task InstallCert()
+        {
+            var certData = await RequestRepo.GetCertificateData(_request.Id);
+            var messageResponse = await WebSocketService.InstallCertificate(certData);
+            if (messageResponse != null)
+                if(messageResponse.Success)
+                    Console.WriteLine("Сертификат установлен");
+                    _request.StepId = 6;
+                    await SilentUpdate();
+                    Snackbar.Add("Сертификат установлен", Severity.Success);
+                    NavigationManager.NavigateTo("/");
+        }
+
+        private async Task LoadCert()
+        {
+            await formCert.Validate();
+            if (certSuccess)
+            {
+                var parameters = new DialogParameters();
+                parameters.Add("ContentText", "Нажимая кнопку отправить вы подтверждаете выпуск сертификата");
+                parameters.Add("ButtonText", "Отправить");
+                parameters.Add("Color", Color.Primary);
+
+                var dialog = DialogService.Show<ConfirmDialog>("Подтверждение выпуска сертификата", parameters);
+                var result = await dialog.Result;
+                if (!result.Cancelled)
+                {
+                    _request.StepId = 5;
+                    await SilentUpdate();
+                    NavigationManager.NavigateTo("/");
+                }
+            }
+            else if (!certSuccess)
+            {
+                Snackbar.Add("Загрузите сертификат", Severity.Error);
+            }
+      
+        }
+
         private async Task Checked()
         {
             await formId.Validate();
@@ -193,7 +245,7 @@ namespace Reg.Client.Pages
                 if (!result.Cancelled)
                 {
                     _request.StepId = 3;
-                    await Update();
+                    await SilentUpdate();
                     NavigationManager.NavigateTo("/generateRequestConfirm");
                 }
             }
@@ -295,14 +347,15 @@ namespace Reg.Client.Pages
         public async Task RunWebSocket()
         {
             var mappedPerson = Mapper.Map<RequestAbonent>(_request);
-            var messageResponse = await WebSocketService.GenerateRequest(mappedPerson);
+            var certRequestData = await WebSocketService.GetCertRequestData(mappedPerson);
+            var messageResponse = await WebSocketService.GenerateRequest(mappedPerson, certRequestData);
             if (messageResponse != null)
                 if(messageResponse.Success)
-                    Console.WriteLine("Запрос сформирован");
                     _request.CertRequest = messageResponse.Data.value;
                     _request.StepId = 4;
+                    _request.ContainerName = certRequestData.ContainerName;
                     await SilentUpdate();
-                    NavigationManager.NavigateTo("/generateRequestConfirm");
+                    NavigationManager.NavigateTo("/sendRequestConfirm");
         }
 
 
@@ -358,10 +411,64 @@ namespace Reg.Client.Pages
             return null;
         }
 
+
+        //Загрузка Сертификата
+        private async Task OnInputFileChangedCert(InputFileChangeEventArgs e)
+        {
+            requestFileFeatures.TypeId = 6;
+            await ClearCert();
+            ClearDragClassCert();
+            var file = e.File;
+            fileNamesCert.Add(file.Name);
+            await certValidation.Validate();
+            using (var ms = file.OpenReadStream(file.Size))
+            {
+                var content = new MultipartFormDataContent();
+                content.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data");
+                content.Add(new StreamContent(ms, Convert.ToInt32(file.Size)), file.ContentType, file.Name);
+                RequestFileReadDtoCert = await RequestFileHttpRepo.UploadRequestFile(content, requestFileFeatures);
+                await OnChange.InvokeAsync(RequestFileReadDtoCert);  
+            }
+            
+        }
+
+        private async Task ClearCert()
+        {
+            if (RequestFileReadDtoCert.Id != Guid.Empty)
+            {
+                await RequestFileHttpRepo.DeleteRequestFile(RequestFileReadDtoCert.Id);
+                RequestFileReadDtoCert.Id = Guid.Empty;
+            }
+            
+            fileNamesCert.Clear();
+            ClearDragClassCert();
+
+        }
+
+        private void SetDragClassCert()
+        {
+            DragClass = $"{DefaultDragClass} mud-border-primary";
+        }
+
+        private void ClearDragClassCert()
+        {
+            DragClass = DefaultDragClass;
+        }
+
+        private string ValidationCert(IReadOnlyList<IBrowserFile> fileList)
+        {
+            if (!fileNamesCert.Any())
+            {
+               return "Загрузите документ"; 
+            }
+            return null;
+        }
+
         public void Dispose()
         {
             Interceptor.DisposeEvent();
         }
+
 
 
     }

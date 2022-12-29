@@ -32,7 +32,7 @@
                             Variant="Variant.Outlined" 
                             Color="Color.Primary">Сохранить
                         </MudButton>
-                        <AuthorizeView Roles="Administrator">
+                        <AuthorizeView Roles="Administrator, AppAdministrator">
                             <Authorized>
                                 <MudButton 
                                     OnClick="@GenerateRequest" 
@@ -233,7 +233,8 @@
                                     @bind-Value="_request.PersonInn"  
                                     Label="ИНН ФЛ" 
                                     Variant="Variant.Outlined" 
-                                    Margin="Margin.Normal" >
+                                    Margin="Margin.Normal" 
+                                    Mask="@(new PatternMask("000000000000"))">
                                 </MudTextField>
                                 </MudPaper>
                                 <MudPaper Elevation=0  Class="d-flex mud-width-full">
@@ -414,7 +415,7 @@
                                     </MudStack>
                                 </MudPaper>
                             </MudPaper>
-                            <AuthorizeView Roles="Administrator">
+                            <AuthorizeView Roles="Administrator, AppAdministrator">
                                 <Authorized>
                                     <MudPaper Elevation=0 Width=48% Class="d-flex flex-column">
                                     <MudPaper Elevation=0 Class="d-flex justify-space-between align-center">
@@ -502,7 +503,7 @@
                             
                         </MudItem>
                     </MudGrid>
-                    <AuthorizeView Roles="Administrator">
+                    <AuthorizeView Roles="Administrator, AppAdministrator">
                         <Authorized>
                             <MudGrid>
                         <MudItem xs="12" Class="d-flex align-start justify-space-between  gap-4 mt-4" >

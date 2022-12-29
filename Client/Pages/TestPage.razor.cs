@@ -94,7 +94,7 @@ namespace Reg.Client.Pages
 
         public void RunWebSocket()
         {
-            WebSocketService.GenerateRequest(clientAbonent);
+            // WebSocketService.GenerateRequest(clientAbonent);
            
         }
     }

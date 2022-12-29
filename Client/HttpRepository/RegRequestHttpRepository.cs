@@ -49,6 +49,12 @@ namespace Client.HttpRepository
             return requestAbonent;
         }
 
+         public async Task<CertificateDataDto> GetCertificateData(Guid id)
+        {
+            var requestAbonent = await _client.GetFromJsonAsync<CertificateDataDto>($"regrequests/getCertificateData/{id}");
+            return requestAbonent;
+        }
+
         public async Task<PagingResponse<RequestAbonent>> GetDraftRequestAbonents(RequestAbonentParameters requestAbonentParameters)
         {
             var queryStringParam = new Dictionary<string, string>

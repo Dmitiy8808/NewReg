@@ -203,7 +203,7 @@ namespace Reg.Client.Pages
             await formdoc.Validate();
             if (dataSuccess & docSuccess)
             {
-                await SilentUpdate();
+
                 
                 await ConfirmComplite();
             }
@@ -569,7 +569,7 @@ namespace Reg.Client.Pages
             // {
                 Console.WriteLine("Подтверждение диалога");
                 _request.StepId = 2;
-                await Update();
+                await SilentUpdate();
                 NavigationManager.NavigateTo("/draftSave");
             // }
         }

@@ -33,7 +33,7 @@
                                 </MudPaper>
                             </Authorized>
                         </AuthorizeView>
-                         <AuthorizeView Roles="Administrator">
+                         <AuthorizeView Roles="Administrator, AppAdministrator">
                             <Authorized>
                                 <MudText Class="d-flex  mt-4 ml-4 " Typo="Typo.h5">Подтвердите корректность заявки</MudText>
                                 <MudPaper Elevation=0 Class="d-flex mt-6 gap-4 mr-4">
@@ -63,7 +63,7 @@
                                 </MudPaper>
                             </Authorized>
                         </AuthorizeView>
-                        <AuthorizeView Roles="Administrator">
+                        <AuthorizeView Roles="Administrator, AppAdministrator">
                             <Authorized>
                                 <MudText Class="d-flex mt-4 ml-4 " Typo="Typo.h5">Пользователю необходимо сформировать запрос на сертификат</MudText>
                                
@@ -81,6 +81,42 @@
                         <AuthorizeView Roles="Administrator">
                             <Authorized>
                                 <MudText Class="d-flex mt-4 mr-4 ml-4 " Typo="Typo.h5">Ожидайте выпуск сертификата в удостоверяющем центре</MudText>
+                               
+                            </Authorized>
+                        </AuthorizeView>
+                        <AuthorizeView Roles="AppAdministrator">
+                            <Authorized>
+                                <MudText Class="d-flex  ml-4 " Typo="Typo.h5">Загрузите выпущенный сертификат</MudText>
+                                <MudPaper Elevation=0 Class="d-flex mt-6 gap-4 mr-4">
+                                    <MudButton 
+                                        OnClick="@LoadCert" 
+                                        EndIcon="@Icons.Material.Filled.Send" 
+                                        Variant="Variant.Filled" 
+                                        Color="Color.Primary">Прикреплен
+                                    </MudButton>  
+                                </MudPaper>
+                            </Authorized>
+                        </AuthorizeView>
+         
+                    }
+                     else if (_request.StepId == 5)
+                    {
+                        <AuthorizeView Roles="User">
+                            <Authorized>
+                                <MudText Class="d-flex  ml-4 " Typo="Typo.h5">Уставновка сертификата</MudText>
+                                <MudPaper Elevation=0 Class="d-flex mt-6 gap-4 mr-4">
+                                    <MudButton 
+                                        OnClick="@InstallCert" 
+                                        EndIcon="@Icons.Material.Filled.Send" 
+                                        Variant="Variant.Filled" 
+                                        Color="Color.Primary">Установить
+                                    </MudButton>  
+                                </MudPaper>
+                            </Authorized>
+                        </AuthorizeView>
+                        <AuthorizeView Roles="Administrator, AppAdministrator">
+                            <Authorized>
+                                <MudText Class="d-flex mt-4 ml-4 " Typo="Typo.h5">Пользователю необходимо установить сертификат в контейнер</MudText>
                                
                             </Authorized>
                         </AuthorizeView>    
@@ -466,7 +502,7 @@
                 </MudCardContent>
             </MudForm>
             </MudPaper>
-            <AuthorizeView Roles="Administrator">
+            <AuthorizeView Roles="Administrator, AppAdministrator">
                 <Authorized>
                      <MudPaper 
                 Elevation=0 MinWidth=500px MaxWidth=45%
@@ -525,6 +561,68 @@
             </MudPaper>
                 </Authorized>
             </AuthorizeView>
+            @if (_request.StepId >= 4)
+            {
+            <AuthorizeView Roles="AppAdministrator">
+                <Authorized>
+                     <MudPaper 
+                Elevation=0 MinWidth=500px MaxWidth=45%
+                 Class="d-flex mud-width-full justify-center "
+                  Style="@($"border:1px solid {Colors.BlueGrey.Lighten5};")">
+                <MudForm Class="d-flex mud-width-full justify-center " @ref="formCert" @bind-IsValid="@certSuccess" >
+                <MudCardContent Class="mud-width-full">
+                    <MudText>Загрузка сертификата</MudText>
+                    
+                    <MudGrid>
+                        <MudItem xs="12" Class="d-flex align-start justify-space-between  gap-4 mt-4 mb-4" >
+                            <MudPaper Elevation=0 Width=48% Class="d-flex flex-column">
+                                    <MudPaper Elevation=0 Class="d-flex justify-space-between align-center">
+                                        <MudText>Сертификат</MudText>
+                                        <MudTooltip Text="Загшрузить сертификат .cer">
+                                            <MudFab Class="d-flex z-30"  Color="Color.Primary" StartIcon="@Icons.Filled.QuestionMark"  Size="Size.Small" />
+                                        </MudTooltip>
+                                        
+                                    </MudPaper>
+                                    <MudPaper Elevation=0 Class="d-flex">
+                                        <MudStack Style="width: 100%">
+                                            <MudFileUpload @ref="certValidation" T="IReadOnlyList<IBrowserFile>" OnFilesChanged="OnInputFileChangedCert" Hidden="false" 
+                                                            Accept=".cer, .crt" 
+                                                            Class="flex-1" 
+                                                            Validation="@(new Func<IReadOnlyList<IBrowserFile>, string>(ValidationCert))"
+                                                            InputClass="absolute mud-width-full mud-height-full overflow-hidden z-20" 
+                                                            InputStyle="opacity:0"
+                                                        @ondragenter="@SetDragClassCert" @ondragleave="@ClearDragClassCert" @ondragend="@ClearDragClassCert">
+                                                <ButtonTemplate Context="CertContext">
+                                                    <MudPaper Elevation=0  MinHeight=130px Outlined="true" Class="@DragClass">
+                                                        <MudText Class="z-30" >Загрузить файл</MudText>
+                                                        @foreach (var file in fileNamesCert)
+                                                        {   <MudPaper  Elevation=0 Class="d-flex gap-4 mt-4" >
+                                                                <MudPaper Elevation=0 MinWidth=70%>
+                                                                    <MudChip Color="Color.Dark" Text="@file" />
+                                                                </MudPaper>
+                                                                <MudPaper Elevation=0 MinWidth=20%>
+                                                                    <MudFab Class="d-flex z-30" OnClick="@ClearCert" Color="Color.Primary" StartIcon="@Icons.Filled.DeleteOutline"  Size="Size.Small" />
+                                                                </MudPaper>
+                                                            </MudPaper>  
+                                                        }
+                                                    </MudPaper>
+                                                </ButtonTemplate>
+                                            </MudFileUpload>
+                                            
+                                        </MudStack>
+                                    </MudPaper>
+                                </MudPaper>
+                            
+                            
+                        </MudItem>
+                    </MudGrid>
+                     
+                </MudCardContent>
+                </MudForm>
+            </MudPaper>
+                </Authorized>
+            </AuthorizeView>
+            }
            
     </MudPaper>
     

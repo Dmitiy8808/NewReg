@@ -23,10 +23,18 @@ namespace Reg.Client.Shared
         {
             var state = await AuthenticationState;
             
-            if(!state.User.Identity.IsAuthenticated)
+            if(!state.User.Identity.IsAuthenticated & !NavigationManager.Uri.Contains("http://podpisdev.ru/setpassword") )
             {
                 NavigationManager.NavigateTo("login");
             }
+        //     else if (NavigationManager.Uri == "http://podpisdev.ru/register")
+        //     {
+        //         NavigationManager.NavigateTo("register");
+        //     }
+        //     else if (NavigationManager.Uri.Contains("http://podpisdev.ru/setpassword"))
+        //     {
+        //         NavigationManager.NavigateTo("register");
+        //     }
         }
 
         void DrawerToggle()

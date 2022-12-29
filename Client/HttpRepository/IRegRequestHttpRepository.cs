@@ -7,6 +7,7 @@ namespace Client.HttpRepository
 {
     public interface IRegRequestHttpRepository
     {
+        Task<CertificateDataDto> GetCertificateData(Guid id);
         Task<CertRequestDataDto> GetCertRequestData(RequestAbonent clientAbonent);
         Task<PagingResponse<RequestAbonent>> GetRequestAbonents(RequestAbonentParameters requestAbonentParameters);
         Task<PagingResponse<RequestAbonent>> GetDraftRequestAbonents(RequestAbonentParameters requestAbonentParameters);

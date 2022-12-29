@@ -110,6 +110,14 @@
                 {
                     <MudChip Color="Color.Default">Черновик</MudChip>
                 }
+                else if (@context.StepId == 5)
+                {
+                    <MudChip Color="Color.Success">Подписание бланка</MudChip>
+                }
+                else if (@context.StepId == 6)
+                {
+                    <MudChip Color="Color.Dark">Установка сертификата</MudChip>
+                }
             </MudTd>
             <MudTd Style="width:10%;" DataLabel="">
                 @* <MudFab @onclick="() => Delete(context.Id)"  Icon="@Icons.Filled.DeleteOutline" Size="Size.Small" IconSize="Size.Medium" /> *@

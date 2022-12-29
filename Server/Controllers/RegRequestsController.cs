@@ -24,10 +24,11 @@ namespace Server.Controllers
         private readonly IRequestRepository _requestRepository;
         private readonly IMapper _mapper;
         private readonly IRegistrationService _registrationService;
+        private readonly IFileRepository _fileRepository;
         public RegRequestsController(IQualifiedCertificateManager qualifiedCertificateManager, 
         
                 IRequestRepository requestRepository, IMapper mapper, IRegistrationService registrationService,
-                IAuthorizationService authorizationService, UserManager<User> userManager)
+                IAuthorizationService authorizationService, UserManager<User> userManager, IFileRepository fileRepository)
         {
             _registrationService = registrationService;
             _mapper = mapper;
@@ -35,7 +36,7 @@ namespace Server.Controllers
             _qualifiedCertificateManager = qualifiedCertificateManager;
             _authorizationService = authorizationService;
             _userManager = userManager;
-            
+            _fileRepository = fileRepository;
         }
 
         [Route("getRequestData")]
@@ -46,6 +47,24 @@ namespace Server.Controllers
 
             return Ok(certRequestData);
         }
+
+        [Route("getCertificateData/{id:guid}")]
+        [HttpGet]
+        public async Task<ActionResult<CertificateDataDto>> GetCertificatetData(Guid id)
+        {
+            var requestData = await _requestRepository.GetRequest(id);
+            var certData = await _fileRepository.GetCertificateFileByRequestId(id);
+            CertificateDataDto response = new CertificateDataDto();
+            response.IsError = false;
+            response.ProviderCode = int.Parse(requestData.Person.CryptoProviderCode);
+            response.ProviderName = requestData.Person.CryptoProviderName;
+            response.ContainerName = requestData.ContainerName;
+            response.CertData = Convert.ToBase64String(certData.Data);
+
+            return Ok(response);
+        }
+
+       
 
         [Route("createRequest")]
         [HttpPost]
@@ -100,16 +119,22 @@ namespace Server.Controllers
              IEnumerable<RequestAbonent>? queryRequestAbonent = new List<RequestAbonent>();
             var user = await _userManager.FindByNameAsync(HttpContext.User.Identity.Name);
             var login = HttpContext.User.Identity.Name;
-            var role = await _userManager.IsInRoleAsync(user, "Administrator");
+            var adminRole = await _userManager.IsInRoleAsync(user, "Administrator");
+            var appAdminRole = await _userManager.IsInRoleAsync(user, "AppAdministrator");
             var requestAbonents = await _requestRepository.GetDraftRequests(requestAbonentParameters);
 
-            if (!role)
+            if (!adminRole)
             {
-                
+                if (appAdminRole)
+                {
+                    Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(requestAbonents.MetaData));
+                    return Ok(requestAbonents);
+                }
                 queryRequestAbonent = requestAbonents.Where(x => x.Person.Email == login);
                 Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(requestAbonents.MetaData));
                 return Ok(queryRequestAbonent);
             }
+            
 
            
             Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(requestAbonents.MetaData));
@@ -123,11 +148,17 @@ namespace Server.Controllers
             IEnumerable<RequestAbonent>? queryRequestAbonent = new List<RequestAbonent>();
             var user = await _userManager.FindByNameAsync(HttpContext.User.Identity.Name);
             var login = HttpContext.User.Identity.Name;
-            var role = await _userManager.IsInRoleAsync(user, "Administrator");
+            var adminRole = await _userManager.IsInRoleAsync(user, "Administrator");
+            var appAdminRole = await _userManager.IsInRoleAsync(user, "AppAdministrator");
             var requestAbonents = await _requestRepository.GetRequests(requestAbonentParameters);
 
-            if (!role)
-            {
+            if (!adminRole)
+            {   
+                if (appAdminRole)
+                {
+                    Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(requestAbonents.MetaData));
+                    return Ok(requestAbonents);
+                }
                 
                 queryRequestAbonent = requestAbonents.Where(x => x.Person.Email == login);
                 Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(requestAbonents.MetaData));

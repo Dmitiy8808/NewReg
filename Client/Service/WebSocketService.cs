@@ -17,18 +17,34 @@ namespace Client.Service
         {
             _regRequestRepo = regRequestRepo;
         }
-          public async Task<MessageResponse> GenerateRequest(RequestAbonent requestAbonent)
+        public async Task<MessageResponse> GenerateRequest(RequestAbonent requestAbonent, CertRequestDataDto? certRequestData)
         {
             var opt = new JsonSerializerOptions {
 
                 Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
             };
-            var certRequestData =  await GetCertRequestData(requestAbonent);
             var certRequestDataString = JsonSerializer.Serialize(certRequestData, opt);
             Console.WriteLine(certRequestDataString);
             Message message = new Message {
                 Code = 1,
                 Data = certRequestDataString
+            };
+            var stringMessage = JsonSerializer.Serialize(message, opt);
+            var request = await SendMessage(stringMessage);
+            return request;
+        }
+
+        public async Task<MessageResponse> InstallCertificate(CertificateDataDto certificateDataDto)
+        {
+            var opt = new JsonSerializerOptions {
+
+                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+            };
+            var certDataString = JsonSerializer.Serialize(certificateDataDto, opt);
+            Console.WriteLine(certDataString);
+            Message message = new Message {
+                Code = 2,
+                Data = certDataString
             };
             var stringMessage = JsonSerializer.Serialize(message, opt);
             var request = await SendMessage(stringMessage);

@@ -15,8 +15,12 @@ namespace Server.Services
     {
         private readonly UserManager<User> _userManager;
         private readonly IEmailSender _emailSender;
-        public RegistrationService(UserManager<User> userManager, IEmailSender emailSender)
+        private readonly IConfiguration _configuration;
+        public RegistrationService(UserManager<User> userManager, IEmailSender emailSender, 
+        
+            IConfiguration configuration)
         {
+            _configuration = configuration;
             _userManager = userManager;
             _emailSender = emailSender;
         }
@@ -44,7 +48,7 @@ namespace Server.Services
         public async Task SendNewRequestEmailNotification(RequestAbonentCreateDto requestAbonentCreateDto)
         {
 
-			var callback = "http://localhost:5136/login";
+			var callback = $"{_configuration["ClientConfiguration:BaseAddress"]}/login";
 
 			var message = new EmailMessage(new string[] { requestAbonentCreateDto.PersonEmail }, $"Для учетной записи {requestAbonentCreateDto.PersonEmail} На портале 1С:Подпись сформирована новая заявка",
 				callback, null);
@@ -65,7 +69,7 @@ namespace Server.Services
 				{ "email", requestAbonentCreateDto.PersonEmail }
 			};
 
-			var callback = QueryHelpers.AddQueryString("http://localhost:5136/setpassword", param);
+			var callback = QueryHelpers.AddQueryString($"{_configuration["ClientConfiguration:BaseAddress"]}/setpassword", param);
 
 			var message = new EmailMessage(new string[] { user.Email }, "Предсоздание аккаунта на портале 1С:Подпись",
 				callback, null);

@@ -16,16 +16,16 @@
         
             
                 <MudText Color="Color.Dark" Typo="Typo.body2">@context.User.Identity.Name</MudText>   
-            <MudMenu Direction="_rightToLeft ? Direction.Right : Direction.Left" OffsetX="true" Dense="true" Class="mt-1 ml-4">
+            <MudMenu AnchorOrigin="Origin.BottomRight" Direction="_rightToLeft ? Direction.Right : Direction.Left" OffsetX="true" Dense="true" Class="mt-1 ml-4">
                         <ActivatorContent>
                             
                             <MudAvatar Style="@($"background-color: #FF1313;")">@context.User.Identity.Name.ToUpper()[0]</MudAvatar>
                                 
                         </ActivatorContent>
                         <ChildContent>
-                            
-                            @* <MudListItem Text="Аккаунт" Href="/account" Icon="@Icons.Material.Outlined.Person" /> *@
-                            <MudListItem Text="Выйти" Icon="@Icons.Material.Filled.Logout" OnClick="Logout" />
+                            <MudPaper Elevation=0 Class="py-2 px-2" MinWidth=220px>
+                                <MudListItem Text="Выйти" Icon="@Icons.Material.Filled.Logout" OnClick="Logout" />
+                            </MudPaper>
                         </ChildContent>
             </MudMenu>
             

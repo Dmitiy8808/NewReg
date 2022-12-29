@@ -16,9 +16,11 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
 
+var apiConfiguration = builder.Configuration.GetSection("ApiConfiguration");
+
 builder.Services.AddHttpClient("RequestAPI", (sp, cl) => 
 {
-    cl.BaseAddress = new Uri("https://localhost:5011/api/");
+    cl.BaseAddress = new Uri(apiConfiguration["BaseAddress"] + "/api/");
     cl.EnableIntercept(sp);
 });
 

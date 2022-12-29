@@ -27,6 +27,11 @@ namespace Server.Repository
             return await _context.Files.Where(f => f.RequestAbonentId == requestId).ToListAsync(); 
         }
 
+        public async Task<RequestFile> GetCertificateFileByRequestId(Guid requestId)
+        {
+            return await _context.Files.Where(f => f.RequestAbonentId == requestId && f.TypeId == 6).FirstOrDefaultAsync(); 
+        }
+
         public async Task SaveFile(RequestFile file)
         {
             if(file == null)

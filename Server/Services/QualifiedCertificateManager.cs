@@ -1,7 +1,13 @@
+using System.Text;
+using Entities.DTOs;
 using Entities.Enums;
 using Entities.Models;
+using Org.BouncyCastle.Asn1;
+using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.X509;
 using Server.Helpers;
 using Server.Repository;
+using bcrypto = Org.BouncyCastle.X509;
 
 namespace Server.Services
 {
@@ -9,9 +15,12 @@ namespace Server.Services
     {
         private readonly IProviderRepository _providerRepository;
         private readonly IRegionRepository _regionRepository;
+        private readonly IFileRepository _fileRepository;
 
-        public QualifiedCertificateManager(IProviderRepository providerRepository, IRegionRepository regionRepository)
+        public QualifiedCertificateManager(IProviderRepository providerRepository, IRegionRepository regionRepository, 
+            IFileRepository fileRepository)
         {
+            _fileRepository = fileRepository;
             _providerRepository = providerRepository;
             _regionRepository = regionRepository;
         }
@@ -139,6 +148,140 @@ namespace Server.Services
             addAttribute("1.2.643.100.3", certStruct.Snils ?? QualifiedCertificateVolatile.AbsentSnils);
             action("1.2.840.113549.1.9.1", certStruct.Email);
             return certAttributes.ToArray();
+        }
+
+        private static Asn1Object GetExtensionValue(X509Certificate cert, String oid) 
+        {
+            byte[] bytes = cert.GetExtensionValue(new DerObjectIdentifier(oid)).GetDerEncoded();
+            if (bytes == null) {
+                return null;
+            }
+            Asn1InputStream aIn = new Asn1InputStream(new MemoryStream(bytes));
+            Asn1OctetString octs = (Asn1OctetString) aIn.ReadObject();
+            aIn = new Asn1InputStream(new MemoryStream(octs.GetOctets()));
+            return aIn.ReadObject();
+        }
+
+        public static string ByteArrayToString(byte[] ba)
+        {
+            return BitConverter.ToString(ba).Replace("-","");
+        }
+
+        public async Task<CertificateStructureDto> GetCertificateData(Guid id)
+        {
+            var certStructure = new CertificateStructureDto();
+
+            var certData = await _fileRepository.GetCertificateFileByRequestId(id);
+
+
+
+
+
+            X509CertificateParser parser = new X509CertificateParser();
+            X509Certificate cert = parser.ReadCertificate(certData.Data);
+
+            certStructure.AuthoritySignTool = GetExtensionValue(cert, "1.2.643.100.112").ToString().Split(',')[0].TrimStart('[');
+            certStructure.AuthoritySignToolCertificate = GetExtensionValue(cert, "1.2.643.100.112").ToString().Split(',')[2];
+            certStructure.AuthoritySignToolCertificate = GetExtensionValue(cert, "1.2.643.100.112").ToString().Split(',')[2];
+            certStructure.AuthorityCaTool = GetExtensionValue(cert, "1.2.643.100.112").ToString().Split(',')[1];
+            certStructure.AuthorityCaCertificate = GetExtensionValue(cert, "1.2.643.100.112").ToString().Split(',')[3].TrimEnd(']');
+            certStructure.CertSigAlgOid = cert.SigAlgOid;
+            if (certStructure.CertSigAlgOid == "1.2.643.7.1.1.3.2")
+                certStructure.CertAlgorithm = "ГОСТ Р 34.10-2012 256 бит";
+            if (certStructure.CertSigAlgOid == "1.2.643.7.1.1.3.3")
+                certStructure.CertAlgorithm = "ГОСТ Р 34.10-2012 512 бит";
+            if (certStructure.CertSigAlgOid == "1.2.643.2.2.3")
+                certStructure.CertAlgorithm = "ГОСТ Р 34.10-2001";
+            certStructure.CertSignTool = GetExtensionValue(cert, "1.2.643.100.111").ToString();
+           
+            certStructure.PublicKey = cert.CertificateStructure.SubjectPublicKeyInfo.PublicKeyData.ToString();
+            certStructure.Signature = ByteArrayToString(cert.GetSignature());
+            certStructure.IdentificationKindCode = GetExtensionValue(cert, "1.2.643.100.114").ToString();
+            if (certStructure.IdentificationKindCode == "0")
+                certStructure.IdentificationKind = "При личном присутствии";
+            if (certStructure.IdentificationKindCode == "1")
+                certStructure.IdentificationKind = "С использованием квалифицированного сертификата";
+            if (certStructure.IdentificationKindCode == "2")
+                certStructure.IdentificationKind = "С использованием загранпаспорта";
+            if (certStructure.IdentificationKindCode == "3")
+                certStructure.IdentificationKind = "С использованием ЕБС";
+
+            Console.WriteLine($"KeyUsage: {certStructure.Organization}");
+
+            certStructure.SerialNumber = ByteArrayToString(cert.CertificateStructure.SerialNumber.GetDerEncoded()).ToUpper().ToCharArray()
+                                        .Aggregate("",
+                                        (result, c) => result += ((!string.IsNullOrEmpty(result) && (result.Length+1) % 5 == 0)
+                                                                ? " " : "")
+                                                                + c.ToString()
+                                                    );
+            certStructure.NotBefore = cert.NotBefore.ToString("dd.MM.yyyy mm:ss");
+            certStructure.NotAfter = cert.NotAfter.ToString("dd.MM.yyyy mm:ss");
+            certStructure.CertAlgorithm = cert.SigAlgName;
+            
+            DerSequence subject =  cert.SubjectDN.ToAsn1Object() as DerSequence;
+            foreach (Asn1Encodable setItem in subject)
+            {
+                DerSet subSet = setItem as DerSet;
+                if (subSet == null)
+                    continue;
+
+                // Первый элемент множества SET - искомая последовательность SEQ of {OID/value}
+                DerSequence subSeq = subSet[0] as DerSequence;
+
+                foreach (Asn1Encodable subSeqItem in subSeq)
+                {
+                    DerObjectIdentifier oid = subSeqItem as DerObjectIdentifier;
+                    if (oid == null)
+                        continue;
+
+                    string value = subSeq[1].ToString();
+
+                    if (oid.Id.Equals("2.5.4.4"))
+                        certStructure.FirstName = value;
+                    if (oid.Id.Equals("2.5.4.42"))
+                        certStructure.GivenName = value;
+                    if (oid.Id.Equals("1.2.643.100.3"))
+                        certStructure.Snils = value;
+                    if (oid.Id.Equals("1.2.643.3.131.1.1"))
+                        certStructure.PersonInn = value;
+                    if (oid.Id.Equals("1.2.643.3.131.1.1"))
+                        certStructure.PersonInn = value;
+                    if (oid.Id.Equals("1.2.840.113549.1.9.1"))
+                        certStructure.Email = value;
+                    if (oid.Id.Equals("1.2.840.113549.1.9.1"))
+                        certStructure.Email = value;
+                    if (oid.Id.Equals("2.5.4.10"))
+                        certStructure.Organization = value;
+                }
+            }
+
+            DerSequence issuerSubject =  cert.IssuerDN.ToAsn1Object() as DerSequence;
+            foreach (Asn1Encodable setItem in issuerSubject)
+            {
+                DerSet subSet = setItem as DerSet;
+                if (subSet == null)
+                    continue;
+                // Первый элемент множества SET - искомая последовательность SEQ of {OID/value}
+                DerSequence subSeq = subSet[0] as DerSequence;
+
+                foreach (Asn1Encodable subSeqItem in subSeq)
+                {
+                    DerObjectIdentifier oid = subSeqItem as DerObjectIdentifier;
+                    if (oid == null)
+                        continue;
+
+                    string value = subSeq[1].ToString();
+
+                    if (oid.Id.Equals("2.5.4.10"))
+                        certStructure.AuthorityName = value;
+                    if (oid.Id.Equals("2.5.4.9"))
+                        certStructure.AuthorityAddressStreet = value;
+                    if (oid.Id.Equals("2.5.4.7"))
+                        certStructure.AuthorityAddressCity = value;
+                }
+            }
+
+            return certStructure;
         }
 
 
