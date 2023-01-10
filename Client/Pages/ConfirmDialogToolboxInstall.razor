@@ -1,0 +1,24 @@
+<MudDialog>
+    <DialogContent>
+        <MudPaper Elevation=0 Class="d-flex">
+            <MudText>@ContentText</MudText>
+            <MudFab Class="d-flex z-30"  Href="https://regservice.1c.ru/webregoffice/Authorisation/Download?fullPath=C:\inetpub\wwwroot\RegOffice\webregoffice\Registration%20Office\1CtoolboxSetup.2.4.zip" Color="Color.Primary" StartIcon="@Icons.Filled.Download"  Size="Size.Small" />
+        </MudPaper>
+       
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="@Color" Variant="Variant.Filled" OnClick="Submit">@ButtonText</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public string ContentText { get; set; }
+
+    [Parameter] public string ButtonText { get; set; }
+
+    [Parameter] public Color Color { get; set; }
+
+    void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    void Cancel() => MudDialog.Cancel();
+}

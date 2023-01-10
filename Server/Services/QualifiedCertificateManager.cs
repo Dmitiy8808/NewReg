@@ -5,6 +5,7 @@ using Entities.Models;
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.X509;
+using Server.Extensions;
 using Server.Helpers;
 using Server.Repository;
 using bcrypto = Org.BouncyCastle.X509;
@@ -24,6 +25,8 @@ namespace Server.Services
             _providerRepository = providerRepository;
             _regionRepository = regionRepository;
         }
+
+
 
         private async Task SetSharedRequisites(CertStruct refCertStruct, RequestAbonent clientAbonent)
         {
@@ -174,9 +177,6 @@ namespace Server.Services
             var certData = await _fileRepository.GetCertificateFileByRequestId(id);
 
 
-
-
-
             X509CertificateParser parser = new X509CertificateParser();
             X509Certificate cert = parser.ReadCertificate(certData.Data);
 
@@ -187,15 +187,25 @@ namespace Server.Services
             certStructure.AuthorityCaCertificate = GetExtensionValue(cert, "1.2.643.100.112").ToString().Split(',')[3].TrimEnd(']');
             certStructure.CertSigAlgOid = cert.SigAlgOid;
             if (certStructure.CertSigAlgOid == "1.2.643.7.1.1.3.2")
-                certStructure.CertAlgorithm = "ГОСТ Р 34.10-2012 256 бит";
+                certStructure.CertAlgorithm = "ГОСТ Р 34.10-2012 256 бит";   
             if (certStructure.CertSigAlgOid == "1.2.643.7.1.1.3.3")
                 certStructure.CertAlgorithm = "ГОСТ Р 34.10-2012 512 бит";
             if (certStructure.CertSigAlgOid == "1.2.643.2.2.3")
                 certStructure.CertAlgorithm = "ГОСТ Р 34.10-2001";
             certStructure.CertSignTool = GetExtensionValue(cert, "1.2.643.100.111").ToString();
            
-            certStructure.PublicKey = cert.CertificateStructure.SubjectPublicKeyInfo.PublicKeyData.ToString();
-            certStructure.Signature = ByteArrayToString(cert.GetSignature());
+            certStructure.PublicKey = ByteArrayToString(cert.CertificateStructure.SubjectPublicKeyInfo.GetPublicKey().GetDerEncoded()).ToCharArray()
+                                        .Aggregate("",
+                                        (result, c) => result += ((!string.IsNullOrEmpty(result) && (result.Length+1) % 32 == 0)
+                                                                ? " " : "")
+                                                                + c.ToString()
+                                                    ).Replace(" ", "<br>");
+            certStructure.Signature = ByteArrayToString(cert.GetSignature()).ToCharArray()
+                                        .Aggregate("",
+                                        (result, c) => result += ((!string.IsNullOrEmpty(result) && (result.Length+1) % 32 == 0)
+                                                                ? " " : "")
+                                                                + c.ToString()
+                                                    ).Replace(" ", "<br>");;
             certStructure.IdentificationKindCode = GetExtensionValue(cert, "1.2.643.100.114").ToString();
             if (certStructure.IdentificationKindCode == "0")
                 certStructure.IdentificationKind = "При личном присутствии";
@@ -214,9 +224,8 @@ namespace Server.Services
                                                                 ? " " : "")
                                                                 + c.ToString()
                                                     );
-            certStructure.NotBefore = cert.NotBefore.ToString("dd.MM.yyyy mm:ss");
-            certStructure.NotAfter = cert.NotAfter.ToString("dd.MM.yyyy mm:ss");
-            certStructure.CertAlgorithm = cert.SigAlgName;
+            certStructure.NotBefore = cert.NotBefore.ToLocalTime().ToString("dd.MM.yyyy HH:mm");
+            certStructure.NotAfter = cert.NotAfter.ToLocalTime().ToString("dd.MM.yyyy HH:mm");
             
             DerSequence subject =  cert.SubjectDN.ToAsn1Object() as DerSequence;
             foreach (Asn1Encodable setItem in subject)
@@ -244,8 +253,8 @@ namespace Server.Services
                         certStructure.Snils = value;
                     if (oid.Id.Equals("1.2.643.3.131.1.1"))
                         certStructure.PersonInn = value;
-                    if (oid.Id.Equals("1.2.643.3.131.1.1"))
-                        certStructure.PersonInn = value;
+                    if (oid.Id.Equals("1.2.643.100.1"))
+                        certStructure.Orgn = value;
                     if (oid.Id.Equals("1.2.840.113549.1.9.1"))
                         certStructure.Email = value;
                     if (oid.Id.Equals("1.2.840.113549.1.9.1"))
@@ -283,6 +292,12 @@ namespace Server.Services
 
             return certStructure;
         }
+
+
+        
+
+
+        
 
 
     }

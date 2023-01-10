@@ -14,6 +14,7 @@ namespace Server.Controllers
     [Authorize]
     public class PdfGeneratorController : ControllerBase
     {
+        private ObjectSettings objectSettings { get; set; }
         private string htmlContent { get; set; }
         private readonly IConverter _converter;
         private readonly IQualifiedCertificateManager _sertifictaeManager;
@@ -101,21 +102,35 @@ namespace Server.Controllers
                 Orientation = Orientation.Portrait,
                 PaperSize = PaperKind.A4,
                 Margins = new MarginSettings { Top = 10 },
-                DocumentTitle = "Доверенность"
+                DocumentTitle = "Бланк сертификата"
             };
-            var objectSettings = new ObjectSettings
+
+            if (certificateStructure.Orgn != null)
             {
-                PagesCount = true,
-                HtmlContent = CertTemplateGenerator.GetHTMLString(certificateStructure),
-                WebSettings = { DefaultEncoding = "utf-8", UserStyleSheet =  Path.Combine(Directory.GetCurrentDirectory(), "assets", "styles.css") }
-            };
+                objectSettings = new ObjectSettings
+                {
+                    PagesCount = true,
+                    HtmlContent = CertTemplateGenerator.GetHTMLString(certificateStructure),
+                    WebSettings = { DefaultEncoding = "utf-8", UserStyleSheet =  Path.Combine(Directory.GetCurrentDirectory(), "assets", "styles.css") }
+                };
+            }
+            else
+            {
+                objectSettings = new ObjectSettings
+                {
+                    PagesCount = true,
+                    HtmlContent = CertTemplateGeneratorFl.GetHTMLString(certificateStructure),
+                    WebSettings = { DefaultEncoding = "utf-8", UserStyleSheet =  Path.Combine(Directory.GetCurrentDirectory(), "assets", "styles.css") }
+                };
+            }
+           
             var pdf = new HtmlToPdfDocument()
             {
                 GlobalSettings = globalSettings,
                 Objects = { objectSettings }
             };
             var file = _converter.Convert(pdf);
-            return File(file, "application/pdf", "Doverennost.pdf");
+            return File(file, "application/pdf", "Certificate.pdf");
         }
 
 

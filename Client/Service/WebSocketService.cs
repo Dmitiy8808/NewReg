@@ -6,6 +6,7 @@ using System.Text.Unicode;
 using Entities.DTOs;
 using Entities.Models;
 using Client.HttpRepository;
+using System.Net.Sockets;
 
 namespace Client.Service
 {
@@ -13,6 +14,7 @@ namespace Client.Service
     {
         private readonly IRegRequestHttpRepository _regRequestRepo; 
         public MessageResponse messageResponse = new MessageResponse();
+        private bool isConnected;
         public WebSocketService(IRegRequestHttpRepository regRequestRepo)
         {
             _regRequestRepo = regRequestRepo;
@@ -82,6 +84,31 @@ namespace Client.Service
         {
             return await _regRequestRepo.GetCertRequestData(clientAbonent);
         }
-        
+
+        public async Task<bool> CheckPlugin()
+        {
+            
+
+            CancellationTokenSource disposalTokenSource = new CancellationTokenSource();
+            ClientWebSocket webSocket = new ClientWebSocket();
+            
+            try
+            {
+                await webSocket.ConnectAsync(new Uri("wss://127.0.0.1:9292/RegistrationOffice"), disposalTokenSource.Token);
+                isConnected = true;
+                disposalTokenSource.Cancel();
+                _ = webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Bye", CancellationToken.None);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                isConnected = false;
+            }
+
+            return isConnected;
+
+
+
+        }
     }
 }

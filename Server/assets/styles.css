@@ -55,3 +55,23 @@ tr.R4{ font-family: Arial; font-size: 12pt; font-style: normal; height: 8px; }
 tr.R4 td.R4C0{ text-align: left; }
 table {table-layout: fixed; padding: 0px; padding-left: 20px; vertical-align:bottom; border-collapse:collapse;width: 100%; font-family: Arial; font-size: 12pt; font-style: normal; }
 td { padding: 0px; padding-left: 2px; overflow:hidden; }
+
+
+.block { position: relative;
+      font-family:"Times New Roman",Times,serif;
+      margin: 7px;
+      padding: 40px;
+      border: 1px solid black;}
+.img {position: absolute;
+      top: 5; 
+      left: 5;}
+.text {position: absolute;
+      top: 0;
+      left: 110px;
+      font-size: 20pt;
+      margin-left: 20px;}
+.text2 {position: absolute;
+      top: 40px;
+      font-size: 13pt;
+      left: 0;
+      margin-left: 5px;} 

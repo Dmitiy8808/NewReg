@@ -17,6 +17,8 @@ namespace Reg.Client.Pages
     {
         MudForm form; 
         MudForm formdoc;
+        MudForm formCertBlanck;
+        bool certBlanckSuccess;
         MudForm formId;
         MudForm formCert;
         bool dataSuccess;
@@ -24,6 +26,9 @@ namespace Reg.Client.Pages
         bool certSuccess;
         bool docSuccess;
         public EventCallback<RequestFileReadDto> OnChange { get; set; }
+        MudFileUpload<IReadOnlyList<IBrowserFile>> certBlanckValidation;
+        public RequestFileReadDto RequestFileReadDtoCertBlanck = new RequestFileReadDto();
+        private List<string> fileNamesCertBlanck = new List<string>();
         public DateTime? PassportDate { get; set; }
         public DateTime? BirthDate { get; set; }
         public bool IsJuridical { get; set; }
@@ -31,6 +36,8 @@ namespace Reg.Client.Pages
         private RequestAbonentReadDto _request;
         [Inject]
         ISnackbar Snackbar { get; set; }
+        [Inject]
+        IPdfGeneratorHttpRepository PdfGeneratorHttpRepo { get; set; }
         [Inject] 
         private HttpInterceptorService Interceptor { get; set; }
         [Inject]
@@ -43,8 +50,10 @@ namespace Reg.Client.Pages
         IRegRequestHttpRepository RequestRepo { get; set; }
         private List<string> fileNamesSelfi = new List<string>();
         private List<string> fileNamesCert = new List<string>();
+        private List<string> fileNamesSecurityGuide = new List<string>();
         public RequestFileReadDto RequestFileReadDtoSelfi = new RequestFileReadDto();
         public RequestFileReadDto RequestFileReadDtoCert = new RequestFileReadDto();
+        public RequestFileReadDto RequestFileReadDtoSecurityGuide = new RequestFileReadDto();
         [Inject]
         public NavigationManager NavigationManager { get; set; }
         [Inject]
@@ -63,7 +72,8 @@ namespace Reg.Client.Pages
         public RequestFileReadDto RequestFileReadDtoDov = new RequestFileReadDto();
         private RequestFileReadDto? _dovFile { get; set; }
         private RequestFileReadDto? _selfiFile { get; set; }
-        private RequestFileReadDto? _certFile { get; set; }
+        private RequestFileReadDto? _certFile { get; set; } 
+        private RequestFileReadDto? _certBlanckFile { get; set; }
         MudFileUpload<IReadOnlyList<IBrowserFile>> selfiValidation;
         MudFileUpload<IReadOnlyList<IBrowserFile>> certValidation;
         public RequestFileReadDto RequestFileReadDtoClaim = new RequestFileReadDto();
@@ -78,6 +88,9 @@ namespace Reg.Client.Pages
 
         protected async override Task OnInitializedAsync()
         {
+            RequestFileReadDtoSecurityGuide.Name = "Руководство";
+            fileNamesSecurityGuide.Add(RequestFileReadDtoSecurityGuide.Name);
+
             Interceptor.RegisterEvent();
             Interceptor.RegisterBeforeSendEvent();
             
@@ -127,8 +140,17 @@ namespace Reg.Client.Pages
              _certFile = requestFileList.Where(type => type.TypeId == 6).FirstOrDefault();
             if (_certFile != null)
             {
-               fileNamesCert.Add(_certFile.Name); 
+               fileNamesCert.Add(_request.ContainerName.Substring(0, _request.ContainerName.Length - 36)); 
                RequestFileReadDtoCert.Id = _certFile.Id;
+               RequestFileReadDtoCert.Name = _request.ContainerName;
+
+            }
+
+             _certBlanckFile = requestFileList.Where(type => type.TypeId == 7).FirstOrDefault();
+            if (_certBlanckFile != null)
+            {
+               fileNamesCertBlanck.Add(_certBlanckFile.Name); 
+               RequestFileReadDtoCertBlanck.Id = _certBlanckFile.Id;
             }
 
             _claimFile = requestFileList.Where(type => type.TypeId == 3).FirstOrDefault();
@@ -193,15 +215,71 @@ namespace Reg.Client.Pages
 
         private async Task InstallCert()
         {
-            var certData = await RequestRepo.GetCertificateData(_request.Id);
-            var messageResponse = await WebSocketService.InstallCertificate(certData);
-            if (messageResponse != null)
+            
+            var checkPlugin = await WebSocketService.CheckPlugin();
+            if(checkPlugin)
+            {
+                var certData = await RequestRepo.GetCertificateData(_request.Id);
+                var messageResponse = await WebSocketService.InstallCertificate(certData);
+                if (messageResponse != null)
                 if(messageResponse.Success)
+                {
                     Console.WriteLine("Сертификат установлен");
-                    _request.StepId = 6;
+                    _request.StepId = 8;
                     await SilentUpdate();
                     Snackbar.Add("Сертификат установлен", Severity.Success);
                     NavigationManager.NavigateTo("/");
+                }
+                else
+                {
+                    var parameters = new DialogParameters();
+                    parameters.Add("ContentText", messageResponse.Message);
+                    parameters.Add("ButtonText", "OK");
+                    parameters.Add("Color", Color.Error);
+
+                    var dialog = DialogService.Show<ErrorDialog>("Ошибка установки сертификата", parameters);
+                    var result = await dialog.Result;
+                }
+            }
+            else
+            {
+                var parameters = new DialogParameters();
+                parameters.Add("ContentText", "Для продолжения работы запустите или установите плагин \"1Сtoolbox\"");
+                parameters.Add("ButtonText", "OK");
+                parameters.Add("Color", Color.Error);
+
+                var dialog = DialogService.Show<ConfirmDialogToolboxInstall>("Ошибка", parameters);
+                var result = await dialog.Result;
+            }
+            
+                    
+        }
+
+        private async Task CheckCert()
+        {
+        
+            _request.StepId = 7;
+            await SilentUpdate();
+            Snackbar.Add("Бланк проверен", Severity.Success);
+            NavigationManager.NavigateTo("/");
+        }
+
+        private async Task SendSert()
+        {
+            await certBlanckValidation.Validate();
+            await formCertBlanck.Validate();
+            if (certBlanckSuccess)
+            {
+                    Console.WriteLine("Сертификат установлен");
+                    _request.StepId = 6;
+                    await SilentUpdate();
+                    Snackbar.Add("Бланк отправлен", Severity.Success);
+                    NavigationManager.NavigateTo("/");
+            }
+            else
+            {
+                Snackbar.Add("Загрузите бланк сертификата", Severity.Warning);
+            }
         }
 
         private async Task LoadCert()
@@ -276,12 +354,22 @@ namespace Reg.Client.Pages
 //Загрузка СНИЛС
       
 
-        private async Task ClearSnils()
+        private async Task DownloadSnils()
         {
             if (RequestFileReadDtoSnils.Id != Guid.Empty)
             {
                 var fileBytes = await RequestFileHttpRepo.GetRequestFile(RequestFileReadDtoSnils.Id);
                 var fileName = $"{RequestFileReadDtoSnils.Name}.pdf";
+                await JSRuntime.InvokeAsync<object>("saveAsFile", fileName, Convert.ToBase64String(fileBytes));
+            }    
+        }
+
+        private async Task DownloadCertificate()
+        {
+            if (RequestFileReadDtoCert.Id != Guid.Empty)
+            {
+                var fileBytes = await RequestFileHttpRepo.GetRequestFile(RequestFileReadDtoCert.Id);
+                var fileName = $"{RequestFileReadDtoCert.Name}.cer";
                 await JSRuntime.InvokeAsync<object>("saveAsFile", fileName, Convert.ToBase64String(fileBytes));
             }    
         }
@@ -330,17 +418,32 @@ namespace Reg.Client.Pages
 
         private async Task Confirm()
         {
-            var parameters = new DialogParameters();
-            parameters.Add("ContentText", "Нажмите кнопку \"Выполнить\", чтобы запустить криптографические операции и подготовить заявление к отправке. Предварительно скачайте и установите 1C Toolbox. ");
-            parameters.Add("ButtonText", "Выполнить");
-            parameters.Add("Color", Color.Primary);
-
-            var dialog = DialogService.Show<ConfirmDialogToolbox>("Подготовка к формированию контейнера", parameters);
-            var result = await dialog.Result;
-            if (!result.Cancelled)
+            var checkPlugin = await WebSocketService.CheckPlugin();
+            if(checkPlugin)
             {
-                await RunWebSocket();
+                var parameters = new DialogParameters();
+                parameters.Add("ContentText", "Нажмите кнопку \"Выполнить\", чтобы запустить криптографические операции и подготовить заявление к отправке.");
+                parameters.Add("ButtonText", "Выполнить");
+                parameters.Add("Color", Color.Primary);
+
+                var dialog = DialogService.Show<ConfirmDialogToolbox>("Подготовка к формированию контейнера", parameters);
+                var result = await dialog.Result;
+                if (!result.Cancelled)
+                {
+                    await RunWebSocket();
+                }
             }
+            else
+                {
+                    var parameters = new DialogParameters();
+                    parameters.Add("ContentText", "Для продолжения работы запустите или установите плагин \"1Сtoolbox\"");
+                    parameters.Add("ButtonText", "OK");
+                    parameters.Add("Color", Color.Error);
+
+                    var dialog = DialogService.Show<ConfirmDialogToolboxInstall>("Ошибка", parameters);
+                    var result = await dialog.Result;
+                }
+
         }
 
 
@@ -351,11 +454,26 @@ namespace Reg.Client.Pages
             var messageResponse = await WebSocketService.GenerateRequest(mappedPerson, certRequestData);
             if (messageResponse != null)
                 if(messageResponse.Success)
+                {
                     _request.CertRequest = messageResponse.Data.value;
                     _request.StepId = 4;
                     _request.ContainerName = certRequestData.ContainerName;
                     await SilentUpdate();
                     NavigationManager.NavigateTo("/sendRequestConfirm");
+                }
+                else
+                {
+                    var parameters = new DialogParameters();
+                    parameters.Add("ContentText", messageResponse.Message);
+                    parameters.Add("ButtonText", "OK");
+                    parameters.Add("Color", Color.Error);
+
+                    var dialog = DialogService.Show<ErrorDialog>("Ошибка", parameters);
+                    var result = await dialog.Result;
+                }
+                    
+                
+                    
         }
 
 
@@ -467,6 +585,68 @@ namespace Reg.Client.Pages
         public void Dispose()
         {
             Interceptor.DisposeEvent();
+        }
+
+        protected async Task CertBlanckPrint() 
+        {
+           
+
+                var fileBytes = await PdfGeneratorHttpRepo.GenerateCertBlanck(_request.Id); 
+                var fileName = $"Бланк сертификата {_request.PersonLastName} {_request.PersonFirstName} {_request.PersonPatronymic}.pdf";
+                await JSRuntime.InvokeAsync<object>("saveAsFile", fileName, Convert.ToBase64String(fileBytes));
+           
+        }
+
+        //Загрузка Бланка сертификата>
+        private async Task OnInputFileChangedCertBlanck(InputFileChangeEventArgs e)
+        {
+            requestFileFeatures.TypeId = 7;
+            await ClearCertBlanck();
+            ClearDragClassCertBlanck();
+            var file = e.File;
+            fileNamesCertBlanck.Add(file.Name);
+            await certBlanckValidation.Validate();
+            using (var ms = file.OpenReadStream(file.Size))
+            {
+                var content = new MultipartFormDataContent();
+                content.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data");
+                content.Add(new StreamContent(ms, Convert.ToInt32(file.Size)), file.ContentType, file.Name);
+                RequestFileReadDtoCertBlanck = await RequestFileHttpRepo.UploadRequestFile(content, requestFileFeatures);
+                await OnChange.InvokeAsync(RequestFileReadDtoCertBlanck);  
+            }
+            
+        }
+
+        private async Task ClearCertBlanck()
+        {
+            if (RequestFileReadDtoCertBlanck.Id != Guid.Empty)
+            {
+                await RequestFileHttpRepo.DeleteRequestFile(RequestFileReadDtoCertBlanck.Id);
+                RequestFileReadDtoCertBlanck.Id = Guid.Empty;
+            }
+            
+            fileNamesCertBlanck.Clear();
+            ClearDragClassCertBlanck();
+
+        }
+
+        private void SetDragClassCertBlanck()
+        {
+            DragClass = $"{DefaultDragClass} mud-border-primary";
+        }
+
+        private void ClearDragClassCertBlanck()
+        {
+            DragClass = DefaultDragClass;
+        }
+
+        private string ValidationCertBlanck(IReadOnlyList<IBrowserFile> fileList)
+        {
+            if (!fileNamesCertBlanck.Any())
+            {
+               return "Загрузите документ"; 
+            }
+            return null;
         }
 
 

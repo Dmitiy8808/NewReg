@@ -16,6 +16,7 @@ namespace Entities.DTOs
         public string? PersonInn { get; set; }
         public string? Organization { get; set; }
         public string? Inn { get; set; }
+        public string? Orgn { get; set; }
         public string? Email { get; set; }
         public string? IdentificationKind { get; set; } 
         public string? IdentificationKindCode { get; set; }
@@ -24,7 +25,6 @@ namespace Entities.DTOs
         public string? AuthorityAddressCity { get; set; }
         public string? AuthoritySerialNumber { get; set; }
         public string? AuthoritySignTool { get; set; }
-        
         public string? AuthoritySignToolCertificate { get; set; }
         public string? AuthorityCaTool { get; set; }
         public string? AuthorityCaCertificate { get; set; }

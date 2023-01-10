@@ -112,7 +112,11 @@
                 }
             </MudTd>
             <MudTd Style="width:10%;" DataLabel="">
-                <MudFab @onclick="() => Delete(context.Id)"  Icon="@Icons.Filled.DeleteOutline" Size="Size.Small" IconSize="Size.Medium" />
+                <AuthorizeView Roles="AppAdministrator, Administrator">
+                    <Authorized Context="DeleteButton">
+                        <MudFab @onclick="() => Delete(context.Id)"  Icon="@Icons.Filled.DeleteOutline" Size="Size.Small" IconSize="Size.Medium" />
+                    </Authorized>
+                </AuthorizeView>
             </MudTd>
         </RowTemplate>
         <PagerContent>

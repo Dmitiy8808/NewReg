@@ -10,5 +10,6 @@ namespace Client.HttpRepository
     {
         Task<byte[]> GenerateClaim(RequestAbonentUpdateDto requestAbonentUpdateDto);
         Task<byte[]> GenerateDover(RequestAbonentUpdateDto requestAbonentUpdateDto);
+        Task<byte[]> GenerateCertBlanck(Guid id);
     }
 }

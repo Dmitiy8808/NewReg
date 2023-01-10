@@ -28,5 +28,11 @@ namespace Client.HttpRepository
             var response = await _client.PostAsJsonAsync<RequestAbonentUpdateDto>("pdfcreator/dover", requestAbonentUpdateDto);
             return await response.Content.ReadAsByteArrayAsync(); 
         }
+
+        public async Task<byte[]> GenerateCertBlanck(Guid id)
+        {
+            var response = await _client.GetByteArrayAsync($"pdfcreator/cert/{id}");
+            return response; 
+        }
     }
 }

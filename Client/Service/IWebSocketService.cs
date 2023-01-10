@@ -13,5 +13,6 @@ namespace Client.Service
         Task<MessageResponse> GenerateRequest(RequestAbonent requestAbonent, CertRequestDataDto? certRequestData);
         Task<CertRequestDataDto> GetCertRequestData(RequestAbonent clientAbonent);
         Task<MessageResponse> InstallCertificate(CertificateDataDto certificateDataDto);
+        Task<bool> CheckPlugin();
     }
 }

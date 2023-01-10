@@ -8,6 +8,7 @@ namespace Server.Utility
     {
         public static string GetHTMLString(CertificateStructureDto cs)
         {
+          var logo =  Path.Combine(Directory.GetCurrentDirectory(), "assets", "logo.png");
             
 
             var sb = new StringBuilder();
@@ -19,9 +20,9 @@ namespace Server.Utility
                     </HEAD>
                         <body>
 
-      <div class='block'>
+      <div class='block' style='margin-left: 120px;'>
         <div class='img' height='49' width='110'>
-          <img src='logo.png'/>
+          <img src='{logo}'/>
         </div>
         <div class='text'>
           <b>
@@ -35,7 +36,7 @@ namespace Server.Utility
         </div>
       </div>
 
-      <div style='position:absolute; top:150px; left:60px; width:960px;'>
+      <div style='position:absolute; top:150px; left:60px; width:1200px;'>
 
         <FONT SIZE='6.8'>
           <div style='margin-left: 65px;font-size:12pt'>
@@ -60,44 +61,41 @@ namespace Server.Utility
 
           <div style='margin-left: 65px;font-size:12pt'>
             <b style='font-size:12pt'>Основной государственный регистрационный номер: </b>
-            <xsl:value-of select='//cert/subject/@OGRN'/>
+            {cs.Orgn}
           </div>
 
           <div style='margin-left: 65px;font-size:12pt'>
-            <b style='font-size:12pt'>Идентификационный номер налогоплательщика: {cs.PersonInn} </b>
+            <b style='font-size:12pt'>Идентификационный номер налогоплательщика:  </b>
+            {cs.Inn}
           </div>
 
           <div style='margin-left: 65px;font-size:12pt'>
             <b style='font-size:12pt'>Индивидуальный номер налогоплательщика: </b>
-            <xsl:choose>
-              <xsl:when test='//cert/subject/@InnLe != '''>
-                <xsl:value-of select='//cert/subject/@INN'/>
-              </xsl:when>
-            </xsl:choose>
+            {cs.PersonInn}
           </div>
 
           <div style='margin-left: 65px;font-size:12pt'>
             <b style='font-size:12pt'>Страховой номер индивидуального лицевого счета: </b>
-            <xsl:value-of select='//cert/subject/@SNILS'/>
+            {cs.Snils}
           </div>
 
           <div style='margin-left: 65px;font-size:12pt'>
             <b style='font-size:12pt'>Электронная почта: </b>
-            <xsl:value-of select='//cert/subject/@EMAIL'/>
+            {cs.Email}
           </div>
 
           <div style='margin-left: 65px;font-size:12pt'>
             <b style='font-size:12pt'>Место нахождения юридического лица: </b>
-            <xsl:value-of select='//cert/subject/@location'/>
+            {cs.AuthorityAddressCity} {cs.AuthorityAddressStreet}
           </div>
 
           <div style='margin-left: 65px;font-size:12pt'>
             <b style='font-size:12pt'>Уполномоченный представитель юридического лица: </b>
-            <xsl:value-of select='//cert/subject/@T'/>&#160;<xsl:value-of select='//cert/subject/@SN'/>&#160;<xsl:value-of select='//cert/subject/@G'/>
+            {cs.FirstName} {cs.GivenName}
           </div>
           <div style='margin-left: 65px;font-size:12pt'>
             <b style='font-size:12pt'>Тип идентификации при выдаче сертификата:  </b>
-            <xsl:value-of select='//cert/IdentificationKind/@value'/>
+            {cs.IdentificationKind}
           </div>
 
 
@@ -108,42 +106,42 @@ namespace Server.Utility
 
           <div style='margin-left: 65px;font-size:12pt'>
             <b style='font-size:12pt'>Наименование удостоверяющего центра: </b>
-            <xsl:value-of select='//cert/Issuer/@CommonName'/>
+            {cs.AuthorityName}
           </div>
 
           <div style='margin-left: 65px;font-size:12pt'>
             <b style='font-size:12pt'>Место нахождения удостоверяющего центра: </b>
-            <xsl:value-of select='//cert/Issuer/@location'/>
+            {cs.AuthorityAddressCity} {cs.AuthorityAddressStreet}
           </div>
 
           <div style='margin-left: 65px;font-size:12pt'>
             <b style='font-size:12pt'>Номер квалифицированного сертификата удостоверяющего центра: </b>
-            <xsl:value-of select='//cert/Issuer/@SN'/>
+            {cs.AuthoritySerialNumber}
           </div>
 
           <div style='margin-left: 65px;font-size:12pt'>
             <b style='font-size:12pt'>Наименование средства электронной подписи: </b>
-            <xsl:value-of select='//cert/Issuer/@ElectronicSignatureName'/>
+            {cs.AuthoritySignTool}
           </div>
 
           <div style='margin-left: 65px;font-size:12pt'>
             <b style='font-size:12pt'>Реквизиты заключения о подтверждении соответствия средства электронной подписи: </b>
-            <xsl:value-of select='//cert/Issuer/@ElectronicSignatureReqv'/>
+            {cs.AuthoritySignToolCertificate}
           </div>
 
           <div style='margin-left: 65px;font-size:12pt'>
             <b style='font-size:12pt'>Наименование средства удостоверяющего центра: </b>
-            <xsl:value-of select='//cert/Issuer/@CertificationAuthorityName'/>
+            {cs.AuthorityCaTool}
           </div>
 
           <div style='margin-left: 65px;font-size:12pt'>
             <b style='font-size:12pt'>Реквизиты заключения о подтверждении соответствия средства удостоверяющего центра: </b>
-            <xsl:value-of select='//cert/Issuer/@CertificationAuthorityReqv'/>
+            {cs.AuthorityCaCertificate}
           </div>
 
           <div style='margin-left: 65px;font-size:12pt'>
             <b style='font-size:12pt'>Класс средств удостоверяющего центра: </b>
-            <xsl:value-of select='//cert/Issuer/@CertificatePolicies'/>
+            {cs.AuthorityType}
           </div>
 
           <pre style='font-size:14pt'>
@@ -152,27 +150,28 @@ namespace Server.Utility
 
           <div style='margin-left: 65px;font-size:12pt'>
             <b style='font-size:12pt'>Используемый алгоритм: </b>
-            <xsl:value-of select='//cert/openKey/@parameter'/>
+            {cs.CertAlgorithm} 
           </div>
 
           <div style='margin-left: 65px;font-size:12pt'>
             <b style='font-size:12pt'>Используемое средство электронной подписи: </b>
-            <xsl:value-of select='//cert/subject/@ElectronicSignatureTool'/>
+            {cs.CertSignTool}  
           </div>
 
           <div style='margin-left: 65px;font-size:12pt'>
             <b style='font-size:12pt'>Класс средства электронной подписи: </b>
-            <xsl:value-of select='//cert/openKey/@CertificatePolicies'/>
+            {cs.CertSignType}
           </div>
 
           <div style='margin-left: 65px;font-size:12pt'>
             <b style='font-size:12pt'>Область использования ключа: </b>
-            <xsl:value-of select='//cert/openKey/@KeyUsage'/>
+            {cs.CertKeyUsage}
           </div>
 
           <div style='margin-left: 65px;font-size:12pt'>
             <b style='font-size:12pt'>Значение ключа: </b>
-            <xsl:value-of select='//cert/openKey/@algoritm'/>
+            <br>
+            {cs.PublicKey}
           </div>
 
 
@@ -181,23 +180,19 @@ namespace Server.Utility
           </pre>
           <div style='margin-left: 65px;font-size:12pt'>
             <b style='font-size:12pt'>Используемый алгоритм: </b>
-            <xsl:value-of select='//cert/openKey/@algoritm'/>
+            {cs.CertAlgorithm} 
           </div>
 
           <div style='margin-left: 65px;font-size:12pt'>
             <b style='font-size:12pt'>Значение электронной подписи: </b>
-            <xsl:for-each select='cert/ElectronicSignature/signatureValue/signatureString'>
-              <div style='margin-left: 65px;font-size:12pt'>
-                <xsl:value-of select='@value'/>
-              </div>
-
-            </xsl:for-each>
+            <br>
+            {cs.Signature}
           </div>
 
           <br></br>
           <div style='margin-left: 65px;font-size:12pt'>
-            Подпись владельца сертификата _____________________________/ <xsl:value-of select='//cert/subject/@SN'/>&#160;<xsl:value-of select='//cert/subject/@G'/> /
-            <pre>  &#x9;&#x9; &#x9; &#x9; &#x9; М.П.</pre>
+            Подпись владельца сертификата _____________________________/ {cs.FirstName} {cs.GivenName}
+            
           </div>
         </FONT>
       </div>
